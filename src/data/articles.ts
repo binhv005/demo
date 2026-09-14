@@ -127,5 +127,74 @@ Hãy cân nhắc kỹ ngành học và ngân sách trước khi xuống tiền. 
     tags: ['Laptop', 'Sinh viên', 'Công nghệ', 'Văn phòng'],
     views: 18900,
     status: 'published'
+  },
+
+  // --- BÀI HƯỚNG DẪN 3: Ứng Dụng AI Năng Suất ---
+  {
+    id: 'art-guide-ai-workflows',
+    title: 'Top 10 Phương Pháp Ứng Dụng Trí Tuệ Nhân Tạo (AI) Tự Động Hóa Công Việc 2024',
+    slug: 'ung-dung-ai-tu-dong-hoa-cong-viec',
+    type: 'guide',
+    productType: 'digital',
+    categorySlug: 'tro-ly-ai',
+    coverImage: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80',
+    excerpt: 'Hướng dẫn từng bước kết hợp ChatGPT, Claude và các công cụ Automation để tiết kiệm 15 giờ làm việc mỗi tuần cho dân văn phòng.',
+    content: `
+### 1. Cuộc Cách Mạng Tự Động Hóa Cá Nhân
+
+Sự bùng nổ của các mô hình ngôn ngữ lớn (LLM) đã mở ra kỷ nguyên mới cho năng suất cá nhân. Thay vì mất hàng giờ xử lý email, tổng hợp tài liệu hay viết báo cáo định kỳ, bạn hoàn toàn có thể tự động hóa 80% khối lượng công việc này.
+
+---
+
+### 2. Các Bước Thiết Lập Quy Trình Tự Động
+
+- **Bước 1: Chuẩn hóa Prompt System**: Xây dựng bộ ngữ cảnh chuẩn cho vai trò và phong cách làm việc.
+- **Bước 2: Tích hợp API qua Make/Zapier**: Đồng bộ hóa dữ liệu giữa bảng tính Notion/Google Sheets và trợ lý AI.
+- **Bước 3: Tận dụng Custom GPTs & Claude Projects**: Đào tạo AI theo kho tài liệu nội bộ riêng của doanh nghiệp.
+
+---
+
+### 3. Kết luận
+Tự động hóa với AI không làm mất đi vai trò của con người, mà nâng tầm bạn trở thành người điều phối quy trình thông minh và hiệu quả hơn.
+    `,
+    tableOfContents: [
+      { id: '1-cuoc-cach-mang-tu-dong-hoa-ca-nhan', title: '1. Cuộc Cách Mạng Tự Động Hóa' },
+      { id: '2-cac-buoc-thiet-lap-quy-trinh-tu-dong', title: '2. Các Bước Thiết Lập' },
+      { id: '3-ket-luan', title: '3. Kết luận' }
+    ],
+    authorId: 'expert-2',
+    readingTime: '5 phút đọc',
+    publishedAt: '14 Tháng 03, 2024',
+    relatedProductIds: ['prod-chatgpt-plus', 'prod-claude-sonnet'],
+    tags: ['AI', 'Năng suất', 'Tự động hóa', 'Phần mềm'],
+    views: 22400,
+    status: 'published'
+  },
+
+  // --- BÀI HƯỚNG DẪN 4: Ghế Công Thái Học ---
+  {
+    id: 'art-guide-ergonomic',
+    title: 'Kinh Nghiệm Chọn Ghế Công Thái Học & Bàn Nâng Hạ Chống Đau Mỏi Cột Sống',
+    slug: 'kinh-nghiem-chon-ghe-cong-thai-hoc',
+    type: 'guide',
+    productType: 'physical',
+    categorySlug: 'ban-ghe-cong-thai-hoc',
+    coverImage: 'https://images.unsplash.com/photo-1580481077195-c3a821a58875?auto=format&fit=crop&w=1200&q=80',
+    excerpt: 'Tìm hiểu các tiêu chí công thái học chuẩn chỉnh: đệm thắt lưng 3D, tay vịn 4D, góc ngả lưng và chất liệu lưới thông thoáng khí cho người ngồi làm việc 8+ tiếng.',
+    content: `
+### 1. Tầm quan trọng của góc ngồi chuẩn y khoa
+
+Ngồi sai tư thế liên tục 8 tiếng mỗi ngày là nguyên nhân hàng đầu gây thoái hóa đốt sống cổ và thoát vị đĩa đệm. Đầu tư một chiếc ghế công thái học đạt chuẩn là quyết định bảo vệ sức khỏe dài hạn quan trọng nhất.
+    `,
+    tableOfContents: [
+      { id: '1-tam-quan-trong', title: '1. Tầm quan trọng của tư thế ngồi' }
+    ],
+    authorId: 'expert-1',
+    readingTime: '7 phút đọc',
+    publishedAt: '11 Tháng 03, 2024',
+    relatedProductIds: [],
+    tags: ['Gia dụng', 'Nội thất', 'Công thái học', 'Sức khỏe'],
+    views: 12100,
+    status: 'published'
   }
 ];

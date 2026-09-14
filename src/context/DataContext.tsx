@@ -45,60 +45,123 @@ interface DataContextType {
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
+const DATA_VERSION = 'v10_top10_sync';
+
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Check version and clear stale cache if version changed
+  useEffect(() => {
+    const currentVersion = localStorage.getItem('demo_data_version');
+    if (currentVersion !== DATA_VERSION) {
+      localStorage.setItem('demo_data_version', DATA_VERSION);
+      const oldKeys = [
+        'demo_data_products',
+        'demo_data_categories',
+        'demo_data_rankings',
+        'demo_data_rankings_v5',
+        'demo_data_comparisons',
+        'demo_data_articles',
+        'demo_data_articles_v3',
+        'demo_data_experts'
+      ];
+      oldKeys.forEach((k) => localStorage.removeItem(k));
+      setProducts(mockProducts);
+      setCategories(mockCategories);
+      setRankings(mockRankings);
+      setComparisons(mockComparisons);
+      setArticles(mockArticles);
+      setExperts(mockExperts);
+    }
+  }, []);
+
   const [products, setProducts] = useState<Product[]>(() => {
-    const saved = localStorage.getItem('demo_data_products');
-    return saved ? JSON.parse(saved) : mockProducts;
+    if (localStorage.getItem('demo_data_version') !== DATA_VERSION) {
+      return mockProducts;
+    }
+    const saved = localStorage.getItem(`demo_data_products_${DATA_VERSION}`);
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) {}
+    }
+    return mockProducts;
   });
 
   const [categories, setCategories] = useState<Category[]>(() => {
-    const saved = localStorage.getItem('demo_data_categories');
-    return saved ? JSON.parse(saved) : mockCategories;
+    if (localStorage.getItem('demo_data_version') !== DATA_VERSION) {
+      return mockCategories;
+    }
+    const saved = localStorage.getItem(`demo_data_categories_${DATA_VERSION}`);
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) {}
+    }
+    return mockCategories;
   });
 
   const [rankings, setRankings] = useState<Ranking[]>(() => {
-    const saved = localStorage.getItem('demo_data_rankings');
-    return saved ? JSON.parse(saved) : mockRankings;
+    if (localStorage.getItem('demo_data_version') !== DATA_VERSION) {
+      return mockRankings;
+    }
+    const saved = localStorage.getItem(`demo_data_rankings_${DATA_VERSION}`);
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) {}
+    }
+    return mockRankings;
   });
 
   const [comparisons, setComparisons] = useState<Comparison[]>(() => {
-    const saved = localStorage.getItem('demo_data_comparisons');
-    return saved ? JSON.parse(saved) : mockComparisons;
+    if (localStorage.getItem('demo_data_version') !== DATA_VERSION) {
+      return mockComparisons;
+    }
+    const saved = localStorage.getItem(`demo_data_comparisons_${DATA_VERSION}`);
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) {}
+    }
+    return mockComparisons;
   });
 
   const [articles, setArticles] = useState<Article[]>(() => {
-    const saved = localStorage.getItem('demo_data_articles');
-    return saved ? JSON.parse(saved) : mockArticles;
+    if (localStorage.getItem('demo_data_version') !== DATA_VERSION) {
+      return mockArticles;
+    }
+    const saved = localStorage.getItem(`demo_data_articles_${DATA_VERSION}`);
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) {}
+    }
+    return mockArticles;
   });
 
   const [experts, setExperts] = useState<Expert[]>(() => {
-    const saved = localStorage.getItem('demo_data_experts');
-    return saved ? JSON.parse(saved) : mockExperts;
+    if (localStorage.getItem('demo_data_version') !== DATA_VERSION) {
+      return mockExperts;
+    }
+    const saved = localStorage.getItem(`demo_data_experts_${DATA_VERSION}`);
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) {}
+    }
+    return mockExperts;
   });
 
   // Save changes to localStorage
   useEffect(() => {
-    localStorage.setItem('demo_data_products', JSON.stringify(products));
+    localStorage.setItem(`demo_data_products_${DATA_VERSION}`, JSON.stringify(products));
   }, [products]);
 
   useEffect(() => {
-    localStorage.setItem('demo_data_categories', JSON.stringify(categories));
+    localStorage.setItem(`demo_data_categories_${DATA_VERSION}`, JSON.stringify(categories));
   }, [categories]);
 
   useEffect(() => {
-    localStorage.setItem('demo_data_rankings', JSON.stringify(rankings));
+    localStorage.setItem(`demo_data_rankings_${DATA_VERSION}`, JSON.stringify(rankings));
   }, [rankings]);
 
   useEffect(() => {
-    localStorage.setItem('demo_data_comparisons', JSON.stringify(comparisons));
+    localStorage.setItem(`demo_data_comparisons_${DATA_VERSION}`, JSON.stringify(comparisons));
   }, [comparisons]);
 
   useEffect(() => {
-    localStorage.setItem('demo_data_articles', JSON.stringify(articles));
+    localStorage.setItem(`demo_data_articles_${DATA_VERSION}`, JSON.stringify(articles));
   }, [articles]);
 
   useEffect(() => {
-    localStorage.setItem('demo_data_experts', JSON.stringify(experts));
+    localStorage.setItem(`demo_data_experts_${DATA_VERSION}`, JSON.stringify(experts));
   }, [experts]);
 
   // Product Methods
@@ -237,12 +300,13 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setComparisons(mockComparisons);
     setArticles(mockArticles);
     setExperts(mockExperts);
-    localStorage.removeItem('demo_data_products');
-    localStorage.removeItem('demo_data_categories');
-    localStorage.removeItem('demo_data_rankings');
-    localStorage.removeItem('demo_data_comparisons');
-    localStorage.removeItem('demo_data_articles');
-    localStorage.removeItem('demo_data_experts');
+    localStorage.setItem('demo_data_version', DATA_VERSION);
+    localStorage.setItem(`demo_data_products_${DATA_VERSION}`, JSON.stringify(mockProducts));
+    localStorage.setItem(`demo_data_categories_${DATA_VERSION}`, JSON.stringify(mockCategories));
+    localStorage.setItem(`demo_data_rankings_${DATA_VERSION}`, JSON.stringify(mockRankings));
+    localStorage.setItem(`demo_data_comparisons_${DATA_VERSION}`, JSON.stringify(mockComparisons));
+    localStorage.setItem(`demo_data_articles_${DATA_VERSION}`, JSON.stringify(mockArticles));
+    localStorage.setItem(`demo_data_experts_${DATA_VERSION}`, JSON.stringify(mockExperts));
   };
 
   return (

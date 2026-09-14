@@ -1,11 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
   <defs>
-    <linearGradient id="logoBgFav" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="logoBg" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#ea580c" />
       <stop offset="100%" stop-color="#c2410c" />
     </linearGradient>
   </defs>
-  <rect width="48" height="48" rx="14" fill="url(#logoBgFav)" />
+  <!-- Rounded squircle badge -->
+  <rect width="48" height="48" rx="14" fill="url(#logoBg)" />
+  
+  <!-- Sparkle Star Icon (Main 4-point star) -->
   <path
     d="M24 10C24 16.5 28.5 21 35 21C28.5 21 24 25.5 24 32C24 25.5 19.5 21 13 21C19.5 21 24 16.5 24 10Z"
     fill="white"
@@ -13,5 +16,11 @@
     stroke-width="1.2"
     stroke-linejoin="round"
   />
+  
+  <!-- Accent Small Sparkle Top-Right / Bottom-Left -->
   <circle cx="15" cy="31" r="2.2" fill="white" />
+  <path
+    d="M33 13C33 14.5 34.5 15.5 36 15.5C34.5 15.5 33 16.5 33 18C33 16.5 31.5 15.5 30 15.5C31.5 15.5 33 14.5 33 13Z"
+    fill="white"
+  />
 </svg>

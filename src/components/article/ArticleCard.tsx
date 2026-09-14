@@ -30,19 +30,27 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
 
   const typeInfo = typeLabels[article.type] || typeLabels.guide;
 
+  const fallbackArticleImg = article.productType === 'digital'
+    ? 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=1200&q=80'
+    : 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80';
+
   if (variant === 'featured') {
     return (
       <div
-        className={`bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-sm hover:shadow-xl hover:border-slate-300 transition-all duration-300 grid grid-cols-1 lg:grid-cols-12 group ${className}`}
+        className={`bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-sm hover:shadow-xl hover:border-slate-300 transition-all duration-300 grid grid-cols-1 md:grid-cols-12 group ${className}`}
       >
-        <div className="lg:col-span-7 relative h-72 sm:h-96 lg:h-full bg-slate-100 overflow-hidden">
+        <div className="md:col-span-5 relative h-64 sm:h-80 md:h-full bg-slate-100 overflow-hidden">
           <img
-            src={article.coverImage}
+            src={article.coverImage || fallbackArticleImg}
             alt={article.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              if (target.src !== fallbackArticleImg) target.src = fallbackArticleImg;
+            }}
           />
           <div className="absolute top-4 left-4">
-            <Badge variant={typeInfo.variant} className="bg-white/95 backdrop-blur-md shadow-sm font-bold">
+            <Badge variant={typeInfo.variant} className="bg-white/95 backdrop-blur-md shadow-xs font-bold text-xs">
               <span className="flex items-center gap-1.5">
                 {typeInfo.icon}
                 {typeInfo.label}
@@ -51,7 +59,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
           </div>
         </div>
 
-        <div className="lg:col-span-5 p-6 sm:p-8 flex flex-col justify-between space-y-6">
+        <div className="md:col-span-7 p-6 sm:p-7 flex flex-col justify-between space-y-4">
           <div className="space-y-3">
             <div className="flex items-center gap-3 text-xs text-slate-400">
               <span className="flex items-center gap-1">
@@ -67,12 +75,12 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
 
             <Link
               to={getArticleUrl(article)}
-              className="block font-extrabold text-xl sm:text-2xl text-slate-900 group-hover:text-indigo-600 transition-colors leading-tight"
+              className="block font-extrabold text-lg sm:text-xl text-slate-900 group-hover:text-indigo-600 transition-colors leading-tight"
             >
               {article.title}
             </Link>
 
-            <p className="text-xs sm:text-sm text-slate-600 line-clamp-3 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-600 line-clamp-3 leading-relaxed font-normal">
               {article.excerpt}
             </p>
           </div>
@@ -98,6 +106,65 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
     );
   }
 
+  if (variant === 'horizontal') {
+    return (
+      <div
+        className={`bg-white rounded-2xl border border-slate-200/80 overflow-hidden hover:shadow-lg hover:border-slate-300 transition-all duration-300 flex flex-col sm:flex-row group ${className}`}
+      >
+        <div className="relative w-full sm:w-44 lg:w-44 h-44 sm:h-auto flex-shrink-0 bg-slate-100 overflow-hidden">
+          <img
+            src={article.coverImage || fallbackArticleImg}
+            alt={article.title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              if (target.src !== fallbackArticleImg) target.src = fallbackArticleImg;
+            }}
+          />
+          <div className="absolute top-2.5 left-2.5">
+            <Badge variant={typeInfo.variant} size="sm" className="bg-white/95 backdrop-blur-md shadow-xs font-semibold text-[10px]">
+              {typeInfo.label}
+            </Badge>
+          </div>
+        </div>
+
+        <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-2 min-w-0">
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2 text-[11px] text-slate-400">
+              <span>{article.publishedAt}</span>
+              <span>•</span>
+              <span>{article.readingTime}</span>
+            </div>
+
+            <Link
+              to={getArticleUrl(article)}
+              className="font-bold text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-2 text-sm sm:text-base leading-snug"
+            >
+              {article.title}
+            </Link>
+
+            <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed font-normal">
+              {article.excerpt}
+            </p>
+          </div>
+
+          <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+            <span className="text-[11px] text-slate-400 font-medium">
+              {article.views.toLocaleString('vi-VN')} lượt đọc
+            </span>
+            <Link
+              to={getArticleUrl(article)}
+              className="text-xs font-bold text-indigo-600 group-hover:text-indigo-700 flex items-center gap-1 group/btn"
+            >
+              <span>Chi tiết</span>
+              <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Standard vertical card
   return (
     <div
@@ -105,9 +172,13 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
     >
       <div className="relative h-48 bg-slate-100 overflow-hidden">
         <img
-          src={article.coverImage}
+          src={article.coverImage || fallbackArticleImg}
           alt={article.title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            if (target.src !== fallbackArticleImg) target.src = fallbackArticleImg;
+          }}
         />
         <div className="absolute top-3 left-3">
           <Badge variant={typeInfo.variant} size="sm" className="bg-white/95 backdrop-blur-md shadow-sm font-semibold">

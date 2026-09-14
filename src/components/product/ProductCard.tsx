@@ -20,6 +20,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   rank,
   className = ''
 }) => {
+  const fallbackImg = product.type === 'physical'
+    ? 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=800&q=80'
+    : 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=800&q=80';
+
   if (variant === 'list') {
     return (
       <div
@@ -28,9 +32,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         {/* Left: Image & Rank Badge */}
         <div className="relative w-full md:w-56 h-48 md:h-44 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0 group">
           <img
-            src={product.image}
+            src={product.image || fallbackImg}
             alt={product.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              if (target.src !== fallbackImg) target.src = fallbackImg;
+            }}
           />
           {rank && (
             <div className="absolute top-3 left-3 w-8 h-8 rounded-full bg-slate-900/90 backdrop-blur-md text-white font-bold flex items-center justify-center text-sm shadow">
@@ -115,9 +123,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       {/* Image Container */}
       <div className="relative h-48 bg-slate-100 overflow-hidden">
         <img
-          src={product.image}
+          src={product.image || fallbackImg}
           alt={product.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            if (target.src !== fallbackImg) target.src = fallbackImg;
+          }}
         />
         {/* Top Badges */}
         <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">

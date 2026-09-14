@@ -62,8 +62,8 @@ export const QuickPick: React.FC<QuickPickProps> = ({
               className={`rounded-2xl border p-5 flex flex-col justify-between space-y-4 shadow-sm transition-all hover:shadow-md ${card.bg}`}
             >
               <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className={`px-2.5 py-1 rounded-lg text-[11px] font-bold tracking-wider uppercase ${card.badgeColor}`}>
+                <div className="flex items-center justify-between gap-2">
+                  <span className={`px-2.5 py-1 rounded-lg text-[10px] sm:text-[11px] font-bold tracking-wide uppercase whitespace-nowrap flex-shrink-0 ${card.badgeColor}`}>
                     {card.type}
                   </span>
                   <ScoreBadge score={card.product.score} size="sm" />

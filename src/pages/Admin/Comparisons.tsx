@@ -134,6 +134,7 @@ export const AdminComparisonsPage: React.FC = () => {
     },
     {
       header: 'Người chiến thắng',
+      className: 'whitespace-nowrap',
       accessor: (c: Comparison) => {
         const winner = products.find((p) => p.id === c.winnerId);
         return (
@@ -145,11 +146,12 @@ export const AdminComparisonsPage: React.FC = () => {
     },
     {
       header: 'Cập nhật',
+      className: 'whitespace-nowrap',
       accessor: (c: Comparison) => <span className="text-xs text-slate-400">{c.updatedAt}</span>
     },
     {
       header: 'Hành động',
-      className: 'text-right',
+      className: 'text-right whitespace-nowrap',
       accessor: (c: Comparison) => (
         <div className="flex items-center justify-end gap-1.5">
           <Link

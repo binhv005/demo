@@ -84,6 +84,7 @@ export interface Ranking {
   type: ProductType;
   groupSlug: string;
   categorySlug: string;
+  image?: string;
   subtitle: string;
   updatedAt: string;
   authorId: string;

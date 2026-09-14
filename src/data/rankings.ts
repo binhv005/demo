@@ -9,6 +9,7 @@ export const mockRankings: Ranking[] = [
     type: 'physical',
     groupSlug: 'gia-dung',
     categorySlug: 'noi-chien',
+    image: '/airfryer-lab-testing.jpg',
     subtitle: 'Đội ngũ chuyên gia của chúng tôi đã thử nghiệm chiên nướng hơn 20 mẫu nồi chiên trong 90 ngày để tìm ra sản phẩm giòn đều, an toàn và dễ vệ sinh nhất.',
     updatedAt: '12 Tháng 03, 2024',
     authorId: 'expert-1',
@@ -16,8 +17,8 @@ export const mockRankings: Ranking[] = [
     methodology: 'Quy trình thử nghiệm tiêu chuẩn: Mỗi sản phẩm trải qua 5 bài test nấu thực tế: chiên khoai tây đông lạnh (kiểm tra độ giòn đồng đều), nướng gà nguyên con 1.8kg (kiểm tra khả năng tỏa nhiệt lõi), nướng bánh bông lan (kiểm tra độ ổn định nhiệt), thử độ ồn bằng máy đo Decibel và test rửa lớp chống dính 30 lần bằng miếng xốp mềm.',
     quickPicks: {
       bestOverallId: 'prod-aircook-6l',
-      bestValueId: 'prod-aircook-6l',
-      bestPremiumId: 'prod-homechef-dual'
+      bestValueId: 'prod-cosori-pro-le',
+      bestPremiumId: 'prod-philips-xxl'
     },
     items: [
       {
@@ -35,6 +36,70 @@ export const mockRankings: Ranking[] = [
         verdict: 'HomeChef Dual Zone 9L là cứu tinh cho gia đình đông người hoặc các bữa tiệc với khả năng nấu 2 món cùng lúc ở 2 mức nhiệt riêng biệt.',
         customPros: ['2 ngăn độc lập công suất mạnh 2400W', 'Đồng bộ thời gian nấu Sync Finish'],
         customCons: ['Giá thành cao và trọng lượng nặng']
+      },
+      {
+        rank: 3,
+        productId: 'prod-philips-xxl',
+        highlight: 'Công nghệ Tách Dầu Đỉnh Cao',
+        verdict: 'Philips XXL HD9650 mang lại khả năng tách mỡ vượt trội nhất và độ bền bỉ chuẩn mực châu Âu, dù mức giá tương đối cao.',
+        customPros: ['Công nghệ Twin TurboStar tách dầu mỡ số 1', 'Độ bền và hoàn thiện cực cao', 'Dung tích lòng nồi 7.3L rộng rãi'],
+        customCons: ['Giá bán cao hơn mặt bằng chung']
+      },
+      {
+        rank: 4,
+        productId: 'prod-cosori-pro-le',
+        highlight: 'Giá Trị Tốt Nhất & Vận Hành Siêu Êm',
+        verdict: 'Cosori Pro LE 5.0L gây ấn tượng mạnh với thiết kế mặt kính phẳng tối giản, vận hành êm ái dưới 55dB và khả năng gia nhiệt cực nhanh.',
+        customPros: ['Độ ồn thấp nhất trong các mẫu thử nghiệm', 'Màn hình cảm ứng phẳng trên đỉnh tinh tế', 'Chức năng Preheat & Shake Reminder tiện dụng'],
+        customCons: ['Dung tích 5L phù hợp gia đình 3-4 người']
+      },
+      {
+        rank: 5,
+        productId: 'prod-locknlock-jumbo',
+        highlight: 'Dung Tích Khủng & Giá Thành Hấp Dẫn',
+        verdict: 'Lock&Lock EJF296 mang lại không gian nấu nướng khổng lồ 7.2L với mức giá cực kỳ cạnh tranh, nướng gà vịt nguyên con dễ dàng.',
+        customPros: ['Lòng nồi 7.2L nướng gà nguyên con thoải mái', 'Mức giá rất cạnh tranh', 'Bảng điều khiển cảm ứng dễ nhìn'],
+        customCons: ['Cần giữ gìn lớp chống dính khi vệ sinh']
+      },
+      {
+        rank: 6,
+        productId: 'prod-tefal-dual-easy',
+        highlight: '2 Ngăn Bất Đối Xứng & Vỉ Gang BBQ',
+        verdict: 'Tefal Dual Easy Fry ghi điểm nhờ thiết kế 2 ngăn bất đối xứng (5.2L + 3.1L) và vỉ nướng đúc gang cho những món BBQ chuẩn vị.',
+        customPros: ['2 ngăn bất đối xứng chia khẩu phần thông minh', 'Vỉ nướng gang Die-Cast cho vệt xém BBQ', 'Công nghệ Extra Crisp giòn lâu'],
+        customCons: ['Trọng lượng nặng và kích thước lớn']
+      },
+      {
+        rank: 7,
+        productId: 'prod-ninja-foodi-dz201',
+        highlight: 'Hệ Thống Quạt Đối Lưu Kép Độc Lập',
+        verdict: 'Ninja DZ201 xuất sắc với 2 vùng nấu sở hữu quạt và thanh nhiệt độc lập hoàn toàn, không lo ám mùi giữa các món ăn.',
+        customPros: ['2 vùng đối lưu độc lập không lẫn mùi', 'Tính năng Match Cook tiện lợi', 'Chế độ sấy Dehydrate chuyên nghiệp'],
+        customCons: ['Mỗi ngăn hơi hẹp chiều ngang cho gà nguyên con']
+      },
+      {
+        rank: 8,
+        productId: 'prod-bear-smart-5l',
+        highlight: 'Thiết Kế Vintage & Cửa Sổ Kính Trực Quan',
+        verdict: 'Bear QZG-F15G1 sở hữu thiết kế retro thanh lịch và khoang kính trong suốt rộng 6.3 inch giúp người dùng dễ dàng theo dõi món ăn chín tới.',
+        customPros: ['Mặt kính rộng có đèn quan sát', 'Kiểu dáng màu sắc retro bắt mắt', 'Giá thành bình dân dễ tiếp cận'],
+        customCons: ['Thời gian nướng lâu hơn các dòng công suất 1800W']
+      },
+      {
+        rank: 9,
+        productId: 'prod-xiaomi-pro-4l',
+        highlight: 'Hệ Sinh Thái Thông Minh Mi Home',
+        verdict: 'Xiaomi Pro 4L là sự lựa chọn hàng đầu cho các tín đồ Smarthome với màn hình OLED núm xoay độc đáo và khả năng điều khiển từ xa qua điện thoại.',
+        customPros: ['Kết nối Wi-Fi điều khiển từ xa qua app', 'Màn hình OLED núm xoay hiện đại', 'Dải nhiệt rộng từ 40°C đến 200°C'],
+        customCons: ['Dung tích 4L nhỏ hơn, thích hợp 1-3 người']
+      },
+      {
+        rank: 10,
+        productId: 'prod-sharp-kf55',
+        highlight: 'Bền Bỉ Chuẩn Nhật & Dễ Dùng Cho Mọi Nhà',
+        verdict: 'Sharp KF-AF55EV tập trung vào độ bền với cụm núm vặn cơ học siêu bền bỉ, thao tác đơn giản không lo hỏng linh kiện điện tử.',
+        customPros: ['Núm vặn cơ siêu bền, không lo lỗi bo mạch', 'Dung tích 5.5L chuẩn cho gia đình', 'Thương hiệu Sharp uy tín lâu năm'],
+        customCons: ['Không có màn hình số hiển thị chi tiết phút giây']
       }
     ],
     conclusion: 'Nếu bạn cần một chiếc nồi chiên gia đình 4-6 người dễ dùng, chất lượng hoàn thiện cao cấp và chiên giòn đỉnh cao, AirCook Pro 6L là lựa chọn tối ưu nhất. Với gia đình đông người hơn cần chế biến đồng thời nhiều món, HomeChef Dual Zone 9L hoàn toàn xứng đáng với mức giá cao cấp.',
@@ -63,6 +128,7 @@ export const mockRankings: Ranking[] = [
     type: 'physical',
     groupSlug: 'dien-tu',
     categorySlug: 'laptop-sinh-vien',
+    image: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=800&q=80',
     subtitle: 'Đánh giá chi tiết dựa trên thời lượng pin thực tế, chất lượng màn hình OLED và bàn phím gõ êm ái cho người thường xuyên di chuyển.',
     updatedAt: '10 Tháng 03, 2024',
     authorId: 'expert-1',
@@ -101,6 +167,7 @@ export const mockRankings: Ranking[] = [
     type: 'digital',
     groupSlug: 'ai',
     categorySlug: 'tro-ly-ai',
+    image: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=800&q=80',
     subtitle: 'So sánh chuyên sâu các mô hình trí tuệ nhân tạo hàng đầu thế giới về khả năng lập trình, viết lách, phân tích dữ liệu và tư duy logic.',
     updatedAt: '14 Tháng 03, 2024',
     authorId: 'expert-2',
@@ -147,6 +214,7 @@ export const mockRankings: Ranking[] = [
     type: 'digital',
     groupSlug: 'phan-mem',
     categorySlug: 'quan-ly-du-an',
+    image: 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=800&q=80',
     subtitle: 'Đánh giá các giải pháp tối ưu hóa năng suất, quản lý tiến độ Kanban/Gantt và tự động hóa công việc cho nhóm từ 5 đến 500 thành viên.',
     updatedAt: '09 Tháng 03, 2024',
     authorId: 'expert-2',

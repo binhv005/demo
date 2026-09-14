@@ -102,6 +102,406 @@ export const mockProducts: Product[] = [
     updatedAt: '2024-03-08'
   },
 
+  // --- VẬT LÝ TOP 3: Philips Premium Airfryer XXL ---
+  {
+    id: 'prod-philips-xxl',
+    name: 'Philips Premium Airfryer XXL HD9650',
+    slug: 'philips-airfryer-xxl',
+    type: 'physical',
+    category: 'Gia dụng',
+    categorySlug: 'noi-chien',
+    groupSlug: 'gia-dung',
+    brand: 'Philips',
+    image: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=800&q=80',
+    score: 9.0,
+    ratingCount: 2310,
+    price: 5890000,
+    originalPrice: 7990000,
+    priceUnit: 'đ',
+    pros: [
+      'Công nghệ Twin TurboStar loại bỏ đến 90% lượng mỡ dư thừa trong thực phẩm',
+      'Dung tích lớn XXL 7.3L nướng trọn vẹn cả con gà hoặc 1.4kg khoai tây',
+      'Chất lượng gia công xuất sắc tiêu chuẩn châu Âu, độ bền linh kiện cực cao'
+    ],
+    cons: [
+      'Giá thành cao nhất trong phân khúc nồi chiên gia đình',
+      'Không có mặt kính trong suốt để nhìn vào bên trong'
+    ],
+    bestFor: 'Gia đình chuộng thương hiệu cao cấp, ưu tiên công nghệ tách dầu mỡ triệt để',
+    shortDescription: 'Nồi chiên không dầu cao cấp công nghệ Twin TurboStar với công suất khủng 2225W, tự động tách chất béo hiệu quả nhất.',
+    deepReview: 'Philips HD9650 là tiêu chuẩn vàng về khả năng chiên nướng. Công nghệ xoáy nhiệt Twin TurboStar tạo luồng khí cực mạnh cuốn trôi chất béo đọng lại ở đáy lồng đôi, giúp món ăn giòn tan mà không bị ngấy mỡ.',
+    specs: {
+      'Dung tích': '7.3 Lít (Giỏ chiên 1.4 kg)',
+      'Công suất': '2225W',
+      'Dải nhiệt độ': '40°C - 200°C',
+      'Bảng điều khiển': 'Núm xoay QuickControl + Màn hình LED',
+      'Chất liệu lòng nồi': 'Hợp kim chống dính QuickClean cao cấp',
+      'Trọng lượng': '7.99 kg',
+      'Bảo hành': '24 tháng toàn cầu'
+    },
+    scoreBreakdown: {
+      design: 9.1,
+      performance: 9.5,
+      value: 8.2,
+      usability: 9.2
+    },
+    badge: 'Công nghệ Tách Dầu Đỉnh Cao',
+    status: 'published',
+    views: 31200,
+    createdAt: '2024-01-10',
+    updatedAt: '2024-03-08'
+  },
+
+  // --- VẬT LÝ TOP 4: Cosori Pro LE 5.0L ---
+  {
+    id: 'prod-cosori-pro-le',
+    name: 'Cosori Pro LE 5.0L CAF-L501',
+    slug: 'cosori-pro-le-5l',
+    type: 'physical',
+    category: 'Gia dụng',
+    categorySlug: 'noi-chien',
+    groupSlug: 'gia-dung',
+    brand: 'Cosori',
+    image: 'https://images.unsplash.com/photo-1574269909862-7e1d70bb8078?auto=format&fit=crop&w=800&q=80',
+    score: 8.9,
+    ratingCount: 1780,
+    price: 2290000,
+    originalPrice: 2890000,
+    priceUnit: 'đ',
+    pros: [
+      'Thiết kế mặt kính cảm ứng phía trên phẳng lì cực kỳ sang trọng, tinh tế',
+      'Công nghệ Air Crisp 360° vận hành siêu êm ái, độ ồn chỉ 55dB',
+      'Chức năng làm nóng trước (Preheat) và nhắc lật thức ăn (Shake Reminder) tiện lợi'
+    ],
+    cons: [
+      'Dung tích 5.0L vừa phải, chỉ nướng gà dưới 1.6kg',
+      'Không kèm phụ kiện vỉ nướng chuyên dụng trong hộp'
+    ],
+    bestFor: 'Căn bếp hiện đại, người trẻ thích thiết kế tối giản thẩm mỹ và không gian yên tĩnh',
+    shortDescription: 'Nồi chiên không dầu thiết kế phẳng đoạt giải Red Dot, công nghệ nấu Air Crisp êm ái hàng đầu phân khúc.',
+    deepReview: 'Cosori Pro LE 5.0L nổi bật nhờ thiết kế mặt kính cường lực phẳng trên đỉnh máy, loại bỏ hoàn toàn các nút bấm lồi. Quạt tản nhiệt cải tiến giúp máy chạy cực kỳ êm ái kể cả khi đạt nhiệt độ tối đa 230°C.',
+    specs: {
+      'Dung tích': '5.0 Lít',
+      'Công suất': '1500W',
+      'Dải nhiệt độ': '75°C - 230°C',
+      'Bảng điều khiển': 'Kính cảm ứng cường lực phẳng Top-Touch',
+      'Chất liệu lòng nồi': 'Hợp kim nhôm phủ chống dính Teflon Free PFOA',
+      'Trọng lượng': '4.54 kg',
+      'Bảo hành': '24 tháng'
+    },
+    scoreBreakdown: {
+      design: 9.6,
+      performance: 8.8,
+      value: 9.1,
+      usability: 9.0
+    },
+    badge: 'Thiết Kế Đẹp Nhất',
+    status: 'published',
+    views: 16400,
+    createdAt: '2024-01-25',
+    updatedAt: '2024-03-09'
+  },
+
+  // --- VẬT LÝ TOP 5: Lock&Lock Jumbo 7.2L ---
+  {
+    id: 'prod-locknlock-jumbo',
+    name: 'Lock&Lock Jumbo 7.2L EJF296BLK',
+    slug: 'locknlock-jumbo-7-2l',
+    type: 'physical',
+    category: 'Gia dụng',
+    categorySlug: 'noi-chien',
+    groupSlug: 'gia-dung',
+    brand: 'Lock&Lock',
+    image: 'https://images.unsplash.com/photo-1585515320310-259814833e62?auto=format&fit=crop&w=800&q=80',
+    score: 8.8,
+    ratingCount: 2950,
+    price: 1950000,
+    originalPrice: 3890000,
+    priceUnit: 'đ',
+    pros: [
+      'Dung tích lòng nồi khổng lồ 7.2L chiên gà nguyên con 2.5kg thoải mái',
+      'Mức giá cực kỳ hấp dẫn so với dung tích lớn',
+      '8 chương trình nấu cài đặt sẵn cho món ăn Việt phổ biến'
+    ],
+    cons: [
+      'Lớp chống dính cần giữ gìn cẩn thận khi cọ rửa',
+      'Kích thước khá to và tốn điện năng khi chiên lượng ít đồ ăn'
+    ],
+    bestFor: 'Gia đình 5-8 thành viên cần nồi dung tích cực lớn với chi phí tiết kiệm',
+    shortDescription: 'Nồi chiên không dầu dung tích khủng 7.2L công suất 1800W, nướng gà vịt nguyên con dễ dàng.',
+    deepReview: 'Lock&Lock EJF296BLK là lựa chọn dung tích lớn có doanh số dẫn đầu tại thị trường Việt Nam. Lòng nồi sâu và rộng rãi giúp nướng thịt tảng hay gà vịt nguyên con chín vàng ruộm mà không cần chặt khúc nhỏ.',
+    specs: {
+      'Dung tích': '7.2 Lít',
+      'Công suất': '1800W',
+      'Dải nhiệt độ': '80°C - 200°C',
+      'Bảng điều khiển': 'Cảm ứng điện tử màn hình LED',
+      'Chất liệu lòng nồi': 'Thép không gỉ phủ chống dính',
+      'Trọng lượng': '5.9 kg',
+      'Bảo hành': '12 tháng chính hãng'
+    },
+    scoreBreakdown: {
+      design: 8.5,
+      performance: 8.7,
+      value: 9.4,
+      usability: 8.8
+    },
+    badge: 'Dung Tích Khủng Giá Tốt',
+    status: 'published',
+    views: 28900,
+    createdAt: '2023-12-15',
+    updatedAt: '2024-03-02'
+  },
+
+  // --- VẬT LÝ TOP 6: Tefal Dual Easy Fry 8.3L ---
+  {
+    id: 'prod-tefal-dual-easy',
+    name: 'Tefal Dual Easy Fry & Grill 8.3L EY905D',
+    slug: 'tefal-dual-easy-fry-8-3l',
+    type: 'physical',
+    category: 'Gia dụng',
+    categorySlug: 'noi-chien',
+    groupSlug: 'gia-dung',
+    brand: 'Tefal',
+    image: 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=800&q=80',
+    score: 8.7,
+    ratingCount: 760,
+    price: 4190000,
+    originalPrice: 5990000,
+    priceUnit: 'đ',
+    pros: [
+      '2 ngăn nấu bất đối xứng thông minh (Ngăn lớn 5.2L + Ngăn nhỏ 3.1L) cực kỳ thực dụng',
+      'Vỉ nướng đúc bằng gang Die-Cast Grill tạo vân nướng chuẩn BBQ không khói',
+      'Công nghệ Extra Crisp cho món chiên giòn tan mà giữ được độ mềm ẩm bên trong'
+    ],
+    cons: [
+      'Giá thành ở phân khúc cao cấp',
+      'Thao tác thiết lập 2 ngăn độc lập cần vài phút làm quen'
+    ],
+    bestFor: 'Người đam mê món nướng BBQ, gia đình thích ăn món chính kèm món phụ cùng lúc',
+    shortDescription: 'Nồi chiên kèm vỉ nướng đúc gang 2 ngăn bất đối xứng 8.3L với công nghệ Extra Crisp từ Pháp.',
+    deepReview: 'Tefal EY905D mang đến sự linh hoạt tối đa nhờ phân bổ 2 ngăn 5.2L và 3.1L thay vì chia đôi đều, rất tiện khi ngăn lớn nướng gà và ngăn nhỏ nướng rau củ ăn kèm.',
+    specs: {
+      'Dung tích': '8.3 Lít (5.2L + 3.1L)',
+      'Công suất': '2700W',
+      'Dải nhiệt độ': '40°C - 220°C',
+      'Bảng điều khiển': 'Cảm ứng kỹ thuật số 8 chế độ',
+      'Chất liệu lòng nồi': 'Hợp kim nhôm phủ chống dính Teflon Tefal cao cấp',
+      'Trọng lượng': '7.8 kg',
+      'Bảo hành': '24 tháng'
+    },
+    scoreBreakdown: {
+      design: 9.0,
+      performance: 9.1,
+      value: 8.3,
+      usability: 8.6
+    },
+    badge: 'Nướng Vỉ Gang Chuyên Nghiệp',
+    status: 'published',
+    views: 14200,
+    createdAt: '2024-02-10',
+    updatedAt: '2024-03-07'
+  },
+
+  // --- VẬT LÝ TOP 7: Ninja Foodi DZ201 ---
+  {
+    id: 'prod-ninja-foodi-dz201',
+    name: 'Ninja Foodi 6-in-1 DualZone 8L DZ201',
+    slug: 'ninja-foodi-dz201',
+    type: 'physical',
+    category: 'Gia dụng',
+    categorySlug: 'noi-chien',
+    groupSlug: 'gia-dung',
+    brand: 'Ninja',
+    image: 'https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?auto=format&fit=crop&w=800&q=80',
+    score: 8.6,
+    ratingCount: 1240,
+    price: 4750000,
+    originalPrice: 5800000,
+    priceUnit: 'đ',
+    pros: [
+      '2 ngăn chiên độc lập 4L + 4L với 2 bộ sinh nhiệt và quạt đối lưu riêng biệt',
+      'Tính năng Match Cook sao chép nhanh cài đặt giữa 2 ngăn',
+      'Khả năng sấy hoa quả (Dehydrate) và nướng giòn cực kỳ chuẩn xác'
+    ],
+    cons: [
+      'Hàng nhập khẩu cần kiểm tra chân cắm điện và chế độ bảo hành đại lý',
+      'Không gian mỗi ngăn khó chứa nguyên con gà to trên 2kg'
+    ],
+    bestFor: 'Người đam mê ẩm thực phương Tây, cần thiết bị nấu nướng đa năng chuyên sâu',
+    shortDescription: 'Nồi chiên không dầu 2 ngăn đối lưu độc lập 6 tính năng cao cấp từ thương hiệu gia dụng Mỹ Ninja.',
+    deepReview: 'Ninja Foodi DZ201 là sản phẩm tiên phong trào lưu nồi 2 ngăn trên toàn cầu. Mỗi ngăn sở hữu quạt và điện trở riêng giúp món nướng không bị lẫn mùi hương giữa 2 món mặn và ngọt.',
+    specs: {
+      'Dung tích': '8.0 Lít (2 x 4.0L)',
+      'Công suất': '1690W',
+      'Dải nhiệt độ': '40°C - 230°C',
+      'Bảng điều khiển': 'Kỹ thuật số Digital Smart Panel',
+      'Chất liệu lòng nồi': 'Chống dính Ceramic cao cấp không chứa chì/cadmium',
+      'Trọng lượng': '8.1 kg',
+      'Bảo hành': '12 tháng'
+    },
+    scoreBreakdown: {
+      design: 8.8,
+      performance: 9.0,
+      value: 8.2,
+      usability: 8.7
+    },
+    badge: 'Chuẩn Ẩm Thực Mỹ',
+    status: 'published',
+    views: 11800,
+    createdAt: '2024-01-05',
+    updatedAt: '2024-03-01'
+  },
+
+  // --- VẬT LÝ TOP 8: Bear Smart Visual 5L ---
+  {
+    id: 'prod-bear-smart-5l',
+    name: 'Bear Smart Visual 5L QZG-F15G1',
+    slug: 'bear-smart-visual-5l',
+    type: 'physical',
+    category: 'Gia dụng',
+    categorySlug: 'noi-chien',
+    groupSlug: 'gia-dung',
+    brand: 'Bear',
+    image: 'https://images.unsplash.com/photo-1590794056226-79ef3a8147e1?auto=format&fit=crop&w=800&q=80',
+    score: 8.5,
+    ratingCount: 1620,
+    price: 1490000,
+    originalPrice: 2190000,
+    priceUnit: 'đ',
+    pros: [
+      'Cửa sổ kính cường lực trong suốt 6.3 inch kèm đèn chiếu sáng khoang nấu',
+      'Thiết kế màu sắc trang nhã hơi hướng Vintage phù hợp gian bếp trẻ trung',
+      'Mức giá rất vừa túi tiền cho sinh viên và gia đình trẻ'
+    ],
+    cons: [
+      'Công suất 1500W tốc độ làm nóng vừa phải',
+      'Thời gian nướng thịt tảng lâu hơn khoảng 3-5 phút so với các dòng 1800W'
+    ],
+    bestFor: 'Gia đình trẻ 2-4 người thích đồ gia dụng đẹp mắt, vừa vặn ngân sách',
+    shortDescription: 'Nồi chiên không dầu kính trong suốt 5L thiết kế thanh lịch, theo dõi thức ăn chín trực tiếp dễ dàng.',
+    deepReview: 'Bear QZG-F15G1 ghi điểm mạnh mẽ bởi diện mạo tinh tế màu xanh ngọc/trắng kem và khoang kính rộng 6.3 inch. Khả năng quan sát màu sắc bánh hoặc thịt nướng giúp người nấu không lo bị cháy khét.',
+    specs: {
+      'Dung tích': '5.0 Lít',
+      'Công suất': '1500W',
+      'Dải nhiệt độ': '80°C - 200°C',
+      'Bảng điều khiển': 'Cảm ứng vi tính thông minh',
+      'Chất liệu lòng nồi': 'Hợp kim tráng men chống dính',
+      'Trọng lượng': '4.1 kg',
+      'Bảo hành': '18 tháng chính hãng'
+    },
+    scoreBreakdown: {
+      design: 9.2,
+      performance: 8.2,
+      value: 9.0,
+      usability: 8.6
+    },
+    badge: 'Thiết Kế Vintage Trẻ Trung',
+    status: 'published',
+    views: 15300,
+    createdAt: '2024-02-15',
+    updatedAt: '2024-03-10'
+  },
+
+  // --- VẬT LÝ TOP 9: Xiaomi Smart Air Fryer Pro 4L ---
+  {
+    id: 'prod-xiaomi-pro-4l',
+    name: 'Xiaomi Smart Air Fryer Pro 4L Window',
+    slug: 'xiaomi-smart-air-fryer-pro-4l',
+    type: 'physical',
+    category: 'Gia dụng',
+    categorySlug: 'noi-chien',
+    groupSlug: 'gia-dung',
+    brand: 'Xiaomi',
+    image: 'https://images.unsplash.com/photo-1512069772995-ec65ed45afd6?auto=format&fit=crop&w=800&q=80',
+    score: 8.4,
+    ratingCount: 2840,
+    price: 1390000,
+    originalPrice: 1990000,
+    priceUnit: 'đ',
+    pros: [
+      'Điều khiển qua app Mi Home, hẹn giờ nấu thông minh 24h và tích hợp Google Assistant',
+      'Màn hình OLED tích hợp ngay trên núm xoay tròn tương tác cực mượt',
+      'Dải nhiệt độ siêu rộng 40°C - 200°C làm được cả sữa chua và sấy thịt khô'
+    ],
+    cons: [
+      'Dung tích 4.0L hơi nhỏ cho gia đình từ 4 người trở lên',
+      'Phần nhựa bóng màu trắng dễ bám dầu mỡ nếu không lau ngay'
+    ],
+    bestFor: 'Người đam mê nhà thông minh Smart Home, người sống độc thân hoặc cặp đôi trẻ',
+    shortDescription: 'Nồi chiên không dầu thông minh 4L kết nối Wi-Fi, màn hình OLED núm xoay và cửa kính cách nhiệt 3 lớp.',
+    deepReview: 'Xiaomi Smart Air Fryer Pro 4L là đại diện tiêu biểu của xu hướng smarthome trong nhà bếp. Bạn có thể bật lò nướng trước từ cơ quan qua điện thoại để khi về nhà món ăn đã sẵn sàng nóng hổi.',
+    specs: {
+      'Dung tích': '4.0 Lít',
+      'Công suất': '1600W',
+      'Dải nhiệt độ': '40°C - 200°C',
+      'Bảng điều khiển': 'Núm xoay màn hình OLED + App Mi Home',
+      'Chất liệu lòng nồi': 'Hợp kim 7 lớp phủ chống dính PTFE',
+      'Trọng lượng': '3.9 kg',
+      'Bảo hành': '12 tháng chính hãng'
+    },
+    scoreBreakdown: {
+      design: 9.3,
+      performance: 8.3,
+      value: 8.9,
+      usability: 9.1
+    },
+    badge: 'Thông Minh Kết Nối App',
+    status: 'published',
+    views: 24100,
+    createdAt: '2024-01-08',
+    updatedAt: '2024-03-05'
+  },
+
+  // --- VẬT LÝ TOP 10: Sharp AirFryer 5.5L ---
+  {
+    id: 'prod-sharp-kf55',
+    name: 'Sharp AirFryer 5.5L KF-AF55EV',
+    slug: 'sharp-airfryer-5-5l',
+    type: 'physical',
+    category: 'Gia dụng',
+    categorySlug: 'noi-chien',
+    groupSlug: 'gia-dung',
+    brand: 'Sharp',
+    image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=800&q=80',
+    score: 8.3,
+    ratingCount: 3100,
+    price: 1190000,
+    originalPrice: 1890000,
+    priceUnit: 'đ',
+    pros: [
+      'Hệ thống điều khiển núm xoay cơ học siêu bền bỉ, không sợ hỏng mạch điện tử',
+      'Rất dễ sử dụng cho người lớn tuổi trong gia đình',
+      'Thương hiệu Sharp Nhật Bản uy tín, giá thành bình dân dễ tiếp cận'
+    ],
+    cons: [
+      'Không có màn hình hiển thị thời gian chính xác theo từng phút',
+      'Thiết kế truyền thống đơn giản, không có đèn quan sát bên trong'
+    ],
+    bestFor: 'Mua tặng bố mẹ, người lớn tuổi thích sự đơn giản bền chắc không lo lỗi bo mạch',
+    shortDescription: 'Nồi chiên không dầu điều khiển cơ học dung tích 5.5L chuẩn công nghệ Nhật Bản bền bỉ.',
+    deepReview: 'Sharp KF-AF55EV là định nghĩa của sự bền bỉ thực dụng. Với 2 núm xoay điều chỉnh nhiệt độ và thời gian riêng biệt, bất kỳ ai cũng có thể sử dụng thành thạo ngay từ lần đầu tiên.',
+    specs: {
+      'Dung tích': '5.5 Lít',
+      'Công suất': '1550W - 1750W',
+      'Dải nhiệt độ': '80°C - 200°C',
+      'Bảng điều khiển': '2 Núm xoay cơ học độc lập',
+      'Chất liệu lòng nồi': 'Thép chống dính cao cấp',
+      'Trọng lượng': '5.14 kg',
+      'Bảo hành': '12 tháng chính hãng'
+    },
+    scoreBreakdown: {
+      design: 8.0,
+      performance: 8.4,
+      value: 9.3,
+      usability: 8.7
+    },
+    badge: 'Nồi Cơ Bền Bỉ Số 1',
+    status: 'published',
+    views: 19700,
+    createdAt: '2023-11-10',
+    updatedAt: '2024-02-28'
+  },
+
   // --- VẬT LÝ 3: SmartClean Vacuum X2 ---
   {
     id: 'prod-smartclean-x2',

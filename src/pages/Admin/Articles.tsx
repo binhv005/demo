@@ -121,6 +121,7 @@ export const AdminArticlesPage: React.FC = () => {
     },
     {
       header: 'Thể loại',
+      className: 'whitespace-nowrap',
       accessor: (a: Article) => (
         <Badge variant={a.type === 'guide' ? 'indigo' : 'warning'} size="sm">
           {a.type === 'guide' ? 'Hướng dẫn' : a.type === 'comparison' ? 'So sánh' : 'Đánh giá'}
@@ -129,6 +130,7 @@ export const AdminArticlesPage: React.FC = () => {
     },
     {
       header: 'Nhóm',
+      className: 'whitespace-nowrap',
       accessor: (a: Article) => (
         <Badge variant={a.productType === 'physical' ? 'warning' : 'indigo'} size="sm">
           {a.productType === 'physical' ? 'Vật lý' : 'Số'}
@@ -137,6 +139,7 @@ export const AdminArticlesPage: React.FC = () => {
     },
     {
       header: 'Lượt xem',
+      className: 'whitespace-nowrap',
       accessor: (a: Article) => (
         <span className="font-semibold text-xs text-slate-700">
           {a.views.toLocaleString('vi-VN')}
@@ -145,7 +148,7 @@ export const AdminArticlesPage: React.FC = () => {
     },
     {
       header: 'Hành động',
-      className: 'text-right',
+      className: 'text-right whitespace-nowrap',
       accessor: (a: Article) => (
         <div className="flex items-center justify-end gap-1.5">
           <Link

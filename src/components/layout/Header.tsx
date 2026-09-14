@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
 import { MegaMenu } from './MegaMenu';
+import { Logo } from '../ui/Logo';
 import {
   Search,
   ChevronDown,
@@ -44,6 +46,17 @@ export const Header: React.FC = () => {
   const physicalCategories = categories.filter((c) => c.group === 'physical' && c.status !== 'inactive');
   const digitalCategories = categories.filter((c) => c.group === 'digital' && c.status !== 'inactive');
 
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileMenuOpen]);
+
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 transition-all">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -54,58 +67,40 @@ export const Header: React.FC = () => {
             onClick={closeMenus}
             className="flex items-center gap-2.5 flex-shrink-0 group"
           >
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 to-indigo-800 flex items-center justify-center text-white shadow-md shadow-indigo-200 group-hover:scale-105 transition-transform">
-              <Sparkles className="w-5 h-5" />
-            </div>
-            <div>
-              <span className="font-extrabold text-xl tracking-tight text-slate-900 flex items-center gap-1">
-                Tech<span className="text-indigo-600">Review</span>
-              </span>
-              <span className="block text-[10px] tracking-wider text-slate-400 font-semibold uppercase -mt-1">
-                Đánh giá & So sánh
-              </span>
-            </div>
+            <Logo variant="light" size="md" />
           </Link>
 
           {/* DESKTOP NAVIGATION */}
           <nav className="hidden lg:flex items-center space-x-1 font-medium text-sm text-slate-700">
             {/* Sản phẩm vật lý */}
-            <div
-              className="relative"
-              onMouseEnter={() => setActiveMegaMenu('physical')}
-            >
+            <div className="relative">
               <button
                 type="button"
                 onClick={() => setActiveMegaMenu(activeMegaMenu === 'physical' ? null : 'physical')}
-                className={`px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition-colors ${
+                className={`px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition-all ${
                   activeMegaMenu === 'physical' || location.pathname.startsWith('/san-pham-vat-ly')
-                    ? 'text-indigo-600 bg-indigo-50/80 font-semibold'
+                    ? 'text-orange-700 bg-orange-50 font-bold ring-1 ring-orange-200/80 shadow-xs'
                     : 'hover:text-slate-900 hover:bg-slate-100'
                 }`}
               >
-                <Flame className="w-4 h-4 text-orange-500" />
                 <span>Sản phẩm vật lý</span>
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${activeMegaMenu === 'physical' ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${activeMegaMenu === 'physical' ? 'rotate-180 text-orange-600' : ''}`} />
               </button>
             </div>
 
             {/* Sản phẩm số */}
-            <div
-              className="relative"
-              onMouseEnter={() => setActiveMegaMenu('digital')}
-            >
+            <div className="relative">
               <button
                 type="button"
                 onClick={() => setActiveMegaMenu(activeMegaMenu === 'digital' ? null : 'digital')}
-                className={`px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition-colors ${
+                className={`px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition-all ${
                   activeMegaMenu === 'digital' || location.pathname.startsWith('/san-pham-so')
-                    ? 'text-indigo-600 bg-indigo-50/80 font-semibold'
+                    ? 'text-indigo-700 bg-indigo-50 font-bold ring-1 ring-indigo-200/80 shadow-xs'
                     : 'hover:text-slate-900 hover:bg-slate-100'
                 }`}
               >
-                <Sparkles className="w-4 h-4 text-indigo-500" />
                 <span>Sản phẩm số</span>
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${activeMegaMenu === 'digital' ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${activeMegaMenu === 'digital' ? 'rotate-180 text-indigo-600' : ''}`} />
               </button>
             </div>
 
@@ -119,7 +114,6 @@ export const Header: React.FC = () => {
                   : 'hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
-              <Award className="w-4 h-4 text-amber-500" />
               <span>Bảng xếp hạng</span>
             </Link>
 
@@ -133,7 +127,6 @@ export const Header: React.FC = () => {
                   : 'hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
-              <BookOpen className="w-4 h-4 text-emerald-500" />
               <span>Hướng dẫn</span>
             </Link>
           </nav>
@@ -181,135 +174,178 @@ export const Header: React.FC = () => {
         </div>
       </div>
 
-      {/* DESKTOP MEGA MENU DROPDOWN */}
+      {/* DESKTOP MEGA MENU DROPDOWN WITH BACKDROP */}
       {activeMegaMenu && (
-        <MegaMenu
-          type={activeMegaMenu}
-          onClose={() => setActiveMegaMenu(null)}
-        />
+        <>
+          <div
+            className="fixed inset-0 top-20 bg-slate-950/40 backdrop-blur-[2px] z-30 transition-opacity animate-fadeIn"
+            onClick={closeMenus}
+          />
+          <MegaMenu
+            type={activeMegaMenu}
+            onClose={() => setActiveMegaMenu(null)}
+          />
+        </>
       )}
 
-      {/* MOBILE DRAWER */}
-      {mobileMenuOpen && (
-        <div className="fixed inset-0 top-20 z-50 bg-white overflow-y-auto pb-12 sm:hidden border-t border-slate-200">
-          <div className="p-4 space-y-4">
-            {/* Search Input Mobile */}
-            <form onSubmit={handleSearchSubmit} className="relative">
-              <input
-                type="text"
-                placeholder="Bạn đang tìm sản phẩm gì..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-100 rounded-xl text-sm border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-            </form>
+      {/* MOBILE BACKDROP OVERLAY & RIGHT-SIDE DRAWER VIA PORTAL */}
+      {typeof document !== 'undefined' && createPortal(
+        <>
+          {/* Mobile Backdrop */}
+          {mobileMenuOpen && (
+            <div
+              onClick={closeMenus}
+              className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-[9998] sm:hidden transition-opacity duration-300"
+            />
+          )}
 
-            <nav className="space-y-1 text-sm font-medium text-slate-800">
-              {/* Accordion Sản phẩm vật lý */}
-              <div className="border-b border-slate-100 pb-2">
-                <button
-                  onClick={() => setMobileCategoryOpen(mobileCategoryOpen === 'physical' ? null : 'physical')}
-                  className="w-full flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-slate-50 font-semibold"
-                >
-                  <span className="flex items-center gap-2">
-                    <Flame className="w-4 h-4 text-orange-500" />
-                    Sản phẩm vật lý
-                  </span>
-                  <ChevronDown className={`w-4 h-4 transition-transform ${mobileCategoryOpen === 'physical' ? 'rotate-180' : ''}`} />
-                </button>
-
-                {mobileCategoryOpen === 'physical' && (
-                  <div className="pl-6 py-2 space-y-2 bg-slate-50 rounded-xl my-1">
-                    <Link
-                      to="/san-pham-vat-ly"
-                      onClick={closeMenus}
-                      className="block text-xs font-bold text-indigo-600 py-1"
-                    >
-                      → Xem trang tổng quan vật lý
-                    </Link>
-                    {physicalCategories.map((c) => (
-                      <Link
-                        key={c.id}
-                        to={`/${c.groupSlug}/${c.subcategories[0]?.slug || c.slug}`}
-                        onClick={closeMenus}
-                        className="block text-xs text-slate-600 py-1"
-                      >
-                        {c.name}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Accordion Sản phẩm số */}
-              <div className="border-b border-slate-100 pb-2">
-                <button
-                  onClick={() => setMobileCategoryOpen(mobileCategoryOpen === 'digital' ? null : 'digital')}
-                  className="w-full flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-slate-50 font-semibold"
-                >
-                  <span className="flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-indigo-500" />
-                    Sản phẩm số & AI
-                  </span>
-                  <ChevronDown className={`w-4 h-4 transition-transform ${mobileCategoryOpen === 'digital' ? 'rotate-180' : ''}`} />
-                </button>
-
-                {mobileCategoryOpen === 'digital' && (
-                  <div className="pl-6 py-2 space-y-2 bg-slate-50 rounded-xl my-1">
-                    <Link
-                      to="/san-pham-so"
-                      onClick={closeMenus}
-                      className="block text-xs font-bold text-indigo-600 py-1"
-                    >
-                      → Xem trang tổng quan sản phẩm số
-                    </Link>
-                    {digitalCategories.map((c) => (
-                      <Link
-                        key={c.id}
-                        to={`/${c.groupSlug}/${c.subcategories[0]?.slug || c.slug}`}
-                        onClick={closeMenus}
-                        className="block text-xs text-slate-600 py-1"
-                      >
-                        {c.name}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <Link
-                to="/top/noi-chien-khong-dau"
-                onClick={closeMenus}
-                className="flex items-center gap-2.5 py-3 px-3 rounded-xl hover:bg-slate-50 font-semibold border-b border-slate-100"
-              >
-                <Award className="w-4 h-4 text-amber-500" />
-                Bảng xếp hạng Top 10
+          {/* Mobile Slide-in Drawer from Right */}
+          <div
+            className={`fixed inset-y-0 right-0 z-[9999] w-[86%] max-w-sm sm:hidden bg-white shadow-2xl flex flex-col border-l border-slate-200 transition-transform duration-300 ease-in-out ${
+              mobileMenuOpen ? 'translate-x-0' : 'translate-x-full pointer-events-none'
+            }`}
+          >
+            {/* Drawer Top Bar */}
+            <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/80 flex-shrink-0">
+              <Link to="/" onClick={closeMenus} className="flex items-center">
+                <Logo variant="light" size="sm" />
               </Link>
-
-              <Link
-                to="/huong-dan/cach-chon-noi-chien-khong-dau"
+              <button
                 onClick={closeMenus}
-                className="flex items-center gap-2.5 py-3 px-3 rounded-xl hover:bg-slate-50 font-semibold border-b border-slate-100"
+                className="p-2 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-200/70 transition-colors"
+                aria-label="Đóng menu"
               >
-                <BookOpen className="w-4 h-4 text-emerald-500" />
-                Hướng dẫn chọn mua
-              </Link>
+                <X className="w-5 h-5" />
+              </button>
+            </div>
 
+            {/* Drawer Body (Scrollable) */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              {/* Search Box inside Drawer */}
+              <form onSubmit={handleSearchSubmit} className="relative">
+                <input
+                  type="text"
+                  placeholder="Bạn đang tìm sản phẩm gì..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-100/90 rounded-xl text-xs border border-slate-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-all placeholder:text-slate-400"
+                />
+                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              </form>
+
+              {/* Navigation Links */}
+              <nav className="space-y-1 text-xs font-medium text-slate-800">
+                {/* Accordion Sản phẩm vật lý */}
+                <div className="border-b border-slate-100 pb-2">
+                  <button
+                    onClick={() => setMobileCategoryOpen(mobileCategoryOpen === 'physical' ? null : 'physical')}
+                    className="w-full flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-orange-50/60 text-slate-800 font-bold transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-orange-500" />
+                      <span>Sản phẩm vật lý</span>
+                    </div>
+                    <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${mobileCategoryOpen === 'physical' ? 'rotate-180 text-orange-600' : ''}`} />
+                  </button>
+
+                  {mobileCategoryOpen === 'physical' && (
+                    <div className="pl-4 py-2 space-y-1.5 bg-orange-50/30 rounded-xl my-1 border border-orange-100/60">
+                      <Link
+                        to="/san-pham-vat-ly"
+                        onClick={closeMenus}
+                        className="block text-xs font-bold text-orange-600 py-1 px-2 rounded-lg hover:bg-orange-100/50"
+                      >
+                        → Xem tất cả sản phẩm vật lý
+                      </Link>
+                      {physicalCategories.map((c) => (
+                        <Link
+                          key={c.id}
+                          to={`/${c.groupSlug}/${c.subcategories[0]?.slug || c.slug}`}
+                          onClick={closeMenus}
+                          className="block text-xs text-slate-700 py-1.5 px-2 rounded-lg hover:bg-white hover:text-orange-600 transition-colors"
+                        >
+                          {c.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Accordion Sản phẩm số */}
+                <div className="border-b border-slate-100 pb-2">
+                  <button
+                    onClick={() => setMobileCategoryOpen(mobileCategoryOpen === 'digital' ? null : 'digital')}
+                    className="w-full flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-indigo-50/60 text-slate-800 font-bold transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-indigo-500" />
+                      <span>Sản phẩm số &amp; AI</span>
+                    </div>
+                    <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${mobileCategoryOpen === 'digital' ? 'rotate-180 text-indigo-600' : ''}`} />
+                  </button>
+
+                  {mobileCategoryOpen === 'digital' && (
+                    <div className="pl-4 py-2 space-y-1.5 bg-indigo-50/30 rounded-xl my-1 border border-indigo-100/60">
+                      <Link
+                        to="/san-pham-so"
+                        onClick={closeMenus}
+                        className="block text-xs font-bold text-indigo-600 py-1 px-2 rounded-lg hover:bg-indigo-100/50"
+                      >
+                        → Xem tất cả sản phẩm số
+                      </Link>
+                      {digitalCategories.map((c) => (
+                        <Link
+                          key={c.id}
+                          to={`/${c.groupSlug}/${c.subcategories[0]?.slug || c.slug}`}
+                          onClick={closeMenus}
+                          className="block text-xs text-slate-700 py-1.5 px-2 rounded-lg hover:bg-white hover:text-indigo-600 transition-colors"
+                        >
+                          {c.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Bảng xếp hạng Top */}
+                <Link
+                  to="/top/noi-chien-khong-dau"
+                  onClick={closeMenus}
+                  className="flex items-center gap-2.5 py-3 px-3 rounded-xl hover:bg-amber-50 font-bold text-slate-800 border-b border-slate-100 transition-colors"
+                >
+                  <Award className="w-4 h-4 text-amber-500" />
+                  <span>Bảng xếp hạng Top 10</span>
+                </Link>
+
+                {/* Hướng dẫn chọn mua */}
+                <Link
+                  to="/huong-dan/cach-chon-noi-chien-khong-dau"
+                  onClick={closeMenus}
+                  className="flex items-center gap-2.5 py-3 px-3 rounded-xl hover:bg-emerald-50 font-bold text-slate-800 border-b border-slate-100 transition-colors"
+                >
+                  <BookOpen className="w-4 h-4 text-emerald-500" />
+                  <span>Hướng dẫn chọn mua</span>
+                </Link>
+              </nav>
+            </div>
+
+            {/* Drawer Footer Action */}
+            <div className="p-4 border-t border-slate-100 bg-slate-50/80 flex-shrink-0">
               <Link
                 to="/admin"
                 onClick={closeMenus}
-                className="flex items-center justify-between py-3 px-3 rounded-xl bg-slate-900 text-white font-semibold mt-4"
+                className="flex items-center justify-between py-2.5 px-3 rounded-xl bg-slate-900 text-white font-semibold text-xs shadow-md hover:bg-slate-800 transition-colors"
               >
                 <span className="flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-indigo-400" />
-                  Khu vực Quản trị Admin
+                  <Shield className="w-4 h-4 text-orange-400" />
+                  <span>Khu vực Quản trị Admin</span>
                 </span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4 text-slate-400" />
               </Link>
-            </nav>
+            </div>
           </div>
-        </div>
+        </>,
+        document.body
       )}
     </header>
   );

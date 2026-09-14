@@ -14,14 +14,14 @@ export function truncateText(text: string, maxLength: number): string {
 
 export function getScoreColor(score: number): { bg: string; text: string; ring: string; label: string } {
   if (score >= 9.5) {
-    return { bg: 'bg-[#606C38]', text: 'text-[#606C38]', ring: 'ring-[#606C38]/20', label: 'Xuất sắc' };
+    return { bg: 'bg-[#FF9951]', text: 'text-[#FF9951]', ring: 'ring-[#FF9951]/20', label: 'Xuất sắc' };
   } else if (score >= 9.0) {
-    return { bg: 'bg-[#283618]', text: 'text-[#283618]', ring: 'ring-[#283618]/20', label: 'Rất tốt' };
+    return { bg: 'bg-[#F07C30]', text: 'text-[#F07C30]', ring: 'ring-[#F07C30]/20', label: 'Rất tốt' };
   } else if (score >= 8.0) {
-    return { bg: 'bg-[#BC6C25]', text: 'text-[#BC6C25]', ring: 'ring-[#BC6C25]/20', label: 'Tốt' };
+    return { bg: 'bg-[#319D9B]', text: 'text-[#319D9B]', ring: 'ring-[#319D9B]/20', label: 'Tốt' };
   } else if (score >= 7.0) {
-    return { bg: 'bg-[#DDA15E]', text: 'text-[#DDA15E]', ring: 'ring-[#DDA15E]/20', label: 'Khá' };
+    return { bg: 'bg-[#E59830]', text: 'text-[#E59830]', ring: 'ring-[#E59830]/20', label: 'Khá' };
   } else {
-    return { bg: 'bg-[#9E5518]', text: 'text-[#9E5518]', ring: 'ring-[#9E5518]/20', label: 'Trung bình' };
+    return { bg: 'bg-[#B89D8D]', text: 'text-[#B89D8D]', ring: 'ring-[#B89D8D]/20', label: 'Trung bình' };
   }
 }

@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { Sparkles, ShieldCheck, Lock, Mail, ArrowRight, ArrowLeft } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
+import { Logo } from '../../components/ui/Logo';
 
 export const AdminLoginPage: React.FC = () => {
   const [email, setEmail] = useState('admin@example.com');
@@ -38,13 +39,8 @@ export const AdminLoginPage: React.FC = () => {
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
-        <Link to="/" className="flex items-center justify-center gap-2 mb-6">
-          <div className="w-10 h-10 rounded-2xl bg-indigo-600 flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-500/30">
-            <Sparkles className="w-5 h-5" />
-          </div>
-          <span className="text-2xl font-extrabold text-white tracking-tight">
-            Tech<span className="text-indigo-400">Review</span>
-          </span>
+        <Link to="/" className="flex items-center justify-center mb-6 group">
+          <Logo variant="dark" size="lg" />
         </Link>
         <h2 className="text-center text-2xl font-extrabold text-white">
           Cổng Quản Trị Nội Dung (CMS)

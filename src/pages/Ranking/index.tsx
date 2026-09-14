@@ -37,48 +37,53 @@ export const RankingDetailPage: React.FC = () => {
 
   return (
     <div className="space-y-16 pb-20">
-      {/* Header Section */}
-      <section className="bg-gradient-to-b from-slate-100/80 via-white to-slate-50 border-b border-slate-200/60 py-10">
+      {/* Clean Compact Header Section with Warm Cream Background */}
+      <section className="bg-[#FAF7F5] border-b border-stone-200/80 py-6 sm:py-8">
         <Container size="xl">
-          <Breadcrumb
-            items={[
-              { label: ranking.type === 'physical' ? 'Sản phẩm vật lý' : 'Sản phẩm số', path: ranking.type === 'physical' ? '/san-pham-vat-ly' : '/san-pham-so' },
-              { label: 'Bảng xếp hạng' },
-              { label: ranking.title }
-            ]}
-          />
+          <div className="inline-block px-2.5 py-1 rounded-lg bg-white/90 border border-stone-200/70 shadow-2xs mb-3">
+            <Breadcrumb
+              items={[
+                { label: ranking.type === 'physical' ? 'Sản phẩm vật lý' : 'Sản phẩm số', path: ranking.type === 'physical' ? '/san-pham-vat-ly' : '/san-pham-so' },
+                { label: 'Bảng xếp hạng' },
+                { label: ranking.title }
+              ]}
+            />
+          </div>
 
-          <div className="mt-6 space-y-4 max-w-4xl">
-            <div className="flex flex-wrap items-center gap-3">
-              <span className="px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-                <Award className="w-3.5 h-3.5 text-indigo-600" />
-                Bảng Xếp Hạng Top Đã Thử Nghiệm
+          <div className="space-y-2.5 max-w-3xl">
+            <div className="flex flex-wrap items-center gap-2 text-xs">
+              <span className="px-2.5 py-0.5 rounded-md bg-orange-100/90 text-orange-800 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider flex items-center gap-1 border border-orange-200/60">
+                <Award className="w-3 h-3 text-orange-600" />
+                BẢNG XẾP HẠNG TOP ĐÃ THỬ NGHIỆM
               </span>
-              <span className="text-xs text-slate-500 font-medium flex items-center gap-1">
-                <Calendar className="w-3.5 h-3.5" />
-                Cập nhật lần cuối: <strong className="text-slate-700">{ranking.updatedAt}</strong>
+              <span className="text-[11px] text-slate-600 font-medium flex items-center gap-1 bg-white/90 px-2 py-0.5 rounded-md border border-stone-200/70">
+                <Calendar className="w-3 h-3 text-slate-400" />
+                Cập nhật: <strong className="text-slate-800">{ranking.updatedAt}</strong>
               </span>
             </div>
 
-            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-slate-900 tracking-tight leading-snug">
               {ranking.title}
             </h1>
 
-            <p className="text-sm sm:text-base text-slate-600 leading-relaxed font-medium">
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
               {ranking.subtitle}
             </p>
 
             {/* Author quick preview */}
             {author && (
-              <div className="flex items-center gap-3 pt-2">
+              <div className="flex items-center gap-2.5 pt-1">
                 <img
                   src={author.avatar}
                   alt={author.name}
-                  className="w-10 h-10 rounded-full object-cover border border-slate-200"
+                  className="w-7 h-7 rounded-full object-cover border border-slate-200 shadow-2xs"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80';
+                  }}
                 />
-                <div className="text-xs">
-                  <span className="font-bold text-slate-900 block">{author.name}</span>
-                  <span className="text-slate-500">{author.role}</span>
+                <div className="text-[11px]">
+                  <span className="font-bold text-slate-900 leading-none">{author.name}</span>
+                  <span className="text-slate-500 ml-1.5">• {author.role}</span>
                 </div>
               </div>
             )}
@@ -91,21 +96,45 @@ export const RankingDetailPage: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           {/* Main Content Area (8 cols) */}
           <div className="lg:col-span-8 space-y-12">
-            {/* Intro & Methodology */}
-            <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 space-y-4 shadow-sm">
-              <h2 className="text-xl font-bold text-slate-900">
-                Phương Pháp Thử Nghiệm & Đánh Giá
-              </h2>
-              <p className="text-sm text-slate-700 leading-relaxed">
-                {ranking.intro}
-              </p>
-              <div className="p-4 rounded-2xl bg-indigo-50/70 border border-indigo-100 space-y-1.5">
-                <span className="text-xs font-bold text-indigo-700 uppercase tracking-wider block">
-                  Tiêu chuẩn kiểm tra:
+            {/* Intro & Methodology with Featured Image */}
+            <div className="bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-sm">
+              {/* Featured Lab Testing Image */}
+              <div className="w-full h-52 sm:h-64 lg:h-72 overflow-hidden relative">
+                <img
+                  src={
+                    ranking.image ||
+                    (ranking.type === 'physical'
+                      ? '/airfryer-lab-testing.jpg'
+                      : 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=1400&q=80')
+                  }
+                  alt={ranking.title}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1400&q=80';
+                  }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/50 via-transparent to-transparent" />
+                <span className="absolute bottom-3 left-4 text-xs font-bold text-white bg-black/60 backdrop-blur-xs px-3 py-1 rounded-lg border border-white/20 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-orange-400" />
+                  Quy trình thử nghiệm phòng lab & thực tế
                 </span>
-                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
-                  {ranking.methodology}
+              </div>
+
+              <div className="p-6 sm:p-8 space-y-4">
+                <h2 className="text-xl font-bold text-slate-900">
+                  Phương Pháp Thử Nghiệm & Đánh Giá
+                </h2>
+                <p className="text-sm text-slate-700 leading-relaxed">
+                  {ranking.intro}
                 </p>
+                <div className="p-4 rounded-2xl bg-orange-50/70 border border-orange-100/90 space-y-1.5">
+                  <span className="text-xs font-bold text-orange-800 uppercase tracking-wider block">
+                    Tiêu chuẩn kiểm tra:
+                  </span>
+                  <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
+                    {ranking.methodology}
+                  </p>
+                </div>
               </div>
             </div>
 

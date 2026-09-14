@@ -195,6 +195,7 @@ export const AdminProductsPage: React.FC = () => {
     },
     {
       header: 'Loại',
+      className: 'whitespace-nowrap',
       accessor: (p: Product) => (
         <Badge variant={p.type === 'physical' ? 'warning' : 'indigo'} size="sm">
           {p.type === 'physical' ? 'Vật lý' : 'Số & AI'}
@@ -203,10 +204,12 @@ export const AdminProductsPage: React.FC = () => {
     },
     {
       header: 'Điểm số',
+      className: 'whitespace-nowrap',
       accessor: (p: Product) => <ScoreBadge score={p.score} size="sm" />
     },
     {
       header: 'Giá tham khảo',
+      className: 'whitespace-nowrap',
       accessor: (p: Product) => (
         <span className="font-bold text-xs text-slate-900">
           {formatPrice(p.price, p.priceUnit)}
@@ -215,6 +218,7 @@ export const AdminProductsPage: React.FC = () => {
     },
     {
       header: 'Trạng thái',
+      className: 'whitespace-nowrap',
       accessor: (p: Product) => (
         <Badge variant={p.status === 'published' ? 'success' : 'slate'} size="sm">
           {p.status === 'published' ? 'Xuất bản' : 'Bản nháp'}
@@ -223,11 +227,12 @@ export const AdminProductsPage: React.FC = () => {
     },
     {
       header: 'Cập nhật',
+      className: 'whitespace-nowrap',
       accessor: (p: Product) => <span className="text-xs text-slate-400">{p.updatedAt}</span>
     },
     {
       header: 'Hành động',
-      className: 'text-right',
+      className: 'text-right whitespace-nowrap',
       accessor: (p: Product) => (
         <div className="flex items-center justify-end gap-1.5">
           <Link

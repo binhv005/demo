@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Sparkles, ShieldCheck, Mail, ArrowRight, Heart } from 'lucide-react';
 import { Container } from '../ui/Container';
+import { Logo } from '../ui/Logo';
 
 export const Footer: React.FC = () => {
   return (
@@ -44,13 +45,8 @@ export const Footer: React.FC = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-16">
           {/* Cột 1: Brand & Bio */}
           <div className="col-span-2 lg:col-span-2 space-y-4">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white">
-                <Sparkles className="w-5 h-5" />
-              </div>
-              <span className="font-extrabold text-xl text-white tracking-tight">
-                Tech<span className="text-indigo-400">Review</span>
-              </span>
+            <Link to="/" className="inline-block group">
+              <Logo variant="dark" size="md" />
             </Link>
             <p className="text-xs text-slate-400 leading-relaxed pr-6">
               Nền tảng đánh giá độc lập, bảng xếp hạng Top 10 và so sánh sản phẩm công nghệ, gia dụng và giải pháp số hàng đầu. Chúng tôi thử nghiệm thực tế để mang lại quyết định mua sắm tối ưu nhất cho bạn.
