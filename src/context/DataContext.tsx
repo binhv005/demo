@@ -45,7 +45,7 @@ interface DataContextType {
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
-const DATA_VERSION = 'v10_top10_sync';
+const DATA_VERSION = 'v12_extended_catalog_all_cats';
 
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Check version and clear stale cache if version changed

@@ -3,10 +3,10 @@ import { Navigate, Outlet, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { AdminSidebar } from './AdminSidebar';
 import { PageTransition } from '../layout/PageTransition';
-import { Menu, Sparkles, ExternalLink, Shield } from 'lucide-react';
+import { Menu, ExternalLink } from 'lucide-react';
 
 export const AdminLayout: React.FC = () => {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   if (!isAuthenticated) {
@@ -14,24 +14,24 @@ export const AdminLayout: React.FC = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-100/70 font-sans text-slate-800">
-      {/* Responsive Admin Sidebar (Drawer on mobile, Sticky on desktop) */}
+    <div className="flex h-screen max-h-screen w-full overflow-hidden bg-[#0d1527] font-sans text-slate-800">
+      {/* Responsive Admin Sidebar (Drawer on mobile, Static full-height 100vh on desktop) */}
       <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
+      {/* Main Content Area with independent scrollbar */}
+      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden bg-slate-50">
         {/* Mobile Top Navbar (Visible only on < lg screens) */}
-        <header className="lg:hidden sticky top-0 z-30 bg-[#0d1527] text-white px-4 py-3 border-b border-slate-800 flex items-center justify-between shadow-md">
+        <header className="lg:hidden sticky top-0 z-30 bg-[#0d1527] text-white px-4 py-3 border-b border-slate-800 flex items-center justify-between shadow-md flex-shrink-0">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="p-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors"
+              className="p-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors cursor-pointer"
               title="Mở menu quản trị"
             >
               <Menu className="w-5 h-5" />
             </button>
 
-            <Link to="/admin" className="flex items-center gap-2">
+            <Link to="/admin/products" className="flex items-center gap-2">
               <div className="w-7 h-7 rounded-full overflow-hidden flex items-center justify-center flex-shrink-0 shadow-xs">
                 <img src="/brand-logo.png" alt="TechReview Icon" className="w-full h-full object-contain" />
               </div>
@@ -47,16 +47,15 @@ export const AdminLayout: React.FC = () => {
             >
               <ExternalLink className="w-4 h-4 text-orange-400" />
             </Link>
-            <div className="w-7 h-7 rounded-lg bg-indigo-700 text-white font-bold flex items-center justify-center text-[10px]">
-              AD
-            </div>
           </div>
         </header>
 
-        {/* Routed Admin Page with Smooth Page Transition */}
-        <PageTransition>
-          <Outlet />
-        </PageTransition>
+        {/* Scrollable Content View */}
+        <main className="flex-1 overflow-y-auto w-full custom-scrollbar">
+          <PageTransition>
+            <Outlet />
+          </PageTransition>
+        </main>
       </div>
     </div>
   );

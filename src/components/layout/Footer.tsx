@@ -1,18 +1,41 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
 import { Sparkles, ShieldCheck, Mail, ArrowRight, Heart } from 'lucide-react';
 import { Container } from '../ui/Container';
 import { Logo } from '../ui/Logo';
+import { useToast } from '../../context/ToastContext';
 
 export const Footer: React.FC = () => {
+  const [email, setEmail] = useState('');
+  const { showToast } = useToast();
+
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !email.includes('@')) {
+      showToast('Vui lòng nhập địa chỉ email hợp lệ!', { type: 'error' });
+      return;
+    }
+    showToast('Đăng ký thành công!', {
+      type: 'success',
+      description: 'Cảm ơn bạn đã đăng ký nhận bản tin công nghệ TechReview.'
+    });
+    setEmail('');
+  };
+
+  const scrollToSection = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <footer className="bg-slate-900 text-slate-400 border-t border-slate-800 pt-16 pb-12 text-sm">
       <Container size="xl">
-        {/* Top Newsletter / Editorial mission banner */}
-        <div className="bg-gradient-to-r from-indigo-950/80 via-slate-800/80 to-indigo-950/80 p-8 rounded-3xl border border-slate-700/60 mb-16 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        {/* Top Newsletter banner */}
+        <div className="bg-gradient-to-r from-orange-950/60 via-slate-800 to-orange-950/60 p-8 rounded-3xl border border-slate-700/60 mb-16 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           <div className="lg:col-span-7 space-y-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-semibold border border-indigo-500/30">
-              <Sparkles className="w-3.5 h-3.5" /> Bản tin Công nghệ & Đánh giá
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-500/20 text-orange-300 text-xs font-semibold border border-orange-500/30">
+              <Sparkles className="w-3.5 h-3.5" /> Bản tin Công nghệ &amp; Đánh giá
             </span>
             <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
               Nhận bảng xếp hạng và so sánh mới nhất mỗi tuần
@@ -22,17 +45,19 @@ export const Footer: React.FC = () => {
             </p>
           </div>
           <div className="lg:col-span-5">
-            <form onSubmit={(e) => e.preventDefault()} className="flex items-center gap-2">
+            <form onSubmit={handleSubscribe} className="flex items-center gap-2">
               <div className="relative flex-1">
                 <input
                   type="email"
                   placeholder="Nhập email của bạn..."
-                  className="w-full bg-slate-900/90 border border-slate-700 text-white rounded-xl px-4 py-3 text-xs sm:text-sm focus:outline-none focus:border-indigo-500 placeholder:text-slate-500"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full bg-slate-900/90 border border-slate-700 text-white rounded-xl px-4 py-3 text-xs sm:text-sm focus:outline-none focus:border-orange-500 placeholder:text-slate-500"
                 />
               </div>
               <button
                 type="submit"
-                className="px-5 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl text-xs sm:text-sm transition-all flex items-center gap-1.5 flex-shrink-0"
+                className="px-5 py-3 bg-orange-600 hover:bg-orange-500 text-white font-semibold rounded-xl text-xs sm:text-sm transition-all flex items-center gap-1.5 flex-shrink-0"
               >
                 <span>Đăng ký</span>
                 <ArrowRight className="w-4 h-4" />
@@ -45,46 +70,51 @@ export const Footer: React.FC = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 mb-16">
           {/* Cột 1: Brand & Bio */}
           <div className="col-span-2 lg:col-span-2 space-y-4">
-            <Link to="/" className="inline-block group">
+            <button onClick={() => scrollToSection('hero')} className="inline-block group text-left">
               <Logo variant="dark" size="md" />
-            </Link>
+            </button>
             <p className="text-xs text-slate-400 leading-relaxed pr-6">
               Nền tảng đánh giá độc lập, bảng xếp hạng Top 10 và so sánh sản phẩm công nghệ, gia dụng và giải pháp số hàng đầu. Chúng tôi thử nghiệm thực tế để mang lại quyết định mua sắm tối ưu nhất cho bạn.
             </p>
             <div className="flex items-center gap-3 pt-2 text-xs text-slate-400">
               <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              <span>100% Đánh giá Độc lập & Khách quan</span>
+              <span>100% Đánh giá Độc lập &amp; Khách quan</span>
             </div>
           </div>
 
-          {/* Cột 2: Khám phá */}
+          {/* Cột 2: Khám phá các mục trên Landing page */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider">Khám phá</h4>
+            <h4 className="text-xs font-bold text-white uppercase tracking-wider">Khám phá nhanh</h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <Link to="/san-pham-vat-ly" className="hover:text-white transition-colors">
+                <button onClick={() => scrollToSection('tinh-nang')} className="hover:text-white transition-colors cursor-pointer">
+                  Tiêu chuẩn đánh giá
+                </button>
+              </li>
+              <li>
+                <button onClick={() => scrollToSection('physical')} className="hover:text-white transition-colors cursor-pointer">
                   Sản phẩm vật lý
-                </Link>
+                </button>
               </li>
               <li>
-                <Link to="/san-pham-so" className="hover:text-white transition-colors">
-                  Sản phẩm số & AI
-                </Link>
+                <button onClick={() => scrollToSection('digital')} className="hover:text-white transition-colors cursor-pointer">
+                  Sản phẩm số &amp; AI
+                </button>
               </li>
               <li>
-                <Link to="/top/noi-chien-khong-dau" className="hover:text-white transition-colors">
+                <button onClick={() => scrollToSection('ranking')} className="hover:text-white transition-colors cursor-pointer">
                   Top 10 Bảng xếp hạng
-                </Link>
+                </button>
               </li>
               <li>
-                <Link to="/so-sanh/aircook-vs-homechef" className="hover:text-white transition-colors">
+                <button onClick={() => scrollToSection('so-sanh')} className="hover:text-white transition-colors cursor-pointer">
                   So sánh đối đầu
-                </Link>
+                </button>
               </li>
               <li>
-                <Link to="/huong-dan/cach-chon-noi-chien-khong-dau" className="hover:text-white transition-colors">
-                  Hướng dẫn chọn mua
-                </Link>
+                <button onClick={() => scrollToSection('guides')} className="hover:text-white transition-colors cursor-pointer">
+                  Cẩm nang chọn mua
+                </button>
               </li>
             </ul>
           </div>
@@ -94,62 +124,57 @@ export const Footer: React.FC = () => {
             <h4 className="text-xs font-bold text-white uppercase tracking-wider">Về chúng tôi</h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <a href="#trust" className="hover:text-white transition-colors">
-                  Quy trình kiểm nghiệm
-                </a>
+                <button onClick={() => scrollToSection('chuyen-gia')} className="hover:text-white transition-colors cursor-pointer">
+                  Quy trình kiểm nghiệm Lab
+                </button>
               </li>
               <li>
-                <Link to="/huong-dan/cach-chon-noi-chien-khong-dau" className="hover:text-white transition-colors">
+                <button onClick={() => scrollToSection('chuyen-gia')} className="hover:text-white transition-colors cursor-pointer">
                   Đội ngũ chuyên gia
-                </Link>
+                </button>
               </li>
               <li>
-                <a href="#trust" className="hover:text-white transition-colors">
-                  Tiêu chuẩn chấm điểm
-                </a>
+                <button onClick={() => scrollToSection('danh-gia')} className="hover:text-white transition-colors cursor-pointer">
+                  Đánh giá từ độc giả
+                </button>
               </li>
               <li>
-                <Link to="/admin/login" className="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors">
-                  Cổng Quản Trị Viên (Admin)
-                </Link>
+                <button onClick={() => scrollToSection('faq')} className="hover:text-white transition-colors cursor-pointer">
+                  Câu hỏi thường gặp
+                </button>
               </li>
             </ul>
           </div>
 
-          {/* Cột 4: Pháp lý & Minh bạch */}
+          {/* Cột 4: Hỗ trợ & Liên hệ */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold text-white uppercase tracking-wider">Pháp lý & Minh bạch</h4>
+            <h4 className="text-xs font-bold text-white uppercase tracking-wider">Hệ thống</h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <span className="hover:text-white cursor-pointer transition-colors">
-                  Chính sách bảo mật
-                </span>
+                <a href="/admin/products" className="text-orange-400 hover:text-orange-300 transition-colors font-semibold">
+                  Quản trị Admin CMS →
+                </a>
               </li>
               <li>
-                <span className="hover:text-white cursor-pointer transition-colors">
-                  Điều khoản dịch vụ
-                </span>
+                <button onClick={() => scrollToSection('faq')} className="hover:text-white transition-colors">
+                  Gửi yêu cầu đánh giá
+                </button>
               </li>
               <li>
-                <span className="hover:text-white cursor-pointer transition-colors">
-                  Tuyên bố miễn trừ
-                </span>
-              </li>
-              <li>
-                <span className="hover:text-white cursor-pointer transition-colors">
-                  Nguyên tắc biên tập
-                </span>
+                <span className="text-slate-500">Phiên bản 2.0 (Single Page)</span>
               </li>
             </ul>
           </div>
         </div>
 
-        {/* Bottom copyright */}
-        <div className="pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-          <p>© 2024 TechReview Editorial Platform. All rights reserved. Xây dựng cho trải nghiệm người dùng tối ưu.</p>
-          <p className="flex items-center gap-1">
-            Thiết kế với <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500" /> bởi Senior Frontend Team
-          </p>
+        {/* Bottom copyright line */}
+        <div className="pt-8 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+          <p>© 2024 TechReview. Nền tảng đánh giá và xếp hạng sản phẩm độc lập số 1.</p>
+          <div className="flex items-center gap-1 text-slate-400">
+            <span>Thiết kế &amp; Phát triển với</span>
+            <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500 inline" />
+            <span>cho người tiêu dùng Việt Nam</span>
+          </div>
         </div>
       </Container>
     </footer>

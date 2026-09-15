@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useData } from '../../context/DataContext';
 import { useToast } from '../../context/ToastContext';
+import { useConfirm } from '../../context/ConfirmContext';
 import { Ranking } from '../../types';
 import { AdminHeader } from '../../components/admin/AdminHeader';
 import { Modal } from '../../components/ui/Modal';
@@ -14,6 +15,7 @@ import { Link } from 'react-router-dom';
 export const AdminRankingsPage: React.FC = () => {
   const { rankings, products, updateRanking, deleteRanking, addRanking } = useData();
   const { showToast } = useToast();
+  const { confirm } = useConfirm();
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editingRanking, setEditingRanking] = useState<Ranking | null>(null);
@@ -112,8 +114,15 @@ export const AdminRankingsPage: React.FC = () => {
     showToast(`Đã đổi thứ tự hạng #${index + 1} và #${targetIdx + 1}!`, { type: 'info' });
   };
 
-  const handleDelete = (r: Ranking) => {
-    if (window.confirm(`Bạn có chắc muốn xóa bảng xếp hạng "${r.title}"?`)) {
+  const handleDelete = async (r: Ranking) => {
+    const ok = await confirm({
+      title: 'Xóa bảng xếp hạng',
+      message: `Bạn có chắc muốn xóa bảng xếp hạng "${r.title}"?`,
+      confirmText: 'Xác nhận xóa',
+      cancelText: 'Hủy bỏ',
+      type: 'danger'
+    });
+    if (ok) {
       deleteRanking(r.id);
       showToast(`Đã xóa bảng xếp hạng thành công!`, { type: 'info' });
     }

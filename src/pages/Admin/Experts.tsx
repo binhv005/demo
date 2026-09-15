@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useData } from '../../context/DataContext';
 import { useToast } from '../../context/ToastContext';
+import { useConfirm } from '../../context/ConfirmContext';
 import { Expert } from '../../types';
 import { AdminHeader } from '../../components/admin/AdminHeader';
 import { Modal } from '../../components/ui/Modal';
@@ -11,6 +12,7 @@ import { Plus, Edit2, Trash2, Award, CheckCircle2, Users } from 'lucide-react';
 export const AdminExpertsPage: React.FC = () => {
   const { experts, addExpert, updateExpert, deleteExpert } = useData();
   const { showToast } = useToast();
+  const { confirm } = useConfirm();
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editingExpert, setEditingExpert] = useState<Expert | null>(null);
@@ -76,8 +78,15 @@ export const AdminExpertsPage: React.FC = () => {
     setModalOpen(false);
   };
 
-  const handleDelete = (exp: Expert) => {
-    if (window.confirm(`Bạn có chắc muốn xóa chuyên gia "${exp.name}"?`)) {
+  const handleDelete = async (exp: Expert) => {
+    const ok = await confirm({
+      title: 'Xóa chuyên gia',
+      message: `Bạn có chắc muốn xóa chuyên gia "${exp.name}"?`,
+      confirmText: 'Xác nhận xóa',
+      cancelText: 'Hủy bỏ',
+      type: 'danger'
+    });
+    if (ok) {
       deleteExpert(exp.id);
       showToast('Đã xóa chuyên gia thành công!', { type: 'info' });
     }

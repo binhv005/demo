@@ -12,22 +12,32 @@ interface ProductCardProps {
   variant?: 'grid' | 'list' | 'compact';
   rank?: number;
   className?: string;
+  onClick?: (product: Product) => void;
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({
   product,
   variant = 'grid',
   rank,
-  className = ''
+  className = '',
+  onClick
 }) => {
   const fallbackImg = product.type === 'physical'
     ? 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=800&q=80'
     : 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=800&q=80';
 
+  const handleClick = (e: React.MouseEvent) => {
+    if (onClick) {
+      e.preventDefault();
+      onClick(product);
+    }
+  };
+
   if (variant === 'list') {
     return (
       <div
-        className={`bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 hover:shadow-md hover:border-slate-300 transition-all flex flex-col md:flex-row gap-6 items-start ${className}`}
+        onClick={handleClick}
+        className={`bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 hover:shadow-md hover:border-slate-300 transition-all flex flex-col md:flex-row gap-6 items-start ${onClick ? 'cursor-pointer' : ''} ${className}`}
       >
         {/* Left: Image & Rank Badge */}
         <div className="relative w-full md:w-56 h-48 md:h-44 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0 group">
@@ -65,12 +75,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             <span className="text-xs text-slate-500">{product.category}</span>
           </div>
 
-          <Link
-            to={`/review/${product.slug}`}
-            className="block font-bold text-base sm:text-lg text-slate-900 hover:text-indigo-600 transition-colors"
-          >
+          <h3 className="font-bold text-base sm:text-lg text-slate-900 hover:text-orange-600 transition-colors">
             {product.name}
-          </Link>
+          </h3>
 
           <p className="text-xs sm:text-sm text-slate-600 line-clamp-2">
             {product.shortDescription}
@@ -104,11 +111,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </div>
 
           <div className="w-full space-y-2">
-            <Link to={`/review/${product.slug}`} className="w-full block">
-              <Button variant="primary" size="sm" className="w-full">
-                Đọc Review
-              </Button>
-            </Link>
+            <Button variant="primary" size="sm" className="w-full">
+              Xem chi tiết
+            </Button>
           </div>
         </div>
       </div>
@@ -118,7 +123,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   // Default: Grid Card
   return (
     <div
-      className={`bg-white rounded-2xl border border-slate-200/80 overflow-hidden hover:shadow-lg hover:border-slate-300 transition-all duration-200 flex flex-col group ${className}`}
+      onClick={handleClick}
+      className={`bg-white rounded-2xl border border-slate-200/80 overflow-hidden hover:shadow-lg hover:border-slate-300 transition-all duration-200 flex flex-col group ${onClick ? 'cursor-pointer' : ''} ${className}`}
     >
       {/* Image Container */}
       <div className="relative h-48 bg-slate-100 overflow-hidden">
@@ -147,7 +153,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
         {product.badge && (
           <div className="absolute bottom-3 left-3 right-3">
-            <span className="inline-block px-2.5 py-1 rounded-lg bg-white/95 backdrop-blur-md text-indigo-700 text-xs font-bold shadow-sm">
+            <span className="inline-block px-2.5 py-1 rounded-lg bg-white/95 backdrop-blur-md text-orange-700 text-xs font-bold shadow-sm">
               {product.badge}
             </span>
           </div>
@@ -160,13 +166,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">
             {product.category}
           </span>
-          <Link
-            to={`/review/${product.slug}`}
-            className="font-bold text-slate-900 hover:text-indigo-600 transition-colors line-clamp-2 text-base leading-snug"
-          >
+          <h4 className="font-bold text-slate-900 group-hover:text-orange-600 transition-colors line-clamp-2 text-base leading-snug">
             {product.name}
-          </Link>
-          <p className="text-xs text-slate-500 line-clamp-2">
+          </h4>
+          <p className="hidden sm:block text-xs text-slate-500 line-clamp-2">
             {product.bestFor}
           </p>
         </div>
@@ -175,15 +178,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
           <div>
             <span className="text-xs text-slate-400 block">Giá tham khảo</span>
-            <span className="font-bold text-slate-900 text-sm">
+            <span className="font-bold text-slate-900 text-sm sm:text-base">
               {formatPrice(product.price, product.priceUnit)}
             </span>
           </div>
-          <Link to={`/review/${product.slug}`}>
-            <Button variant="secondary" size="sm" rightIcon={<ArrowRight className="w-3.5 h-3.5" />}>
-              Chi tiết
-            </Button>
-          </Link>
         </div>
       </div>
     </div>

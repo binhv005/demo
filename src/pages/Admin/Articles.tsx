@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useData } from '../../context/DataContext';
 import { useToast } from '../../context/ToastContext';
+import { useConfirm } from '../../context/ConfirmContext';
 import { Article } from '../../types';
 import { AdminHeader } from '../../components/admin/AdminHeader';
 import { DataTable } from '../../components/admin/DataTable';
@@ -15,6 +16,7 @@ import { Link } from 'react-router-dom';
 export const AdminArticlesPage: React.FC = () => {
   const { articles, addArticle, updateArticle, deleteArticle } = useData();
   const { showToast } = useToast();
+  const { confirm } = useConfirm();
 
   const [search, setSearch] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
@@ -90,8 +92,15 @@ export const AdminArticlesPage: React.FC = () => {
     setModalOpen(false);
   };
 
-  const handleDelete = (a: Article) => {
-    if (window.confirm(`Bạn có chắc muốn xóa bài viết "${a.title}"?`)) {
+  const handleDelete = async (a: Article) => {
+    const ok = await confirm({
+      title: 'Xóa bài viết',
+      message: `Bạn có chắc muốn xóa bài viết "${a.title}"?`,
+      confirmText: 'Xác nhận xóa',
+      cancelText: 'Hủy bỏ',
+      type: 'danger'
+    });
+    if (ok) {
       deleteArticle(a.id);
       showToast('Đã xóa bài viết thành công!', { type: 'info' });
     }

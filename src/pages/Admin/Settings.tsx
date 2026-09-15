@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useToast } from '../../context/ToastContext';
 import { useData } from '../../context/DataContext';
+import { useConfirm } from '../../context/ConfirmContext';
 import { AdminHeader } from '../../components/admin/AdminHeader';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
@@ -9,6 +10,7 @@ import { RotateCcw, Save, ShieldCheck, Globe, Bell, Sliders } from 'lucide-react
 export const AdminSettingsPage: React.FC = () => {
   const { resetData } = useData();
   const { showToast } = useToast();
+  const { confirm } = useConfirm();
 
   const [siteName, setSiteName] = useState('TechReview & Choice Platform');
   const [siteTagline, setSiteTagline] = useState('Đánh giá, So sánh & Lựa chọn Sản phẩm');
@@ -22,8 +24,15 @@ export const AdminSettingsPage: React.FC = () => {
     showToast('Đã lưu cấu hình hệ thống thành công!', { type: 'success' });
   };
 
-  const handleResetData = () => {
-    if (window.confirm('Khôi phục toàn bộ cơ sở dữ liệu Demo về trạng thái ban đầu?')) {
+  const handleResetData = async () => {
+    const ok = await confirm({
+      title: 'Khôi phục toàn bộ dữ liệu',
+      message: 'Khôi phục toàn bộ cơ sở dữ liệu Demo về trạng thái ban đầu? Tất cả thay đổi sẽ bị hoàn tác.',
+      confirmText: 'Xác nhận khôi phục',
+      cancelText: 'Hủy bỏ',
+      type: 'warning'
+    });
+    if (ok) {
       resetData();
       showToast('Đã khôi phục dữ liệu gốc thành công!', { type: 'info' });
     }

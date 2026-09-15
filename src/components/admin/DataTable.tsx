@@ -97,8 +97,8 @@ export function DataTable<T>({
 
       {/* Pagination Footer */}
       {totalPages && totalPages > 1 && onPageChange && currentPage && (
-        <div className="p-4 border-t border-slate-100 flex items-center justify-between bg-slate-50/30">
-          <span className="text-xs text-slate-500">
+        <div className="p-4 border-t border-slate-100 flex items-center justify-center sm:justify-between bg-slate-50/30">
+          <span className="text-xs text-slate-500 hidden sm:inline">
             Trang <strong>{currentPage}</strong> trên <strong>{totalPages}</strong> ({data.length} kết quả)
           </span>
           <Pagination

@@ -16,22 +16,19 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ title, description, ac
       <div>
         <div className="flex items-center gap-2">
           <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">{title}</h1>
-          <span className="text-[10px] bg-indigo-50 text-indigo-700 font-bold px-2 py-0.5 rounded-full border border-indigo-200/60">
+          <span className="text-[10px] bg-indigo-50 text-indigo-700 font-bold px-2 py-0.5 rounded-full border border-indigo-200/60 whitespace-nowrap flex-shrink-0 inline-block">
             Mock Mode
           </span>
         </div>
         {description && <p className="text-xs text-slate-500 mt-0.5">{description}</p>}
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 flex-shrink-0 whitespace-nowrap">
         {actions}
 
         {/* User Info Capsule */}
         <div className="flex items-center gap-2.5 pl-4 border-l border-slate-200">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-600 to-indigo-800 text-white flex items-center justify-center font-bold text-xs shadow-sm">
-            AD
-          </div>
-          <div className="hidden md:block text-left">
+          <div className="text-left">
             <span className="text-xs font-bold text-slate-900 block leading-tight">
               {user?.name || 'Quản Trị Viên'}
             </span>

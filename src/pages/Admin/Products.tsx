@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useData } from '../../context/DataContext';
 import { useToast } from '../../context/ToastContext';
+import { useConfirm } from '../../context/ConfirmContext';
 import { Product, ProductType } from '../../types';
 import { AdminHeader } from '../../components/admin/AdminHeader';
 import { DataTable } from '../../components/admin/DataTable';
@@ -17,6 +18,7 @@ import { Link } from 'react-router-dom';
 export const AdminProductsPage: React.FC = () => {
   const { products, categories, addProduct, updateProduct, deleteProduct } = useData();
   const { showToast } = useToast();
+  const { confirm } = useConfirm();
 
   const [search, setSearch] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
@@ -149,8 +151,15 @@ export const AdminProductsPage: React.FC = () => {
     setModalOpen(false);
   };
 
-  const handleDelete = (p: Product) => {
-    if (window.confirm(`Bạn có chắc muốn xóa sản phẩm "${p.name}"?`)) {
+  const handleDelete = async (p: Product) => {
+    const ok = await confirm({
+      title: 'Xóa sản phẩm',
+      message: `Bạn có chắc muốn xóa sản phẩm "${p.name}"? Thao tác này sẽ xóa vĩnh viễn khỏi hệ thống.`,
+      confirmText: 'Xác nhận xóa',
+      cancelText: 'Hủy bỏ',
+      type: 'danger'
+    });
+    if (ok) {
       deleteProduct(p.id);
       showToast(`Đã xóa sản phẩm "${p.name}"!`, { type: 'info' });
     }

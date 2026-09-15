@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useData } from '../../context/DataContext';
 import { useToast } from '../../context/ToastContext';
+import { useConfirm } from '../../context/ConfirmContext';
 import { Comparison } from '../../types';
 import { AdminHeader } from '../../components/admin/AdminHeader';
 import { DataTable } from '../../components/admin/DataTable';
@@ -15,6 +16,7 @@ import { Link } from 'react-router-dom';
 export const AdminComparisonsPage: React.FC = () => {
   const { comparisons, products, addComparison, updateComparison, deleteComparison } = useData();
   const { showToast } = useToast();
+  const { confirm } = useConfirm();
 
   const [search, setSearch] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
@@ -98,8 +100,15 @@ export const AdminComparisonsPage: React.FC = () => {
     setModalOpen(false);
   };
 
-  const handleDelete = (c: Comparison) => {
-    if (window.confirm(`Bạn có chắc muốn xóa bài so sánh "${c.title}"?`)) {
+  const handleDelete = async (c: Comparison) => {
+    const ok = await confirm({
+      title: 'Xóa bài so sánh',
+      message: `Bạn có chắc muốn xóa bài so sánh "${c.title}"?`,
+      confirmText: 'Xác nhận xóa',
+      cancelText: 'Hủy bỏ',
+      type: 'danger'
+    });
+    if (ok) {
       deleteComparison(c.id);
       showToast('Đã xóa bài so sánh thành công!', { type: 'info' });
     }

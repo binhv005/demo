@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
 import { useToast } from '../../context/ToastContext';
+import { useConfirm } from '../../context/ConfirmContext';
 import { AdminHeader } from '../../components/admin/AdminHeader';
 import { StatCard } from '../../components/admin/StatCard';
 import { Badge } from '../../components/ui/Badge';
@@ -25,12 +26,20 @@ import {
 export const AdminDashboardPage: React.FC = () => {
   const { products, categories, rankings, articles, comparisons, resetData } = useData();
   const { showToast } = useToast();
+  const { confirm } = useConfirm();
 
   const totalViews = products.reduce((acc, p) => acc + p.views, 0) + articles.reduce((acc, a) => acc + a.views, 0);
   const draftsCount = products.filter((p) => p.status === 'draft').length + articles.filter((a) => a.status === 'draft').length;
 
-  const handleReset = () => {
-    if (window.confirm('Bạn có chắc chắn muốn đặt lại toàn bộ mock data về mặc định?')) {
+  const handleReset = async () => {
+    const ok = await confirm({
+      title: 'Khôi phục dữ liệu gốc',
+      message: 'Bạn có chắc chắn muốn đặt lại toàn bộ mock data về trạng thái ban đầu? Mọi dữ liệu tự thêm sẽ bị xóa.',
+      confirmText: 'Đặt lại dữ liệu',
+      cancelText: 'Hủy bỏ',
+      type: 'warning'
+    });
+    if (ok) {
       resetData();
       showToast('Đã khôi phục dữ liệu gốc thành công!', { type: 'info' });
     }

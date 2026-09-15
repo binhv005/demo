@@ -1,50 +1,50 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useData } from '../../context/DataContext';
-import { MegaMenu } from './MegaMenu';
 import { Logo } from '../ui/Logo';
+import { SearchOverlay } from '../search/SearchOverlay';
+import { Product, Ranking, Article } from '../../types';
 import {
-  Search,
-  ChevronDown,
   Menu,
   X,
-  Sparkles,
-  Flame,
   Award,
   BookOpen,
   Shield,
-  Layers,
-  ArrowRight
+  ArrowRight,
+  Scale,
+  Zap,
+  HelpCircle,
+  Flame,
+  Sparkles,
+  Search
 } from 'lucide-react';
-import { renderCategoryIcon } from '../../utils/icons';
 
 export const Header: React.FC = () => {
-  const [activeMegaMenu, setActiveMegaMenu] = useState<'physical' | 'digital' | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [mobileCategoryOpen, setMobileCategoryOpen] = useState<'physical' | 'digital' | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  
+  const [activeSection, setActiveSection] = useState<string>('hero');
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
   const navigate = useNavigate();
   const location = useLocation();
-  const { categories } = useData();
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/tim-kiem?q=${encodeURIComponent(searchQuery.trim())}`);
-      setSearchQuery('');
-      setMobileMenuOpen(false);
-    }
-  };
 
   const closeMenus = () => {
-    setActiveMegaMenu(null);
     setMobileMenuOpen(false);
   };
 
-  const physicalCategories = categories.filter((c) => c.group === 'physical' && c.status !== 'inactive');
-  const digitalCategories = categories.filter((c) => c.group === 'digital' && c.status !== 'inactive');
+  const scrollToSection = (sectionId: string) => {
+    closeMenus();
+    window.dispatchEvent(new CustomEvent('trigger-page-transition'));
+    if (location.pathname === '/') {
+      const el = document.getElementById(sectionId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+        setActiveSection(sectionId);
+      }
+    } else {
+      navigate(`/#${sectionId}`);
+    }
+  };
 
   useEffect(() => {
     if (mobileMenuOpen) {
@@ -57,115 +57,107 @@ export const Header: React.FC = () => {
     };
   }, [mobileMenuOpen]);
 
+  // Listen for open-search events
+  useEffect(() => {
+    const handleOpenSearch = () => setIsSearchOpen(true);
+    window.addEventListener('open-search', handleOpenSearch);
+    return () => window.removeEventListener('open-search', handleOpenSearch);
+  }, []);
+
+  // Track scroll position for header styling and active section tracking
+  useEffect(() => {
+    const sectionIds = ['hero', 'tinh-nang', 'physical', 'digital', 'ranking', 'so-sanh', 'guides', 'chuyen-gia', 'faq'];
+
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 15);
+
+      const scrollPosition = window.scrollY + 200;
+
+      for (let i = sectionIds.length - 1; i >= 0; i--) {
+        const id = sectionIds[i];
+        const element = document.getElementById(id);
+        if (element) {
+          const top = element.offsetTop;
+          if (scrollPosition >= top) {
+            setActiveSection(id);
+            break;
+          }
+        }
+      }
+    };
+
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const navItems = [
+    { label: 'Tiêu chuẩn', id: 'tinh-nang', icon: Zap },
+    { label: 'Sản phẩm vật lý', id: 'physical', icon: Flame },
+    { label: 'Sản phẩm số', id: 'digital', icon: Sparkles },
+    { label: 'Bảng xếp hạng', id: 'ranking', icon: Award },
+    { label: 'So sánh', id: 'so-sanh', icon: Scale },
+    { label: 'Cẩm nang', id: 'guides', icon: BookOpen },
+    { label: 'Hỏi đáp', id: 'faq', icon: HelpCircle }
+  ];
+
   return (
-    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 transition-all">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20 gap-4">
+    <header
+      className={`sticky top-0 z-50 w-full transition-all duration-300 ${isScrolled
+          ? 'bg-white/95 backdrop-blur-md shadow-md border-b border-slate-200/90'
+          : 'bg-white/90 backdrop-blur-md border-b border-slate-200/70 shadow-xs'
+        }`}
+    >
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-20 gap-3">
           {/* LOGO */}
-          <Link
-            to="/"
-            onClick={closeMenus}
-            className="flex items-center gap-2.5 flex-shrink-0 group"
+          <button
+            type="button"
+            onClick={() => scrollToSection('hero')}
+            className="flex items-center gap-2 flex-shrink-0 group text-left cursor-pointer whitespace-nowrap"
           >
             <Logo variant="light" size="md" />
-          </Link>
+          </button>
 
-          {/* DESKTOP NAVIGATION */}
-          <nav className="hidden lg:flex items-center space-x-1 font-medium text-sm text-slate-700">
-            {/* Sản phẩm vật lý */}
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => setActiveMegaMenu(activeMegaMenu === 'physical' ? null : 'physical')}
-                className={`px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition-all ${
-                  activeMegaMenu === 'physical' || location.pathname.startsWith('/san-pham-vat-ly')
-                    ? 'text-orange-700 bg-orange-50 font-bold ring-1 ring-orange-200/80 shadow-xs'
-                    : 'hover:text-slate-900 hover:bg-slate-100'
-                }`}
-              >
-                <span>Sản phẩm vật lý</span>
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${activeMegaMenu === 'physical' ? 'rotate-180 text-orange-600' : ''}`} />
-              </button>
-            </div>
-
-            {/* Sản phẩm số */}
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => setActiveMegaMenu(activeMegaMenu === 'digital' ? null : 'digital')}
-                className={`px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition-all ${
-                  activeMegaMenu === 'digital' || location.pathname.startsWith('/san-pham-so')
-                    ? 'text-indigo-700 bg-indigo-50 font-bold ring-1 ring-indigo-200/80 shadow-xs'
-                    : 'hover:text-slate-900 hover:bg-slate-100'
-                }`}
-              >
-                <span>Sản phẩm số</span>
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${activeMegaMenu === 'digital' ? 'rotate-180 text-indigo-600' : ''}`} />
-              </button>
-            </div>
-
-            {/* Bảng xếp hạng */}
-            <Link
-              to="/top/noi-chien-khong-dau"
-              onClick={closeMenus}
-              className={`px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition-colors ${
-                location.pathname.startsWith('/top')
-                  ? 'text-indigo-600 bg-indigo-50/80 font-semibold'
-                  : 'hover:text-slate-900 hover:bg-slate-100'
-              }`}
-            >
-              <span>Bảng xếp hạng</span>
-            </Link>
-
-            {/* Hướng dẫn */}
-            <Link
-              to="/huong-dan/cach-chon-noi-chien-khong-dau"
-              onClick={closeMenus}
-              className={`px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition-colors ${
-                location.pathname.startsWith('/huong-dan')
-                  ? 'text-indigo-600 bg-indigo-50/80 font-semibold'
-                  : 'hover:text-slate-900 hover:bg-slate-100'
-              }`}
-            >
-              <span>Hướng dẫn</span>
-            </Link>
+          {/* DESKTOP SINGLE-PAGE NAVIGATION */}
+          <nav className="hidden lg:flex items-center space-x-0.5 xl:space-x-1 font-medium text-xs xl:text-sm text-slate-700 whitespace-nowrap flex-shrink-0">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = activeSection === item.id;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => scrollToSection(item.id)}
+                  className={`px-2.5 xl:px-3 py-2 rounded-xl flex items-center gap-1.5 transition-all font-semibold cursor-pointer whitespace-nowrap flex-shrink-0 ${isActive
+                      ? 'bg-orange-50 text-orange-600 shadow-xs'
+                      : 'text-slate-700 hover:text-orange-600 hover:bg-slate-100/80'
+                    }`}
+                >
+                  <Icon className={`w-3.5 h-3.5 flex-shrink-0 ${isActive ? 'text-orange-600' : 'text-slate-400'}`} />
+                  <span className="whitespace-nowrap">{item.label}</span>
+                </button>
+              );
+            })}
           </nav>
 
-          {/* SEARCH & ADMIN LINK */}
-          <div className="hidden sm:flex items-center gap-3">
-            <form onSubmit={handleSearchSubmit} className="relative">
-              <input
-                type="text"
-                placeholder="Tìm sản phẩm, review, so sánh..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-56 lg:w-64 pl-9 pr-4 py-2 bg-slate-100 text-xs rounded-xl border border-transparent focus:border-indigo-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-100 transition-all placeholder:text-slate-400"
-              />
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-            </form>
-
+          {/* ACTIONS: ADMIN */}
+          <div className="hidden sm:flex items-center gap-2 flex-shrink-0 whitespace-nowrap">
             <Link
-              to="/admin"
-              className="px-3 py-2 bg-slate-900 text-white hover:bg-slate-800 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm"
-              title="Khu vực Quản trị Admin Demo"
+              to="/admin/products"
+              className="px-4 py-2.5 bg-slate-900 text-white hover:bg-slate-800 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm whitespace-nowrap flex-shrink-0"
+              title="Quản trị Sản phẩm"
             >
-              <Shield className="w-3.5 h-3.5 text-indigo-400" />
-              <span>Admin Demo</span>
+              <Shield className="w-3.5 h-3.5 text-orange-400 flex-shrink-0" />
+              <span className="whitespace-nowrap">Admin Demo</span>
             </Link>
           </div>
 
-          {/* MOBILE HAMBURGER BUTTON */}
-          <div className="flex sm:hidden items-center gap-2">
-            <Link
-              to="/tim-kiem"
-              className="p-2 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-100"
-              aria-label="Tìm kiếm"
-            >
-              <Search className="w-5 h-5" />
-            </Link>
+          {/* MOBILE ACTIONS */}
+          <div className="flex lg:hidden items-center gap-2">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-xl text-slate-700 hover:bg-slate-100"
+              className="p-2 rounded-xl text-slate-700 hover:bg-slate-100 cursor-pointer"
               aria-label="Toggle Menu"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -174,171 +166,83 @@ export const Header: React.FC = () => {
         </div>
       </div>
 
-      {/* DESKTOP MEGA MENU DROPDOWN WITH BACKDROP */}
-      {activeMegaMenu && (
-        <>
-          <div
-            className="fixed inset-0 top-20 bg-slate-950/40 backdrop-blur-[2px] z-30 transition-opacity animate-fadeIn"
-            onClick={closeMenus}
-          />
-          <MegaMenu
-            type={activeMegaMenu}
-            onClose={() => setActiveMegaMenu(null)}
-          />
-        </>
-      )}
+      {/* SEARCH OVERLAY */}
+      <SearchOverlay
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+        onSelectProduct={(p: Product) => {
+          window.dispatchEvent(new CustomEvent('select-product', { detail: p }));
+        }}
+        onSelectRanking={(r: Ranking) => {
+          window.dispatchEvent(new CustomEvent('select-ranking', { detail: r }));
+        }}
+        onSelectArticle={(a: Article) => {
+          window.dispatchEvent(new CustomEvent('select-article', { detail: a }));
+        }}
+      />
 
-      {/* MOBILE BACKDROP OVERLAY & RIGHT-SIDE DRAWER VIA PORTAL */}
+      {/* MOBILE DRAWER */}
       {typeof document !== 'undefined' && createPortal(
         <>
-          {/* Mobile Backdrop */}
           {mobileMenuOpen && (
             <div
               onClick={closeMenus}
-              className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-[9998] sm:hidden transition-opacity duration-300"
+              className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-[9998] lg:hidden transition-opacity duration-300"
             />
           )}
 
-          {/* Mobile Slide-in Drawer from Right */}
           <div
-            className={`fixed inset-y-0 right-0 z-[9999] w-[86%] max-w-sm sm:hidden bg-white shadow-2xl flex flex-col border-l border-slate-200 transition-transform duration-300 ease-in-out ${
-              mobileMenuOpen ? 'translate-x-0' : 'translate-x-full pointer-events-none'
-            }`}
+            className={`fixed inset-y-0 right-0 z-[9999] w-[86%] max-w-sm lg:hidden bg-white shadow-2xl flex flex-col border-l border-slate-200 transition-transform duration-300 ease-in-out ${mobileMenuOpen ? 'translate-x-0' : 'translate-x-full pointer-events-none'
+              }`}
           >
             {/* Drawer Top Bar */}
             <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/80 flex-shrink-0">
-              <Link to="/" onClick={closeMenus} className="flex items-center">
+              <button onClick={() => scrollToSection('hero')} className="flex items-center">
                 <Logo variant="light" size="sm" />
-              </Link>
+              </button>
               <button
                 onClick={closeMenus}
-                className="p-2 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-200/70 transition-colors"
+                className="p-2 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-200/70 transition-colors cursor-pointer"
                 aria-label="Đóng menu"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            {/* Drawer Body (Scrollable) */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
-              {/* Search Box inside Drawer */}
-              <form onSubmit={handleSearchSubmit} className="relative">
-                <input
-                  type="text"
-                  placeholder="Bạn đang tìm sản phẩm gì..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-100/90 rounded-xl text-xs border border-slate-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white transition-all placeholder:text-slate-400"
-                />
-                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-              </form>
-
-              {/* Navigation Links */}
+            {/* Drawer Navigation Links */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-2">
               <nav className="space-y-1 text-xs font-medium text-slate-800">
-                {/* Accordion Sản phẩm vật lý */}
-                <div className="border-b border-slate-100 pb-2">
-                  <button
-                    onClick={() => setMobileCategoryOpen(mobileCategoryOpen === 'physical' ? null : 'physical')}
-                    className="w-full flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-orange-50/60 text-slate-800 font-bold transition-colors"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-orange-500" />
-                      <span>Sản phẩm vật lý</span>
-                    </div>
-                    <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${mobileCategoryOpen === 'physical' ? 'rotate-180 text-orange-600' : ''}`} />
-                  </button>
-
-                  {mobileCategoryOpen === 'physical' && (
-                    <div className="pl-4 py-2 space-y-1.5 bg-orange-50/30 rounded-xl my-1 border border-orange-100/60">
-                      <Link
-                        to="/san-pham-vat-ly"
-                        onClick={closeMenus}
-                        className="block text-xs font-bold text-orange-600 py-1 px-2 rounded-lg hover:bg-orange-100/50"
-                      >
-                        → Xem tất cả sản phẩm vật lý
-                      </Link>
-                      {physicalCategories.map((c) => (
-                        <Link
-                          key={c.id}
-                          to={`/${c.groupSlug}/${c.subcategories[0]?.slug || c.slug}`}
-                          onClick={closeMenus}
-                          className="block text-xs text-slate-700 py-1.5 px-2 rounded-lg hover:bg-white hover:text-orange-600 transition-colors"
-                        >
-                          {c.name}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Accordion Sản phẩm số */}
-                <div className="border-b border-slate-100 pb-2">
-                  <button
-                    onClick={() => setMobileCategoryOpen(mobileCategoryOpen === 'digital' ? null : 'digital')}
-                    className="w-full flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-indigo-50/60 text-slate-800 font-bold transition-colors"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-indigo-500" />
-                      <span>Sản phẩm số &amp; AI</span>
-                    </div>
-                    <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${mobileCategoryOpen === 'digital' ? 'rotate-180 text-indigo-600' : ''}`} />
-                  </button>
-
-                  {mobileCategoryOpen === 'digital' && (
-                    <div className="pl-4 py-2 space-y-1.5 bg-indigo-50/30 rounded-xl my-1 border border-indigo-100/60">
-                      <Link
-                        to="/san-pham-so"
-                        onClick={closeMenus}
-                        className="block text-xs font-bold text-indigo-600 py-1 px-2 rounded-lg hover:bg-indigo-100/50"
-                      >
-                        → Xem tất cả sản phẩm số
-                      </Link>
-                      {digitalCategories.map((c) => (
-                        <Link
-                          key={c.id}
-                          to={`/${c.groupSlug}/${c.subcategories[0]?.slug || c.slug}`}
-                          onClick={closeMenus}
-                          className="block text-xs text-slate-700 py-1.5 px-2 rounded-lg hover:bg-white hover:text-indigo-600 transition-colors"
-                        >
-                          {c.name}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Bảng xếp hạng Top */}
-                <Link
-                  to="/top/noi-chien-khong-dau"
-                  onClick={closeMenus}
-                  className="flex items-center gap-2.5 py-3 px-3 rounded-xl hover:bg-amber-50 font-bold text-slate-800 border-b border-slate-100 transition-colors"
-                >
-                  <Award className="w-4 h-4 text-amber-500" />
-                  <span>Bảng xếp hạng Top 10</span>
-                </Link>
-
-                {/* Hướng dẫn chọn mua */}
-                <Link
-                  to="/huong-dan/cach-chon-noi-chien-khong-dau"
-                  onClick={closeMenus}
-                  className="flex items-center gap-2.5 py-3 px-3 rounded-xl hover:bg-emerald-50 font-bold text-slate-800 border-b border-slate-100 transition-colors"
-                >
-                  <BookOpen className="w-4 h-4 text-emerald-500" />
-                  <span>Hướng dẫn chọn mua</span>
-                </Link>
+                {navItems.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = activeSection === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => scrollToSection(item.id)}
+                      className={`w-full flex items-center gap-3 py-3 px-3.5 rounded-xl font-bold border-b border-slate-100 transition-colors text-left cursor-pointer whitespace-nowrap ${isActive
+                          ? 'bg-orange-50 text-orange-600'
+                          : 'hover:bg-slate-50 text-slate-800'
+                        }`}
+                    >
+                      <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-orange-500' : 'text-slate-400'}`} />
+                      <span className="whitespace-nowrap">{item.label}</span>
+                    </button>
+                  );
+                })}
               </nav>
             </div>
 
             {/* Drawer Footer Action */}
             <div className="p-4 border-t border-slate-100 bg-slate-50/80 flex-shrink-0">
               <Link
-                to="/admin"
+                to="/admin/products"
                 onClick={closeMenus}
-                className="flex items-center justify-between py-2.5 px-3 rounded-xl bg-slate-900 text-white font-semibold text-xs shadow-md hover:bg-slate-800 transition-colors"
+                className="flex items-center justify-between py-2.5 px-3 rounded-xl bg-slate-900 text-white font-semibold text-xs shadow-md hover:bg-slate-800 transition-colors whitespace-nowrap"
               >
-                <span className="flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-orange-400" />
-                  <span>Khu vực Quản trị Admin</span>
+                <span className="flex items-center gap-2 whitespace-nowrap">
+                  <Shield className="w-4 h-4 text-orange-400 flex-shrink-0" />
+                  <span className="whitespace-nowrap">Khu vực Quản trị Admin</span>
                 </span>
                 <ArrowRight className="w-4 h-4 text-slate-400" />
               </Link>
@@ -350,3 +254,4 @@ export const Header: React.FC = () => {
     </header>
   );
 };
+

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useData } from '../../context/DataContext';
 import { useToast } from '../../context/ToastContext';
+import { useConfirm } from '../../context/ConfirmContext';
 import { Category, ProductType } from '../../types';
 import { AdminHeader } from '../../components/admin/AdminHeader';
 import { Modal } from '../../components/ui/Modal';
@@ -14,6 +15,7 @@ import { Plus, Edit2, Trash2, Search, Power, CheckCircle, FolderTree } from 'luc
 export const AdminCategoriesPage: React.FC = () => {
   const { categories, addCategory, updateCategory, deleteCategory, toggleCategoryStatus } = useData();
   const { showToast } = useToast();
+  const { confirm } = useConfirm();
 
   const [search, setSearch] = useState('');
   const [filterGroup, setFilterGroup] = useState<'all' | 'physical' | 'digital'>('all');
@@ -83,8 +85,15 @@ export const AdminCategoriesPage: React.FC = () => {
     setModalOpen(false);
   };
 
-  const handleDelete = (cat: Category) => {
-    if (window.confirm(`Bạn có chắc chắn muốn xóa danh mục "${cat.name}"?`)) {
+  const handleDelete = async (cat: Category) => {
+    const ok = await confirm({
+      title: 'Xóa danh mục',
+      message: `Bạn có chắc chắn muốn xóa danh mục "${cat.name}"? Các sản phẩm thuộc danh mục này có thể bị ảnh hưởng.`,
+      confirmText: 'Xác nhận xóa',
+      cancelText: 'Hủy bỏ',
+      type: 'danger'
+    });
+    if (ok) {
       deleteCategory(cat.id);
       showToast(`Đã xóa danh mục "${cat.name}" thành công!`, { type: 'info' });
     }
