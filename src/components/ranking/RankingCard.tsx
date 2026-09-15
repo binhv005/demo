@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Ranking } from '../../types';
-import { Award, ArrowRight, Calendar, Sparkles, Flame } from 'lucide-react';
+import { Award, Calendar, Sparkles, Flame } from 'lucide-react';
 import { Badge } from '../ui/Badge';
 
 interface RankingCardProps {
@@ -87,9 +87,6 @@ export const RankingCard: React.FC<RankingCardProps> = ({ ranking, className = '
           <span className="text-xs font-semibold text-slate-500">
             Đã kiểm nghiệm {ranking.items.length} sản phẩm
           </span>
-          <div className="w-7 h-7 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center group-hover:bg-orange-600 group-hover:text-white transition-colors">
-            <ArrowRight className="w-3.5 h-3.5" />
-          </div>
         </div>
       </div>
     </div>
