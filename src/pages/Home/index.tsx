@@ -996,8 +996,7 @@ export const HomePage: React.FC = () => {
                       {filteredPhysicalProducts.map((p) => (
                         <div
                           key={p.id}
-                          onClick={() => setSelectedProduct(p)}
-                          className="w-[280px] sm:w-[300px] flex-shrink-0 cursor-pointer"
+                          className="w-[280px] sm:w-[300px] flex-shrink-0"
                         >
                           <ProductCard product={p} variant="grid" className="h-full" />
                         </div>
@@ -1157,8 +1156,7 @@ export const HomePage: React.FC = () => {
                       {filteredDigitalProducts.map((p) => (
                         <div
                           key={p.id}
-                          onClick={() => setSelectedProduct(p)}
-                          className="w-[280px] sm:w-[300px] flex-shrink-0 cursor-pointer"
+                          className="w-[280px] sm:w-[300px] flex-shrink-0"
                         >
                           <ProductCard product={p} variant="grid" className="h-full" />
                         </div>
@@ -1208,11 +1206,7 @@ export const HomePage: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-grid-filter">
               {filteredRankings.slice(0, 3).map((ranking) => (
-                <div
-                  key={ranking.id}
-                  onClick={() => setSelectedRanking(ranking)}
-                  className="cursor-pointer"
-                >
+                <div key={ranking.id}>
                   <RankingCard ranking={ranking} />
                 </div>
               ))}
@@ -1258,20 +1252,13 @@ export const HomePage: React.FC = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
               {featuredArticle && (
-                <div
-                  onClick={() => setSelectedArticle(featuredArticle)}
-                  className="lg:col-span-7 cursor-pointer"
-                >
+                <div className="lg:col-span-7">
                   <ArticleCard article={featuredArticle} variant="featured" className="h-full" />
                 </div>
               )}
               <div className="lg:col-span-5 flex flex-col gap-5 justify-between">
                 {otherArticles.map((art) => (
-                  <div
-                    key={art.id}
-                    onClick={() => setSelectedArticle(art)}
-                    className="cursor-pointer flex-1"
-                  >
+                  <div key={art.id} className="flex-1">
                     <ArticleCard article={art} variant="horizontal" className="h-full" />
                   </div>
                 ))}
