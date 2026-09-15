@@ -365,30 +365,6 @@ export const HomePage: React.FC = () => {
               </div>
 
               <div className="relative w-full max-w-[380px] flex flex-col gap-4 z-10 mx-auto">
-                {/* Spotlight 1: AI */}
-                <div
-                  onClick={() => setSelectedProduct(products.find((p) => p.slug === 'claude-3-5-sonnet') || products[0])}
-                  className="self-start -mb-2 z-20 bg-slate-900/90 backdrop-blur-md p-3 rounded-2xl border border-white/15 shadow-2xl flex items-center gap-3 transform -rotate-1 hover:rotate-0 hover:scale-105 transition-all duration-300 w-72 text-white cursor-pointer"
-                >
-                  <div className="w-11 h-11 rounded-xl bg-indigo-950/80 border border-indigo-500/30 flex items-center justify-center overflow-hidden flex-shrink-0">
-                    <img
-                      src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=120&q=80"
-                      alt="Claude 3.5 Sonnet"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-1">
-                      <span className="text-[10px] font-extrabold text-indigo-300 uppercase tracking-wider flex items-center gap-1">
-                        <Sparkles className="w-3 h-3 text-indigo-400" /> AI #1
-                      </span>
-                      <span className="text-[10px] font-black text-amber-300 bg-amber-400/10 px-1.5 py-0.5 rounded border border-amber-400/20">★ 9.8</span>
-                    </div>
-                    <h5 className="font-bold text-white text-xs truncate">Claude 3.5 Sonnet</h5>
-                    <p className="text-[10px] text-slate-300 truncate">Nhấn để xem chi tiết →</p>
-                  </div>
-                </div>
-
                 {/* Spotlight 2: Physical */}
                 <div
                   onClick={() => setSelectedProduct(products.find((p) => p.slug === 'aircook-pro-6l') || products[0])}
