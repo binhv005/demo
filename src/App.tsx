@@ -45,9 +45,9 @@ import { PageTransition } from './components/layout/PageTransition';
 // Public Website Wrapper Layout (Header + Page + Footer)
 const PublicLayout: React.FC = () => {
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-indigo-500 selection:text-white">
+    <div className="flex flex-col min-h-screen w-full overflow-x-hidden bg-slate-50 font-sans text-slate-900 selection:bg-indigo-500 selection:text-white">
       <Header />
-      <main className="flex-1">
+      <main className="flex-1 w-full overflow-x-hidden">
         <PageTransition>
           <Outlet />
         </PageTransition>

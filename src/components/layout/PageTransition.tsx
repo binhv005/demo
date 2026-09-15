@@ -81,7 +81,7 @@ export const PageTransition: React.FC<PageTransitionProps> = ({ children }) => {
       {/* Main Page Content with Route-Specific Keyframe Transition */}
       <div
         key={location.pathname}
-        className={`w-full ${getTransitionClass(location.pathname)}`}
+        className={`w-full overflow-x-hidden ${getTransitionClass(location.pathname)}`}
       >
         {children}
       </div>

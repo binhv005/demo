@@ -33,20 +33,20 @@ export const ComparisonMatrix: React.FC<ComparisonMatrixProps> = ({ products, cl
       </div>
 
       {/* Horizontal Scroll Table Container */}
-      <div className="relative overflow-x-auto rounded-3xl border border-slate-200/80 bg-white shadow-sm">
-        <table className="w-full text-left text-xs sm:text-sm">
+      <div className="relative w-full max-w-full overflow-x-auto rounded-2xl sm:rounded-3xl border border-slate-200/80 bg-white shadow-sm scrollbar-thin">
+        <table className="w-full text-left text-xs sm:text-sm border-collapse">
           <thead>
             <tr className="border-b border-slate-100 bg-slate-50/70">
-              <th className="p-4 sm:p-5 font-bold text-slate-900 min-w-[160px] sticky left-0 bg-slate-50/95 backdrop-blur z-10 border-r border-slate-200/60">
+              <th className="p-3 sm:p-5 font-bold text-slate-900 min-w-[120px] sm:min-w-[160px] sticky left-0 bg-slate-50/95 backdrop-blur z-10 border-r border-slate-200/60 shadow-xs">
                 Sản phẩm
               </th>
-              {products.map((p, idx) => (
-                <th key={p.id} className="p-4 sm:p-5 font-bold text-slate-900 min-w-[220px] text-center">
+              {products.map((p) => (
+                <th key={p.id} className="p-3 sm:p-5 font-bold text-slate-900 min-w-[170px] sm:min-w-[220px] text-center align-top">
                   <div className="space-y-2">
                     <img
                       src={p.image}
                       alt={p.name}
-                      className="w-16 h-16 rounded-xl object-cover mx-auto border border-slate-200/80 shadow-sm"
+                      className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl object-cover mx-auto border border-slate-200/80 shadow-sm"
                     />
                     <Link
                       to={`/review/${p.slug}`}
@@ -65,11 +65,11 @@ export const ComparisonMatrix: React.FC<ComparisonMatrixProps> = ({ products, cl
           <tbody>
             {/* Row: Price */}
             <tr className="border-b border-slate-100 bg-white">
-              <td className="p-4 sm:p-5 font-bold text-slate-700 sticky left-0 bg-white z-10 border-r border-slate-200/60">
+              <td className="p-3 sm:p-5 font-bold text-slate-700 sticky left-0 bg-white z-10 border-r border-slate-200/60 shadow-xs">
                 Giá tham khảo
               </td>
               {products.map((p) => (
-                <td key={p.id} className="p-4 sm:p-5 text-center font-bold text-indigo-600">
+                <td key={p.id} className="p-3 sm:p-5 text-center font-bold text-indigo-600 whitespace-nowrap">
                   {formatPrice(p.price, p.priceUnit)}
                 </td>
               ))}
@@ -81,11 +81,11 @@ export const ComparisonMatrix: React.FC<ComparisonMatrixProps> = ({ products, cl
                 key={key}
                 className={`border-b border-slate-100 ${idx % 2 === 0 ? 'bg-slate-50/40' : 'bg-white'}`}
               >
-                <td className="p-4 sm:p-5 font-semibold text-slate-700 sticky left-0 bg-white z-10 border-r border-slate-200/60">
+                <td className="p-3 sm:p-5 font-semibold text-slate-700 sticky left-0 bg-white z-10 border-r border-slate-200/60 shadow-xs">
                   {key}
                 </td>
                 {products.map((p) => (
-                  <td key={p.id} className="p-4 sm:p-5 text-center text-slate-600 font-medium">
+                  <td key={p.id} className="p-3 sm:p-5 text-center text-slate-600 font-medium text-xs sm:text-sm">
                     {p.specs[key] || '—'}
                   </td>
                 ))}
@@ -94,11 +94,11 @@ export const ComparisonMatrix: React.FC<ComparisonMatrixProps> = ({ products, cl
 
             {/* Row: Best For */}
             <tr className="border-b border-slate-100 bg-white">
-              <td className="p-4 sm:p-5 font-bold text-slate-700 sticky left-0 bg-white z-10 border-r border-slate-200/60">
+              <td className="p-3 sm:p-5 font-bold text-slate-700 sticky left-0 bg-white z-10 border-r border-slate-200/60 shadow-xs">
                 Phù hợp cho
               </td>
               {products.map((p) => (
-                <td key={p.id} className="p-4 sm:p-5 text-center text-xs text-slate-600">
+                <td key={p.id} className="p-3 sm:p-5 text-center text-xs text-slate-600">
                   {p.bestFor}
                 </td>
               ))}
@@ -106,11 +106,11 @@ export const ComparisonMatrix: React.FC<ComparisonMatrixProps> = ({ products, cl
 
             {/* Row: CTA */}
             <tr className="bg-slate-50/70">
-              <td className="p-4 sm:p-5 font-bold text-slate-700 sticky left-0 bg-slate-50/95 z-10 border-r border-slate-200/60">
+              <td className="p-3 sm:p-5 font-bold text-slate-700 sticky left-0 bg-slate-50/95 z-10 border-r border-slate-200/60 shadow-xs">
                 Xem đánh giá
               </td>
               {products.map((p) => (
-                <td key={p.id} className="p-4 sm:p-5 text-center">
+                <td key={p.id} className="p-3 sm:p-5 text-center">
                   <Link to={`/review/${p.slug}`}>
                     <Button variant="primary" size="sm" className="w-full">
                       Chi tiết

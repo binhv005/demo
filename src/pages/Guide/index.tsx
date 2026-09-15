@@ -67,9 +67,9 @@ export const GuideDetailPage: React.FC = () => {
 
       {/* Main Content Layout */}
       <Container size="xl">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 w-full min-w-0">
           {/* Main Article (8 cols) */}
-          <div className="lg:col-span-8 space-y-12">
+          <div className="lg:col-span-8 space-y-10 sm:space-y-12 min-w-0 w-full">
             {/* Featured Image */}
             <div className="rounded-3xl overflow-hidden bg-slate-100 border border-slate-200/80 h-72 sm:h-96">
               <img
@@ -183,7 +183,7 @@ export const GuideDetailPage: React.FC = () => {
           </div>
 
           {/* Right Sidebar (4 cols) */}
-          <div className="lg:col-span-4 space-y-8">
+          <div className="lg:col-span-4 space-y-8 min-w-0 w-full">
             {article.tableOfContents && (
               <div className="sticky top-24">
                 <TableOfContents items={article.tableOfContents} />

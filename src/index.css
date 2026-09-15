@@ -81,10 +81,25 @@
 }
 
 @layer base {
+  html {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
+  }
+
   body {
     font-family: var(--font-sans);
     background-color: #fdf8f5;
     color: #231814;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
+  }
+
+  #root {
+    width: 100%;
+    overflow-x: hidden;
+    min-height: 100vh;
   }
 
   /* Apply Lufga Font to all Big Headings & Titles */

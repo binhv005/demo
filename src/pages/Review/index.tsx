@@ -63,9 +63,9 @@ export const ReviewDetailPage: React.FC = () => {
 
       {/* Main Review Body */}
       <Container size="xl">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 w-full min-w-0">
           {/* Main Review Article (8 cols) */}
-          <div className="lg:col-span-8 space-y-12">
+          <div className="lg:col-span-8 space-y-10 sm:space-y-12 min-w-0 w-full">
             {/* Quick Verdict */}
             <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 space-y-4 shadow-sm">
               <h2 className="text-xl font-bold text-slate-900">
@@ -151,7 +151,7 @@ export const ReviewDetailPage: React.FC = () => {
           </div>
 
           {/* Right Sidebar (4 cols) */}
-          <div className="lg:col-span-4 space-y-8">
+          <div className="lg:col-span-4 space-y-8 min-w-0 w-full">
             {/* Quick Buy Card */}
             <div className="bg-white rounded-3xl border border-slate-200/80 p-6 space-y-4 shadow-sm sticky top-24">
               <div className="space-y-2">
