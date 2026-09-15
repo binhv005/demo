@@ -273,161 +273,73 @@ export const HomePage: React.FC = () => {
   return (
     <div className="space-y-16 sm:space-y-24 pb-20 overflow-hidden">
       {/* ========================================================================= */}
-      {/* SECTION 1 — HERO SECTION (FULL WIDTH WITH RICH DOODLE PATTERN) */}
+      {/* SECTION 1 — BOTANICAL ORGANIC LUXURY HERO SECTION (PERFECT VIEWPORT FIT) */}
       {/* ========================================================================= */}
-      <section
-        id="hero"
-        className="relative w-full text-white overflow-hidden border-b border-emerald-950/80 py-10 sm:py-14 lg:py-18 scroll-mt-24"
-        style={{
-          backgroundColor: '#0b2419',
-          backgroundImage: 'radial-gradient(ellipse at top right, #143e2d 0%, #0b2419 55%, #06140e 100%)'
-        }}
-      >
-
-        {/* Shopping & Tech Doodle Pattern Overlay */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-[0.09] select-none">
-          <svg className="w-full h-full text-white" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <pattern
-                id="hero-shopping-pattern"
-                x="0"
-                y="0"
-                width="380"
-                height="280"
-                patternUnits="userSpaceOnUse"
-              >
-                <g fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  {/* 1. DISC Badge */}
-                  <g transform="translate(30, 20)">
-                    <path d="M12 0 L15 5 L21 4 L21 10 L26 13 L23 18 L26 23 L21 26 L21 32 L15 31 L12 36 L9 31 L3 32 L3 26 L-2 23 L1 18 L-2 13 L3 10 L3 4 L9 5 Z" />
-                    <text x="12" y="21" fill="currentColor" stroke="none" fontSize="7" fontWeight="bold" textAnchor="middle">DISC</text>
-                  </g>
-                  {/* 2. Gift Box */}
-                  <g transform="translate(95, 25)">
-                    <rect x="0" y="8" width="26" height="22" rx="2" />
-                    <line x1="13" y1="8" x2="13" y2="30" />
-                    <line x1="0" y1="18" x2="26" y2="18" />
-                  </g>
-                  {/* 3. Cards */}
-                  <g transform="translate(195, 18)">
-                    <rect x="6" y="8" width="36" height="22" rx="3" strokeDasharray="1 0" />
-                    <rect x="0" y="0" width="36" height="22" rx="3" fill="#0b2419" fillOpacity="0.4" />
-                  </g>
-                  {/* 4. SALE Tag */}
-                  <g transform="translate(265, 15) rotate(35)">
-                    <path d="M0 0 H22 L34 12 L18 28 L0 28 Z" />
-                    <text x="17" y="17" fill="currentColor" stroke="none" fontSize="7.5" fontWeight="bold" textAnchor="middle">SALE</text>
-                  </g>
-                  {/* 5. Smartphone */}
-                  <g transform="translate(90, 85)">
-                    <rect x="0" y="0" width="16" height="28" rx="3" />
-                  </g>
-                  {/* 6. Shopping Cart */}
-                  <g transform="translate(320, 85)">
-                    <path d="M0 0 H6 L12 18 H32 L36 6 H10" />
-                    <circle cx="15" cy="22" r="2.5" />
-                    <circle cx="29" cy="22" r="2.5" />
-                  </g>
-                </g>
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#hero-shopping-pattern)" />
-          </svg>
+      <section id="hero" className="relative w-full bg-[#f4efe8] border-b border-[#e2d9cd] overflow-hidden scroll-mt-20 min-h-[440px] sm:min-h-[480px] lg:min-h-[510px] flex items-center">
+        {/* Full-bleed Seamless Right Photo (Spans top-to-bottom and flush to right with zero borders) */}
+        <div className="absolute right-0 top-0 bottom-0 w-full lg:w-[60%] h-full pointer-events-none select-none z-0 overflow-hidden">
+          <img
+            src="/hero-tech-lifestyle.jpg"
+            alt="Thiết bị công nghệ &amp; đồ gia dụng thông minh được kiểm nghiệm"
+            className="w-full h-full object-cover object-center"
+            style={{
+              maskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.5) 18%, black 48%)',
+              WebkitMaskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.5) 18%, black 48%)'
+            }}
+          />
+          {/* Subtle soft gradient blend on left edge */}
+          <div className="absolute inset-y-0 left-0 w-36 bg-gradient-to-r from-[#f4efe8] via-[#f4efe8]/70 to-transparent pointer-events-none" />
         </div>
 
-        {/* Ambient Glows */}
-        <div className="absolute -top-24 -left-24 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute top-1/2 right-0 w-[500px] h-[500px] bg-orange-500/5 rounded-full blur-3xl pointer-events-none" />
+        {/* Red Stamp Badge (Borderless) */}
+        <div className="absolute top-6 right-6 lg:top-8 lg:right-12 z-20 w-19 h-19 sm:w-22 sm:h-22 rounded-full bg-[#dc2626] text-white p-1.5 flex flex-col items-center justify-center text-center shadow-2xl transform rotate-6 hover:rotate-0 transition-transform duration-300 select-none pointer-events-auto">
+          <span className="text-[7.5px] sm:text-[8.5px] font-black tracking-widest uppercase opacity-95">LAB TESTED</span>
+          <Sparkles className="w-4 h-4 text-white my-0.5" />
+          <span className="text-[7.5px] sm:text-[8.5px] font-extrabold tracking-wider uppercase opacity-95">TOP 10 CHUẨN XÁC</span>
+        </div>
 
-        <Container size="xl" className="relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+        <Container size="xl" className="relative z-10 py-10 sm:py-13 lg:py-15">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
             {/* Left Column - Content */}
-            <div className="lg:col-span-7 space-y-6 max-w-2xl">
-              {/* Headline */}
-              <h1 className="text-3xl sm:text-5xl lg:text-[52px] font-black text-white tracking-tight leading-[1.12]">
-                Đánh Giá Chuẩn,<br />
-                <span className="text-[#FF5722]">Chọn Thông Minh!</span>
+            <div className="lg:col-span-6 space-y-5 max-w-xl">
+              {/* Main Headline */}
+              <h1 className="text-3xl sm:text-4xl lg:text-[46px] font-outfit font-bold text-[#153424] tracking-tight leading-[1.18]">
+                Đánh Giá Chuẩn Xác.<br />
+                <span className="text-[#ea580c] font-outfit font-bold">Chọn Mua Thông Minh.</span>
               </h1>
 
               {/* Subtitle */}
-              <p className="text-sm sm:text-base text-slate-300 font-normal leading-relaxed max-w-xl">
-                Khám phá đánh giá chuyên sâu từ phòng lab, bảng xếp hạng Top 10 độc lập và so sánh trực quan giúp bạn đưa ra quyết định mua sắm tối ưu và chính xác nhất.
+              <p className="text-sm sm:text-base text-slate-700 font-normal leading-relaxed max-w-lg">
+                Đo kiểm thực tế từ phòng lab và trải nghiệm đời thực. Khám phá bảng xếp hạng Top 10 đồ gia dụng, thiết bị công nghệ và công cụ AI đáng mua nhất.
               </p>
 
-            </div>
-
-            {/* Right Column - Multi-Card Spotlight Showcase */}
-            <div className="hidden lg:flex lg:col-span-5 relative items-center justify-center min-h-[420px] select-none">
-              <div className="absolute -top-4 right-2 z-30 w-22 h-22 rounded-full bg-[#FF5722] text-white flex flex-col items-center justify-center shadow-2xl ring-4 ring-[#0b2419]/80 transform rotate-6 hover:rotate-0 transition-transform duration-300">
-                <span className="text-[10px] font-extrabold tracking-wider uppercase opacity-90">TOP 10</span>
-                <span className="text-2xl font-black leading-none my-0.5 tracking-tight">2024</span>
-                <span className="text-[9px] font-extrabold tracking-wider uppercase opacity-90">CHUẨN XÁC</span>
-              </div>
-
-              <div className="relative w-full max-w-[380px] flex flex-col gap-4 z-10 mx-auto">
-                {/* Spotlight 2: Physical */}
-                <div
-                  onClick={() => setSelectedProduct(products.find((p) => p.slug === 'aircook-pro-6l') || products[0])}
-                  className="self-end z-10 w-80 bg-white p-4 rounded-3xl border border-white shadow-2xl space-y-3 transform hover:-translate-y-1 transition-all duration-300 text-slate-900 cursor-pointer"
+              {/* CTA Action Buttons */}
+              <div className="pt-2 flex items-center gap-3.5 flex-wrap">
+                <button
+                  onClick={() => {
+                    const el = document.getElementById('physical');
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="inline-flex items-center gap-2.5 px-6 py-3 sm:px-7 sm:py-3.5 rounded-full bg-[#1b3d2c] hover:bg-[#122b1e] text-white font-bold text-xs sm:text-sm shadow-md hover:shadow-lg transition-all active:scale-95 cursor-pointer"
                 >
-                  <div className="flex items-center justify-between">
-                    <span className="px-2.5 py-0.5 rounded-full bg-orange-50 text-orange-700 border border-orange-200/80 text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1">
-                      <Flame className="w-3.5 h-3.5 text-orange-500" /> #1 Gia Dụng
-                    </span>
-                    <ScoreBadge score={9.4} size="sm" />
-                  </div>
+                  <span>Khám Phá Sản Phẩm</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
 
-                  <div className="rounded-2xl overflow-hidden h-32 bg-slate-100 border border-slate-100 relative group">
-                    <img
-                      src="https://images.unsplash.com/photo-1585515320310-259814833e62?auto=format&fit=crop&w=400&q=80"
-                      alt="AirCook Pro 6L"
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 to-transparent" />
-                    <span className="absolute bottom-2 left-2.5 text-[10px] font-bold text-white bg-black/60 backdrop-blur-xs px-2.5 py-0.5 rounded-md">
-                      AirCook Pro 6L Smart
-                    </span>
-                  </div>
-
-                  <div>
-                    <h4 className="font-bold text-slate-900 text-xs sm:text-sm line-clamp-1">AirCook Pro 6L Smart Fryer</h4>
-                    <p className="text-[11px] text-slate-500 line-clamp-1 mt-0.5">Chín giòn 360° • Men gốm Ceramic</p>
-                  </div>
-
-                  <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between">
-                    <span className="text-xs sm:text-sm font-black text-slate-900">2.490.000 đ</span>
-                    <span className="text-xs font-bold text-orange-600 flex items-center gap-1">
-                      <span>Xem review chi tiết</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </span>
-                  </div>
-                </div>
-
-                {/* Spotlight 3: Laptop */}
-                <div
-                  onClick={() => setSelectedProduct(products.find((p) => p.slug === 'probook-14-oled') || products[0])}
-                  className="self-start -mt-2 z-20 bg-slate-900/90 backdrop-blur-md p-3 rounded-2xl border border-white/15 shadow-2xl flex items-center gap-3 transform rotate-1 hover:rotate-0 hover:scale-105 transition-all duration-300 w-72 text-white cursor-pointer"
+                <button
+                  onClick={() => {
+                    const el = document.getElementById('ranking');
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="inline-flex items-center gap-2 px-5 py-3 sm:px-6 sm:py-3.5 rounded-full bg-[#faf8f3]/90 hover:bg-white text-slate-800 font-bold text-xs sm:text-sm border border-[#d6ccbc] shadow-xs transition-all active:scale-95 cursor-pointer backdrop-blur-xs"
                 >
-                  <div className="w-11 h-11 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center overflow-hidden flex-shrink-0">
-                    <img
-                      src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=120&q=80"
-                      alt="ProBook Laptop"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-1">
-                      <span className="text-[10px] font-extrabold text-indigo-300 uppercase tracking-wider flex items-center gap-1">
-                        <Award className="w-3 h-3 text-amber-400" /> Laptop #1
-                      </span>
-                      <span className="text-[10px] font-black text-amber-300 bg-amber-400/10 px-1.5 py-0.5 rounded border border-amber-400/20">★ 9.3</span>
-                    </div>
-                    <h5 className="font-bold text-white text-xs truncate">ProBook 14 Ultra OLED</h5>
-                    <p className="text-[10px] text-slate-300 truncate">Pin 14h • OLED 2.8K 120Hz</p>
-                  </div>
-                </div>
+                  <span>Top 10 Bảng Xếp Hạng</span>
+                </button>
               </div>
             </div>
+
+            {/* Right Column - Spacer to keep layout balanced */}
+            <div className="hidden lg:block lg:col-span-6 h-[300px]" />
           </div>
         </Container>
       </section>
@@ -910,11 +822,10 @@ export const HomePage: React.FC = () => {
                   >
                     <button
                       onClick={() => setSelectedPhysicalCategorySlug('all')}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 cursor-pointer ${
-                        selectedPhysicalCategorySlug === 'all'
-                          ? 'bg-orange-600 text-white shadow-xs'
-                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                      }`}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 cursor-pointer ${selectedPhysicalCategorySlug === 'all'
+                        ? 'bg-orange-600 text-white shadow-xs'
+                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                        }`}
                     >
                       Tất cả ({physicalProducts.length})
                     </button>
@@ -922,11 +833,10 @@ export const HomePage: React.FC = () => {
                       <button
                         key={c.id}
                         onClick={() => setSelectedPhysicalCategorySlug(c.slug)}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 cursor-pointer ${
-                          selectedPhysicalCategorySlug === c.slug
-                            ? 'bg-orange-600 text-white shadow-xs'
-                            : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                        }`}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 cursor-pointer ${selectedPhysicalCategorySlug === c.slug
+                          ? 'bg-orange-600 text-white shadow-xs'
+                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                          }`}
                       >
                         {c.name}
                       </button>
@@ -959,233 +869,231 @@ export const HomePage: React.FC = () => {
               </div>
 
               {/* Physical Product Cards 1-Line Slider with Navigation */}
-                {filteredPhysicalProducts.length > 0 ? (
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-slate-500">
-                        Hiển thị {filteredPhysicalProducts.length} sản phẩm vật lý phù hợp
-                      </span>
-                      <div className="flex items-center gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => handleScrollContainer(physicalProductScrollRef, 'left', 320)}
-                          className="w-8 h-8 rounded-xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 flex items-center justify-center transition-colors cursor-pointer shadow-xs active:scale-95"
-                          title="Trượt sang trái"
-                          aria-label="Trượt sang trái"
-                        >
-                          <ChevronLeft className="w-4 h-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleScrollContainer(physicalProductScrollRef, 'right', 320)}
-                          className="w-8 h-8 rounded-xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 flex items-center justify-center transition-colors cursor-pointer shadow-xs active:scale-95"
-                          title="Trượt sang phải"
-                          aria-label="Trượt sang phải"
-                        >
-                          <ChevronRight className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-
-                    <div
-                      key={`${selectedPhysicalCategorySlug}-${physicalSearchVal}`}
-                      ref={physicalProductScrollRef}
-                      className="flex items-stretch gap-5 overflow-x-auto scroll-smooth py-2 select-none animate-grid-filter"
-                      style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                    >
-                      {filteredPhysicalProducts.map((p) => (
-                        <div
-                          key={p.id}
-                          className="w-[280px] sm:w-[300px] flex-shrink-0"
-                        >
-                          <ProductCard product={p} variant="grid" className="h-full" />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="p-10 text-center bg-white rounded-3xl border border-slate-200 space-y-3">
-                    <Box className="w-10 h-10 text-slate-300 mx-auto" />
-                    <h3 className="font-bold text-slate-800 text-sm">Không tìm thấy sản phẩm vật lý phù hợp</h3>
-                    <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                      Hãy thử tìm kiếm với từ khóa khác hoặc bỏ chọn bộ lọc để xem toàn bộ danh mục sản phẩm.
-                    </p>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setPhysicalSearchVal('');
-                        setSelectedPhysicalCategorySlug('all');
-                      }}
-                    >
-                      Xóa bộ lọc
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </Container>
-          </RevealOnScroll>
-        </section>
-
-        {/* ========================================================================= */}
-        {/* SECTION 4 — SẢN PHẨM SỐ & AI (#digital) */}
-        {/* ========================================================================= */}
-        <section id="digital" className="scroll-mt-24">
-          <RevealOnScroll animation="fade-up">
-            <Container size="xl">
-              {/* Digital & AI Products Explorer & Filter */}
-              <div id="digital-explorer" className="space-y-6 scroll-mt-24">
-                {/* Explorer Section Header */}
-                <div className="space-y-1">
-                  <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                    <span>Khám Phá &amp; Lọc Toàn Bộ</span>{' '}
-                    <span className="block sm:inline whitespace-nowrap">Sản Phẩm Số &amp; AI</span>
-                  </h2>
-                  <p className="text-xs sm:text-sm text-slate-500">
-                    Nhấn vào bất kỳ công cụ nào để xem bảng tính năng, đánh giá hiệu năng phòng lab và bài review chuyên sâu.
-                  </p>
-                </div>
-
-                {/* Category Filter Pills on 1 Single Line with Slide Arrows & Search */}
-                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 p-3 sm:p-4 bg-white rounded-2xl border border-slate-200/80 shadow-xs">
-                  <div className="flex items-center gap-2 min-w-0 flex-1">
-                    <span className="text-xs font-bold text-slate-500 flex-shrink-0 ml-1 whitespace-nowrap">Danh mục:</span>
-
-                    {/* Left Arrow Button */}
-                    <button
-                      type="button"
-                      onClick={() => handleScrollContainer(digitalCategoryScrollRef, 'left')}
-                      className="w-7 h-7 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center flex-shrink-0 transition-colors cursor-pointer shadow-xs active:scale-95"
-                      title="Trượt sang trái"
-                      aria-label="Trượt sang trái"
-                    >
-                      <ChevronLeft className="w-4 h-4" />
-                    </button>
-
-                    {/* 1-Line Scrollable Pills Container */}
-                    <div
-                      ref={digitalCategoryScrollRef}
-                      className="flex items-center gap-2 overflow-x-auto scroll-smooth py-1 flex-1 select-none"
-                      style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                    >
+              {filteredPhysicalProducts.length > 0 ? (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-500">
+                      Hiển thị {filteredPhysicalProducts.length} sản phẩm vật lý phù hợp
+                    </span>
+                    <div className="flex items-center gap-1.5">
                       <button
-                        onClick={() => setSelectedDigitalCategorySlug('all')}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 cursor-pointer ${
-                          selectedDigitalCategorySlug === 'all'
-                            ? 'bg-indigo-600 text-white shadow-xs'
-                            : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                        }`}
+                        type="button"
+                        onClick={() => handleScrollContainer(physicalProductScrollRef, 'left', 320)}
+                        className="w-8 h-8 rounded-xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 flex items-center justify-center transition-colors cursor-pointer shadow-xs active:scale-95"
+                        title="Trượt sang trái"
+                        aria-label="Trượt sang trái"
                       >
-                        Tất cả ({digitalProducts.length})
+                        <ChevronLeft className="w-4 h-4" />
                       </button>
-                      {digitalCategories.map((c) => (
-                        <button
-                          key={c.id}
-                          onClick={() => setSelectedDigitalCategorySlug(c.slug)}
-                          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 cursor-pointer ${
-                            selectedDigitalCategorySlug === c.slug
-                              ? 'bg-indigo-600 text-white shadow-xs'
-                              : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                          }`}
-                        >
-                          {c.name}
-                        </button>
-                      ))}
+                      <button
+                        type="button"
+                        onClick={() => handleScrollContainer(physicalProductScrollRef, 'right', 320)}
+                        className="w-8 h-8 rounded-xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 flex items-center justify-center transition-colors cursor-pointer shadow-xs active:scale-95"
+                        title="Trượt sang phải"
+                        aria-label="Trượt sang phải"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
                     </div>
-
-                    {/* Right Arrow Button */}
-                    <button
-                      type="button"
-                      onClick={() => handleScrollContainer(digitalCategoryScrollRef, 'right')}
-                      className="w-7 h-7 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center flex-shrink-0 transition-colors cursor-pointer shadow-xs active:scale-95"
-                      title="Trượt sang phải"
-                      aria-label="Trượt sang phải"
-                    >
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
                   </div>
 
-                  {/* Quick Search inside Digital Products */}
-                  <div className="relative w-full lg:w-60 flex-shrink-0">
-                    <input
-                      type="text"
-                      placeholder="Lọc nhanh công cụ số & AI..."
-                      value={digitalSearchVal}
-                      onChange={(e) => setDigitalSearchVal(e.target.value)}
-                      className="w-full pl-8 pr-3 py-1.5 bg-slate-100 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    />
-                    <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                  <div
+                    key={`${selectedPhysicalCategorySlug}-${physicalSearchVal}`}
+                    ref={physicalProductScrollRef}
+                    className="flex items-stretch gap-5 overflow-x-auto scroll-smooth py-2 select-none animate-grid-filter"
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                  >
+                    {filteredPhysicalProducts.map((p) => (
+                      <div
+                        key={p.id}
+                        className="w-[280px] sm:w-[300px] flex-shrink-0"
+                      >
+                        <ProductCard product={p} variant="grid" className="h-full" />
+                      </div>
+                    ))}
                   </div>
                 </div>
+              ) : (
+                <div className="p-10 text-center bg-white rounded-3xl border border-slate-200 space-y-3">
+                  <Box className="w-10 h-10 text-slate-300 mx-auto" />
+                  <h3 className="font-bold text-slate-800 text-sm">Không tìm thấy sản phẩm vật lý phù hợp</h3>
+                  <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                    Hãy thử tìm kiếm với từ khóa khác hoặc bỏ chọn bộ lọc để xem toàn bộ danh mục sản phẩm.
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setPhysicalSearchVal('');
+                      setSelectedPhysicalCategorySlug('all');
+                    }}
+                  >
+                    Xóa bộ lọc
+                  </Button>
+                </div>
+              )}
+            </div>
+          </Container>
+        </RevealOnScroll>
+      </section>
 
-                {/* Digital Product Cards 1-Line Slider with Navigation */}
-                {filteredDigitalProducts.length > 0 ? (
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-slate-500">
-                        Hiển thị {filteredDigitalProducts.length} giải pháp số &amp; AI phù hợp
-                      </span>
-                      <div className="flex items-center gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => handleScrollContainer(digitalProductScrollRef, 'left', 320)}
-                          className="w-8 h-8 rounded-xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 flex items-center justify-center transition-colors cursor-pointer shadow-xs active:scale-95"
-                          title="Trượt sang trái"
-                          aria-label="Trượt sang trái"
-                        >
-                          <ChevronLeft className="w-4 h-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleScrollContainer(digitalProductScrollRef, 'right', 320)}
-                          className="w-8 h-8 rounded-xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 flex items-center justify-center transition-colors cursor-pointer shadow-xs active:scale-95"
-                          title="Trượt sang phải"
-                          aria-label="Trượt sang phải"
-                        >
-                          <ChevronRight className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-
-                    <div
-                      key={`${selectedDigitalCategorySlug}-${digitalSearchVal}`}
-                      ref={digitalProductScrollRef}
-                      className="flex items-stretch gap-5 overflow-x-auto scroll-smooth py-2 select-none animate-grid-filter"
-                      style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                    >
-                      {filteredDigitalProducts.map((p) => (
-                        <div
-                          key={p.id}
-                          className="w-[280px] sm:w-[300px] flex-shrink-0"
-                        >
-                          <ProductCard product={p} variant="grid" className="h-full" />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="p-10 text-center bg-white rounded-3xl border border-slate-200 space-y-3">
-                    <Box className="w-10 h-10 text-slate-300 mx-auto" />
-                    <h3 className="font-bold text-slate-800 text-sm">Không tìm thấy công cụ số &amp; AI phù hợp</h3>
-                    <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                      Hãy thử tìm kiếm với từ khóa khác hoặc bỏ chọn bộ lọc để xem toàn bộ danh mục sản phẩm.
-                    </p>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setDigitalSearchVal('');
-                        setSelectedDigitalCategorySlug('all');
-                      }}
-                    >
-                      Xóa bộ lọc
-                    </Button>
-                  </div>
-                )}
+      {/* ========================================================================= */}
+      {/* SECTION 4 — SẢN PHẨM SỐ & AI (#digital) */}
+      {/* ========================================================================= */}
+      <section id="digital" className="scroll-mt-24">
+        <RevealOnScroll animation="fade-up">
+          <Container size="xl">
+            {/* Digital & AI Products Explorer & Filter */}
+            <div id="digital-explorer" className="space-y-6 scroll-mt-24">
+              {/* Explorer Section Header */}
+              <div className="space-y-1">
+                <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                  <span>Khám Phá &amp; Lọc Toàn Bộ</span>{' '}
+                  <span className="block sm:inline whitespace-nowrap">Sản Phẩm Số &amp; AI</span>
+                </h2>
+                <p className="text-xs sm:text-sm text-slate-500">
+                  Nhấn vào bất kỳ công cụ nào để xem bảng tính năng, đánh giá hiệu năng phòng lab và bài review chuyên sâu.
+                </p>
               </div>
-            </Container>
-          </RevealOnScroll>
-        </section>
+
+              {/* Category Filter Pills on 1 Single Line with Slide Arrows & Search */}
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 p-3 sm:p-4 bg-white rounded-2xl border border-slate-200/80 shadow-xs">
+                <div className="flex items-center gap-2 min-w-0 flex-1">
+                  <span className="text-xs font-bold text-slate-500 flex-shrink-0 ml-1 whitespace-nowrap">Danh mục:</span>
+
+                  {/* Left Arrow Button */}
+                  <button
+                    type="button"
+                    onClick={() => handleScrollContainer(digitalCategoryScrollRef, 'left')}
+                    className="w-7 h-7 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center flex-shrink-0 transition-colors cursor-pointer shadow-xs active:scale-95"
+                    title="Trượt sang trái"
+                    aria-label="Trượt sang trái"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+
+                  {/* 1-Line Scrollable Pills Container */}
+                  <div
+                    ref={digitalCategoryScrollRef}
+                    className="flex items-center gap-2 overflow-x-auto scroll-smooth py-1 flex-1 select-none"
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                  >
+                    <button
+                      onClick={() => setSelectedDigitalCategorySlug('all')}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 cursor-pointer ${selectedDigitalCategorySlug === 'all'
+                        ? 'bg-indigo-600 text-white shadow-xs'
+                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                        }`}
+                    >
+                      Tất cả ({digitalProducts.length})
+                    </button>
+                    {digitalCategories.map((c) => (
+                      <button
+                        key={c.id}
+                        onClick={() => setSelectedDigitalCategorySlug(c.slug)}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 cursor-pointer ${selectedDigitalCategorySlug === c.slug
+                          ? 'bg-indigo-600 text-white shadow-xs'
+                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                          }`}
+                      >
+                        {c.name}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Right Arrow Button */}
+                  <button
+                    type="button"
+                    onClick={() => handleScrollContainer(digitalCategoryScrollRef, 'right')}
+                    className="w-7 h-7 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center flex-shrink-0 transition-colors cursor-pointer shadow-xs active:scale-95"
+                    title="Trượt sang phải"
+                    aria-label="Trượt sang phải"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Quick Search inside Digital Products */}
+                <div className="relative w-full lg:w-60 flex-shrink-0">
+                  <input
+                    type="text"
+                    placeholder="Lọc nhanh công cụ số & AI..."
+                    value={digitalSearchVal}
+                    onChange={(e) => setDigitalSearchVal(e.target.value)}
+                    className="w-full pl-8 pr-3 py-1.5 bg-slate-100 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                  <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                </div>
+              </div>
+
+              {/* Digital Product Cards 1-Line Slider with Navigation */}
+              {filteredDigitalProducts.length > 0 ? (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-500">
+                      Hiển thị {filteredDigitalProducts.length} giải pháp số &amp; AI phù hợp
+                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => handleScrollContainer(digitalProductScrollRef, 'left', 320)}
+                        className="w-8 h-8 rounded-xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 flex items-center justify-center transition-colors cursor-pointer shadow-xs active:scale-95"
+                        title="Trượt sang trái"
+                        aria-label="Trượt sang trái"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleScrollContainer(digitalProductScrollRef, 'right', 320)}
+                        className="w-8 h-8 rounded-xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 flex items-center justify-center transition-colors cursor-pointer shadow-xs active:scale-95"
+                        title="Trượt sang phải"
+                        aria-label="Trượt sang phải"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div
+                    key={`${selectedDigitalCategorySlug}-${digitalSearchVal}`}
+                    ref={digitalProductScrollRef}
+                    className="flex items-stretch gap-5 overflow-x-auto scroll-smooth py-2 select-none animate-grid-filter"
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                  >
+                    {filteredDigitalProducts.map((p) => (
+                      <div
+                        key={p.id}
+                        className="w-[280px] sm:w-[300px] flex-shrink-0"
+                      >
+                        <ProductCard product={p} variant="grid" className="h-full" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="p-10 text-center bg-white rounded-3xl border border-slate-200 space-y-3">
+                  <Box className="w-10 h-10 text-slate-300 mx-auto" />
+                  <h3 className="font-bold text-slate-800 text-sm">Không tìm thấy công cụ số &amp; AI phù hợp</h3>
+                  <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                    Hãy thử tìm kiếm với từ khóa khác hoặc bỏ chọn bộ lọc để xem toàn bộ danh mục sản phẩm.
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setDigitalSearchVal('');
+                      setSelectedDigitalCategorySlug('all');
+                    }}
+                  >
+                    Xóa bộ lọc
+                  </Button>
+                </div>
+              )}
+            </div>
+          </Container>
+        </RevealOnScroll>
+      </section>
 
       {/* ========================================================================= */}
       {/* SECTION 6 — BẢNG XẾP HẠNG TOP 10 (#ranking) */}
@@ -1728,19 +1636,19 @@ export const HomePage: React.FC = () => {
                     <div
                       key={item.rank}
                       className={`p-4 rounded-2xl border flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between ${item.rank === 1
-                          ? 'bg-amber-50/50 border-amber-300 ring-2 ring-amber-400/20'
-                          : 'bg-white border-slate-200'
+                        ? 'bg-amber-50/50 border-amber-300 ring-2 ring-amber-400/20'
+                        : 'bg-white border-slate-200'
                         }`}
                     >
                       <div className="flex items-center gap-3.5">
                         <div
                           className={`w-9 h-9 rounded-xl font-black flex items-center justify-center text-sm shadow-xs flex-shrink-0 ${item.rank === 1
-                              ? 'bg-amber-500 text-white ring-2 ring-amber-200'
-                              : item.rank === 2
-                                ? 'bg-slate-300 text-slate-800'
-                                : item.rank === 3
-                                  ? 'bg-amber-700 text-white'
-                                  : 'bg-slate-100 text-slate-600'
+                            ? 'bg-amber-500 text-white ring-2 ring-amber-200'
+                            : item.rank === 2
+                              ? 'bg-slate-300 text-slate-800'
+                              : item.rank === 3
+                                ? 'bg-amber-700 text-white'
+                                : 'bg-slate-100 text-slate-600'
                             }`}
                         >
                           #{item.rank}
