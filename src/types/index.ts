@@ -17,6 +17,7 @@ export interface Product {
   groupSlug: string; // e.g. 'gia-dung', 'dien-tu', 'ai', 'phan-mem'
   brand: string;
   image: string;
+  gallery?: string[];
   score: number;
   ratingCount: number;
   price: number;
@@ -30,6 +31,7 @@ export interface Product {
   specs: Record<string, string>;
   scoreBreakdown: ScoreBreakdown;
   badge?: string;
+  buyUrl?: string;
   status: 'published' | 'draft' | 'archived';
   views: number;
   createdAt: string;
@@ -117,6 +119,7 @@ export interface Comparison {
   productAId: string;
   productBId: string;
   winnerId: string;
+  image?: string;
   verdict: string;
   priceComparison: string;
   features: ComparisonFeature[];
@@ -126,11 +129,54 @@ export interface Comparison {
   updatedAt: string;
   faq: { q: string; a: string }[];
   status: 'published' | 'draft';
+  isFeatured?: boolean;
 }
 
 export interface TOCItem {
   id: string;
   title: string;
+}
+
+export interface ArticleBlock {
+  id?: string;
+  type: 'heading' | 'paragraph' | 'image' | 'quote' | 'callout' | 'list' | 'table' | 'video' | 'divider' | 'code' | 'columns';
+  text?: string;
+  url?: string;
+  caption?: string;
+  width?: string;
+  height?: string;
+  maxHeight?: string;
+  code?: string;
+  language?: string;
+  author?: string;
+  align?: 'left' | 'center' | 'right' | 'justify';
+  color?: string;
+  bgColor?: string;
+  highlightColor?: string;
+  fontSize?: string;
+  lineHeight?: string;
+  level?: 1 | 2 | 3 | 4;
+  calloutType?: 'tip' | 'note' | 'warning' | 'success';
+  headers?: string[];
+  rows?: string[][];
+  items?: string[];
+  listType?: 'bullet' | 'numbered';
+  // Multi-column block fields
+  layout?: '50-50' | '60-40' | '40-60' | '70-30' | '30-70';
+  leftType?: 'text' | 'image' | 'video';
+  leftTitle?: string;
+  leftText?: string;
+  leftImageUrl?: string;
+  leftImageCaption?: string;
+  leftImageHeight?: string;
+  leftVideoUrl?: string;
+  rightType?: 'text' | 'image' | 'video';
+  rightTitle?: string;
+  rightText?: string;
+  rightImageUrl?: string;
+  rightImageCaption?: string;
+  rightImageHeight?: string;
+  rightVideoUrl?: string;
 }
 
 export interface Article {
@@ -143,6 +189,7 @@ export interface Article {
   coverImage: string;
   excerpt: string;
   content: string;
+  blocks?: ArticleBlock[];
   tableOfContents?: TOCItem[];
   authorId: string;
   readingTime: string;
@@ -151,6 +198,9 @@ export interface Article {
   tags: string[];
   views: number;
   status: 'published' | 'draft';
+  isFeatured?: boolean;
+  isTopRanking?: boolean | number;
+  topRankOrder?: number | null;
 }
 
 export interface AdminStats {

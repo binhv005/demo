@@ -106,7 +106,7 @@ export const RankingDetailPage: React.FC = () => {
                   src={
                     ranking.image ||
                     (ranking.type === 'physical'
-                      ? '/airfryer-lab-testing.jpg'
+                      ? '/airfryer-lab-testing.webp'
                       : 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=1400&q=80')
                   }
                   alt={ranking.title}

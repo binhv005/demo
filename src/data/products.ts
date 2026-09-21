@@ -11,7 +11,13 @@ export const mockProducts: Product[] = [
     categorySlug: 'noi-chien',
     groupSlug: 'gia-dung',
     brand: 'AirCook',
-    image: 'https://images.unsplash.com/photo-1585515320310-259814833e62?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?auto=format&fit=crop&w=800&q=80',
+    gallery: [
+      'https://images.unsplash.com/photo-1585515320310-259814833e62?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=800&q=80'
+    ],
     score: 9.4,
     ratingCount: 1420,
     price: 2490000,
@@ -62,7 +68,7 @@ export const mockProducts: Product[] = [
     categorySlug: 'noi-chien',
     groupSlug: 'gia-dung',
     brand: 'HomeChef',
-    image: 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1590794056226-79ef3a8147e1?auto=format&fit=crop&w=800&q=80',
     score: 9.1,
     ratingCount: 890,
     price: 3690000,
@@ -162,7 +168,7 @@ export const mockProducts: Product[] = [
     categorySlug: 'noi-chien',
     groupSlug: 'gia-dung',
     brand: 'Cosori',
-    image: 'https://images.unsplash.com/photo-1574269909862-7e1d70bb8078?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1546548970-71785318a17b?auto=format&fit=crop&w=800&q=80',
     score: 8.9,
     ratingCount: 1780,
     price: 2290000,
@@ -262,7 +268,7 @@ export const mockProducts: Product[] = [
     categorySlug: 'noi-chien',
     groupSlug: 'gia-dung',
     brand: 'Tefal',
-    image: 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1584992236310-6edddc08acff?auto=format&fit=crop&w=800&q=80',
     score: 8.7,
     ratingCount: 760,
     price: 4190000,
@@ -312,7 +318,7 @@ export const mockProducts: Product[] = [
     categorySlug: 'noi-chien',
     groupSlug: 'gia-dung',
     brand: 'Ninja',
-    image: 'https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=800&q=80',
     score: 8.6,
     ratingCount: 1240,
     price: 4750000,
@@ -362,7 +368,7 @@ export const mockProducts: Product[] = [
     categorySlug: 'noi-chien',
     groupSlug: 'gia-dung',
     brand: 'Bear',
-    image: 'https://images.unsplash.com/photo-1590794056226-79ef3a8147e1?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1556912173-3bb406ef7e77?auto=format&fit=crop&w=800&q=80',
     score: 8.5,
     ratingCount: 1620,
     price: 1490000,
@@ -462,7 +468,7 @@ export const mockProducts: Product[] = [
     categorySlug: 'noi-chien',
     groupSlug: 'gia-dung',
     brand: 'Sharp',
-    image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1574269909862-7e1d70bb8078?auto=format&fit=crop&w=800&q=80',
     score: 8.3,
     ratingCount: 3100,
     price: 1190000,
@@ -612,7 +618,7 @@ export const mockProducts: Product[] = [
     categorySlug: 'tai-nghe-chong-on',
     groupSlug: 'dien-tu',
     brand: 'SoundMax',
-    image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=800&q=80',
     score: 9.2,
     ratingCount: 940,
     price: 4890000,
@@ -662,7 +668,7 @@ export const mockProducts: Product[] = [
     categorySlug: 'tro-ly-ai',
     groupSlug: 'ai',
     brand: 'OpenAI',
-    image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=800&q=80',
     score: 9.7,
     ratingCount: 3200,
     price: 499000,
@@ -710,7 +716,7 @@ export const mockProducts: Product[] = [
     categorySlug: 'tro-ly-ai',
     groupSlug: 'ai',
     brand: 'Anthropic',
-    image: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80',
     score: 9.6,
     ratingCount: 1980,
     price: 499000,
@@ -807,7 +813,7 @@ export const mockProducts: Product[] = [
     categorySlug: 'thiet-ke',
     groupSlug: 'phan-mem',
     brand: 'Figma',
-    image: 'https://images.unsplash.com/photo-1581291518655-9523c932694b?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?auto=format&fit=crop&w=800&q=80',
     score: 9.8,
     ratingCount: 4100,
     price: 0,
@@ -854,7 +860,7 @@ export const mockProducts: Product[] = [
     categorySlug: 'quan-ly-du-an',
     groupSlug: 'phan-mem',
     brand: 'ClickUp',
-    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80',
     score: 9.2,
     ratingCount: 1540,
     price: 175000,
@@ -948,7 +954,7 @@ export const mockProducts: Product[] = [
     categorySlug: 'suc-khoe',
     groupSlug: 'suc-khoe',
     brand: 'Garmin',
-    image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?auto=format&fit=crop&w=800&q=80',
     score: 9.4,
     ratingCount: 940,
     price: 12290000,
@@ -1034,7 +1040,7 @@ export const mockProducts: Product[] = [
     categorySlug: 'thoi-trang',
     groupSlug: 'thoi-trang',
     brand: 'Tomtoc',
-    image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1622560480605-d83c853bc5c3?auto=format&fit=crop&w=800&q=80',
     score: 9.3,
     ratingCount: 1120,
     price: 1890000,
@@ -1371,7 +1377,7 @@ export const mockProducts: Product[] = [
     categorySlug: 'tai-nghe-chong-on',
     groupSlug: 'dien-tu',
     brand: 'Sony',
-    image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&w=800&q=80',
     score: 9.6,
     ratingCount: 3200,
     price: 6990000,
@@ -1575,7 +1581,7 @@ export const mockProducts: Product[] = [
     categorySlug: 'ban-chai-dien',
     groupSlug: 'suc-khoe',
     brand: 'Oral-B',
-    image: 'https://images.unsplash.com/photo-1559591937-e10220268571?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1607613009820-a29f7bb81c04?auto=format&fit=crop&w=800&q=80',
     score: 9.5,
     ratingCount: 1250,
     price: 5490000,
@@ -1863,7 +1869,7 @@ export const mockProducts: Product[] = [
     categorySlug: 'me-va-be',
     groupSlug: 'me-va-be',
     brand: 'Bear',
-    image: 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=800&q=80',
     score: 9.2,
     ratingCount: 2200,
     price: 620000,
@@ -2027,7 +2033,7 @@ export const mockProducts: Product[] = [
     categorySlug: 'the-thao',
     groupSlug: 'the-thao',
     brand: 'Coros',
-    image: 'https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80',
     score: 9.6,
     ratingCount: 1650,
     price: 6190000,
@@ -2057,6 +2063,418 @@ export const mockProducts: Product[] = [
     views: 33400,
     createdAt: '2024-02-15',
     updatedAt: '2024-03-11'
+  },
+
+  // --- VẬT LÝ MỚI 1: RoboClean X10 Ultra Station ---
+  {
+    id: 'prod-roboclean-x10',
+    name: 'Robot Hút Bụi Lau Nhà RoboClean X10 Ultra Station',
+    slug: 'roboclean-x10-ultra-station',
+    type: 'physical',
+    category: 'Gia dụng',
+    categorySlug: 'robot-hut-bui',
+    groupSlug: 'gia-dung',
+    brand: 'RoboClean',
+    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80',
+    score: 9.4,
+    ratingCount: 1120,
+    price: 14990000,
+    originalPrice: 17990000,
+    priceUnit: 'đ',
+    pros: [
+      'Trạm sạc đa năng tự động giặt sấy giẻ lau bằng nước nóng 60°C và gom bụi tự động',
+      'Lực hút cực đại 7000Pa hút sạch cát mịn và lông thú cưng trên thảm dày',
+      'Hệ thống định vị LiDAR 3D + Camera AI tránh 50+ loại vật cản chính xác'
+    ],
+    cons: [
+      'Trạm sạc khá to cần không gian đặt rộng rãi',
+      'Cần thay túi gom bụi và hộp nước định kỳ'
+    ],
+    bestFor: 'Gia đình nuôi thú cưng, nhà rộng nhiều tầng muốn trải nghiệm rảnh tay 100%',
+    shortDescription: 'Robot hút bụi lau nhà hàng đầu với lực hút 7000Pa, trạm sạc tự giặt giẻ sấy khô và định vị AI thông minh.',
+    deepReview: 'RoboClean X10 Ultra Station mang đến giải pháp làm sạch tự động hoàn hảo cho căn hộ hiện đại.',
+    specs: {
+      'Lực hút': '7000 Pa',
+      'Dung lượng pin': '5200 mAh (Dọn dẹp 180 phút)',
+      'Trạm sạc': 'Giặt giẻ nước nóng + Sấy khí nóng + Hút bụi tự động',
+      'Bảo hành': '24 tháng chính hãng'
+    },
+    scoreBreakdown: { design: 9.5, performance: 9.6, value: 9.1, usability: 9.4 },
+    badge: 'Robot Lau Nhà Số 1',
+    status: 'published',
+    views: 19800,
+    createdAt: '2024-03-01',
+    updatedAt: '2024-03-20'
+  },
+  // --- VẬT LÝ MỚI 2: Sony WH-1000XM5 ---
+  {
+    id: 'prod-sony-wh1000xm5',
+    name: 'Tai Nghe Chống Ồn Cao Cấp Sony WH-1000XM5',
+    slug: 'sony-wh-1000xm5',
+    type: 'physical',
+    category: 'Điện tử & Công nghệ',
+    categorySlug: 'tai-nghe-chong-on',
+    groupSlug: 'dien-tu',
+    brand: 'Sony',
+    image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80',
+    score: 9.6,
+    ratingCount: 2350,
+    price: 7490000,
+    originalPrice: 8490000,
+    priceUnit: 'đ',
+    pros: [
+      'Công nghệ chống ồn ANC 8 micro xử lý kép khử tạp âm máy bay và tiếng ồn văn phòng xuất sắc',
+      'Driver 30mm thiết kế riêng cho âm trầm sâu lắng và dải âm trung trong trẻo',
+      'Thời lượng pin 30 giờ liên tục kèm sạc nhanh 3 phút dùng 3 giờ'
+    ],
+    cons: [
+      'Khớp nối thiết kế mới không gấp gọn cuộn tròn được như đời XM4',
+      'Khả năng kháng nước ở mức cơ bản, không phù hợp tập thể thao nặng'
+    ],
+    bestFor: 'Người di chuyển bằng máy bay, làm việc mở tại văn phòng và yêu âm thanh Hi-Res',
+    shortDescription: 'Vua chống ồn chụp tai với 8 micro xử lý, âm thanh chuẩn Hi-Res Audio Wireless và pin 30 giờ.',
+    deepReview: 'Sony WH-1000XM5 tiếp tục khẳng định vị thế dẫn đầu thế giới về công nghệ chống ồn chủ động.',
+    specs: {
+      'Thời lượng pin': '30 giờ (bật ANC), 40 giờ (tắt ANC)',
+      'Micro': '8 micro chống ồn + Cảm biến gia tốc',
+      'Bluetooth': 'Version 5.2 (Hỗ trợ LDAC, AAC, SBC)',
+      'Trọng lượng': '250g'
+    },
+    scoreBreakdown: { design: 9.4, performance: 9.8, value: 9.4, usability: 9.8 },
+    badge: 'Tai Nghe ANC Tốt Nhất',
+    status: 'published',
+    views: 28900,
+    createdAt: '2024-02-28',
+    updatedAt: '2024-03-18'
+  },
+  // --- VẬT LÝ MỚI 3: Xiaomi Smart Band 8 Pro ---
+  {
+    id: 'prod-xiaomi-band-8-pro',
+    name: 'Vòng Đeo Tay Thông Minh Xiaomi Smart Band 8 Pro',
+    slug: 'xiaomi-smart-band-8-pro',
+    type: 'physical',
+    category: 'Sức khỏe & Đời sống',
+    categorySlug: 'dong-ho-suc-khoe',
+    groupSlug: 'suc-khoe',
+    brand: 'Xiaomi',
+    image: 'https://images.unsplash.com/photo-1579586337278-3befd40fd17a?auto=format&fit=crop&w=800&q=80',
+    score: 8.9,
+    ratingCount: 1420,
+    price: 1590000,
+    originalPrice: 1790000,
+    priceUnit: 'đ',
+    pros: [
+      'Màn hình AMOLED 1.74 inch tần số quét 60Hz hiển thị rực rỡ ngoài trời',
+      'Định vị GPS độc lập không cần mang theo điện thoại khi chạy bộ',
+      'Theo dõi nhịp tim 24/7, SpO2 và 150+ chế độ luyện tập thể thao'
+    ],
+    cons: [
+      'Không hỗ trợ nghe gọi trực tiếp qua SIM',
+      'Kho ứng dụng cài thêm còn hạn chế'
+    ],
+    bestFor: 'Học sinh, sinh viên và người tập thể thao cần theo dõi sức khỏe gọn nhẹ giá tốt',
+    shortDescription: 'Vòng đeo tay sức khỏe màn hình AMOLED 1.74 inch rực rỡ, tích hợp GPS độc lập và pin 14 ngày.',
+    deepReview: 'Xiaomi Smart Band 8 Pro đem lại trải nghiệm tiệm cận đồng hồ thông minh cao cấp với giá cực kỳ hợp lý.',
+    specs: {
+      'Màn hình': '1.74 inch AMOLED 60Hz',
+      'Định vị': 'GPS, GLONASS, Galileo, Beidou',
+      'Thời lượng pin': '14 ngày (sử dụng thông thường)',
+      'Chống nước': '5 ATM (50m)'
+    },
+    scoreBreakdown: { design: 9.0, performance: 8.8, value: 9.5, usability: 8.4 },
+    badge: 'Ngon Bổ Rẻ 2024',
+    status: 'published',
+    views: 16500,
+    createdAt: '2024-03-05',
+    updatedAt: '2024-03-19'
+  },
+  // --- VẬT LÝ MỚI 4: Bếp Từ Đôi Sunhouse Mama ---
+  {
+    id: 'prod-sunhouse-mama-bep-tu',
+    name: 'Bếp Từ Đôi Cảm Ứng Sunhouse Mama MMB9201',
+    slug: 'sunhouse-mama-bep-tu-doi',
+    type: 'physical',
+    category: 'Thiết bị nhà bếp',
+    categorySlug: 'bep-tu',
+    groupSlug: 'thiet-bi-nha-bep',
+    brand: 'Sunhouse',
+    image: 'https://images.unsplash.com/photo-1588854337236-6889d631faa8?auto=format&fit=crop&w=800&q=80',
+    score: 9.1,
+    ratingCount: 780,
+    price: 5290000,
+    originalPrice: 6590000,
+    priceUnit: 'đ',
+    pros: [
+      'Mặt kính Schott Ceran chịu lực chịu nhiệt lên tới 1000°C chống xước xuất sắc',
+      'Công nghệ Inverter tiết kiệm 35% điện năng tiêu thụ hàng tháng',
+      'Tính năng Booster nấu nhanh 3600W cho 2 vùng nấu riêng biệt'
+    ],
+    cons: [
+      'Yêu cầu sử dụng bộ nồi có đáy từ tính chuyên dụng',
+      'Bảng điều khiển cảm ứng cần giữ khô tay để thao tác nhạy nhất'
+    ],
+    bestFor: 'Gia đình hiện đại nâng cấp căn bếp an toàn, tiết kiệm điện năng và nấu ăn nhanh',
+    shortDescription: 'Bếp từ đôi âm cao cấp Inverter đun nấu siêu tốc 3600W, mặt kính Schott Ceran chịu lực 1000°C.',
+    deepReview: 'Sunhouse Mama MMB9201 mang đến trải nghiệm đun nấu an toàn, sạch sẽ và cực kỳ tiết kiệm điện.',
+    specs: {
+      'Công suất tổng': '3600W (Booster 2x 2000W)',
+      'Mặt kính': 'Schott Ceran vát cạnh sang trọng',
+      'Tính năng': 'Inverter tiết kiệm điện, Hẹn giờ, Khóa trẻ em, Tự ngắt khi tràn',
+      'Bảo hành': '36 tháng chính hãng'
+    },
+    scoreBreakdown: { design: 9.2, performance: 9.3, value: 9.0, usability: 8.9 },
+    badge: 'Bếp Từ Đôi Đáng Mua',
+    status: 'published',
+    views: 14200,
+    createdAt: '2024-02-20',
+    updatedAt: '2024-03-15'
+  },
+  // --- VẬT LÝ MỚI 5: Balo Mark Ryden ---
+  {
+    id: 'prod-mark-ryden-backpack',
+    name: 'Balo Laptop Chống Nước Mark Ryden Professional 15.6 Inch',
+    slug: 'mark-ryden-backpack-156',
+    type: 'physical',
+    category: 'Thời trang & Phụ kiện',
+    categorySlug: 'balo-chong-nuoc',
+    groupSlug: 'thoi-trang',
+    brand: 'Mark Ryden',
+    image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80',
+    score: 9.0,
+    ratingCount: 950,
+    price: 890000,
+    originalPrice: 1190000,
+    priceUnit: 'đ',
+    pros: [
+      'Vải Oxford chống nước tuyệt đối bảo vệ an toàn laptop và thiết bị điện tử khi đi mưa',
+      'Khóa kéo TSA ẩn chống trộm và đệm lưng tổ ong thoáng khí chống gù lưng',
+      'Tích hợp cổng sạc USB bên ngoài kết nối tiện lợi với pin dự phòng trong balo'
+    ],
+    cons: [
+      'Form balo cố định nên khó gấp gọn khi không đựng đồ',
+      'Chỉ vừa laptop tối đa 15.6 inch (không chứa vừa laptop 17.3 inch)'
+    ],
+    bestFor: 'Dân công nghệ, lập trình viên, học sinh sinh viên di chuyển làm việc hàng ngày',
+    shortDescription: 'Balo chống nước chuẩn TSA chống trộm, đệm lưng công thái học và cổng sạc USB thông minh.',
+    deepReview: 'Mark Ryden Professional là người bạn đồng hành hoàn hảo cho dân công nghệ bảo vệ thiết bị đắt tiền.',
+    specs: {
+      'Chất liệu': 'Vải Oxford chống nước cao cấp + Vải Lót Polyester',
+      'Kích thước': '46 x 31 x 16 cm (Vừa laptop 15.6 inch)',
+      'Tính năng': 'Cổng USB sạc ngoài, Khóa số chống trộm, Đệm công thái học',
+      'Bảo hành': '12 tháng'
+    },
+    scoreBreakdown: { design: 9.1, performance: 9.0, value: 9.2, usability: 8.8 },
+    badge: 'Balo Công Nghệ Số 1',
+    status: 'published',
+    views: 12800,
+    createdAt: '2024-03-08',
+    updatedAt: '2024-03-21'
+  },
+
+  // --- AI MỚI 1: Perplexity Pro ---
+  {
+    id: 'prod-perplexity-pro',
+    name: 'Perplexity Pro AI Engine',
+    slug: 'perplexity-pro-ai',
+    type: 'digital',
+    category: 'Trí tuệ nhân tạo (AI Tools)',
+    categorySlug: 'tro-ly-ai',
+    groupSlug: 'ai',
+    brand: 'Perplexity',
+    image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=800&q=80',
+    score: 9.5,
+    ratingCount: 1890,
+    price: 500000,
+    originalPrice: 600000,
+    priceUnit: 'đ/tháng',
+    pros: [
+      'Công cụ tìm kiếm AI thời gian thực trích dẫn nguồn chi tiết, chính xác 100%',
+      'Cho phép chọn chuyển đổi linh hoạt giữa GPT-4o, Claude 3.5 Sonnet và Sonar Large',
+      'Hỗ trợ đính kèm file PDF, Excel, ảnh và phân tích dữ liệu chuyên sâu qua Pro Search'
+    ],
+    cons: [
+      'Giới hạn 600 lượt Pro Search mỗi ngày cho tài khoản trả phí',
+      'Tính năng tạo ảnh chưa phong phú bằng Midjourney'
+    ],
+    bestFor: 'Nhà nghiên cứu, sinh viên, nhà báo và chuyên gia tìm kiếm thông tin có trích dẫn chuẩn xác',
+    shortDescription: 'Công cụ tìm kiếm AI thời gian thực hàng đầu thế giới với khả năng trích dẫn nguồn tin uy tín.',
+    deepReview: 'Perplexity Pro đã tái định nghĩa trải nghiệm tìm kiếm thông tin trực tuyến, loại bỏ hoàn toàn rác kết quả.',
+    specs: {
+      'Mô hình AI hỗ trợ': 'GPT-4o, Claude 3.5 Sonnet, Llama 3, Sonar Large',
+      'Tính năng Pro': 'Pro Search thời gian thực, Upload File không giới hạn, Tạo ảnh AI',
+      'Nền tảng': 'Web, iOS, Android, Chrome Extension',
+      'Bảo mật': 'Mã hóa dữ liệu chuẩn SOC2'
+    },
+    scoreBreakdown: { design: 9.5, performance: 9.7, value: 9.3, usability: 9.5 },
+    badge: 'Công Cụ Tìm Kiếm AI Số 1',
+    status: 'published',
+    views: 31200,
+    createdAt: '2024-02-25',
+    updatedAt: '2024-03-21'
+  },
+  // --- AI MỚI 2: GitHub Copilot Enterprise ---
+  {
+    id: 'prod-github-copilot-enterprise',
+    name: 'GitHub Copilot Enterprise AI',
+    slug: 'github-copilot-enterprise',
+    type: 'digital',
+    category: 'Trí tuệ nhân tạo (AI Tools)',
+    categorySlug: 'ai-code',
+    groupSlug: 'ai',
+    brand: 'GitHub',
+    image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80',
+    score: 9.4,
+    ratingCount: 1650,
+    price: 480000,
+    originalPrice: 550000,
+    priceUnit: 'đ/tháng',
+    pros: [
+      'Gợi ý code thời gian thực tự động hoàn thành hàm, giải thuật và viết unit test chuẩn xác',
+      'Hiểu rõ toàn bộ codebase riêng của doanh nghiệp để giải thích code và review PR tự động',
+      'Tích hợp hoàn hảo vào VS Code, JetBrains IDEs, Neovim và GitHub.com'
+    ],
+    cons: [
+      'Đôi khi gợi ý code theo cú pháp cũ nếu thư viện vừa cập nhật phiên bản mới',
+      'Cần kết nối Internet liên tục để gửi request đến model'
+    ],
+    bestFor: 'Lập trình viên, kỹ sư phần mềm và đội ngũ công nghệ muốn tăng 300% tốc độ viết code',
+    shortDescription: 'Trợ lý lập trình AI hàng đầu tích hợp sâu vào IDE giúp sinh code, giải thích bug và viết test tự động.',
+    deepReview: 'GitHub Copilot Enterprise chính là trợ lý đắc lực không thể thiếu của mọi lập trình viên thời đại mới.',
+    specs: {
+      'IDE hỗ trợ': 'VS Code, Visual Studio, JetBrains PyCharm/IntelliJ, Neovim',
+      'Ngôn ngữ': 'Python, JavaScript, TypeScript, Go, Rust, Java, C++, PHP...',
+      'Tính năng': 'Auto-complete, Copilot Chat, PR Summaries, Code Review AI',
+      'Bảo mật': 'Không sử dụng code khách hàng để huấn luyện model'
+    },
+    scoreBreakdown: { design: 9.3, performance: 9.6, value: 9.2, usability: 9.5 },
+    badge: 'Trợ Lý Lập Trình AI Số 1',
+    status: 'published',
+    views: 29500,
+    createdAt: '2024-03-02',
+    updatedAt: '2024-03-20'
+  },
+  // --- AI MỚI 3: Midjourney v6 ---
+  {
+    id: 'prod-midjourney-v6',
+    name: 'Midjourney v6 Alpha Art Generator',
+    slug: 'midjourney-v6-alpha',
+    type: 'digital',
+    category: 'Trí tuệ nhân tạo (AI Tools)',
+    categorySlug: 'ai-media',
+    groupSlug: 'ai',
+    brand: 'Midjourney',
+    image: 'https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?auto=format&fit=crop&w=800&q=80',
+    score: 9.6,
+    ratingCount: 3100,
+    price: 750000,
+    originalPrice: 900000,
+    priceUnit: 'đ/tháng',
+    pros: [
+      'Chất lượng tạo ảnh tả thực (photorealistic), ánh sáng và chi tiết da người đỉnh cao',
+      'Khả năng render văn bản (Text in Image) chuẩn xác chưa từng có trên các model AI khác',
+      'Hỗ trợ Upscale 4K, Inpainting, Outpainting và tùy chỉnh tỷ lệ khung hình linh hoạt'
+    ],
+    cons: [
+      'Giao diện qua Discord hoặc Web Beta đòi hỏi người mới mất thời gian làm quen',
+      'Không có gói miễn phí trải nghiệm dài hạn'
+    ],
+    bestFor: 'Designer, Art Director, Concept Artist, Marketer và Creators thiết kế hình ảnh chất lượng cao',
+    shortDescription: 'Công cụ sinh ảnh AI chất lượng nhất thế giới với khả năng tái tạo ánh sáng và văn bản sống động.',
+    deepReview: 'Midjourney v6 tiếp tục giữ vững ngai vàng công cụ thiết kế đồ họa AI mạnh mẽ nhất hành tinh.',
+    specs: {
+      'Phiên bản': 'v6.0 Alpha Engine',
+      'Độ phân giải': 'Tối đa 4K (sau khi Upscale)',
+      'Tính năng': 'Text Rendering, Style Reference, Zoom Out, Pan, Vary Region',
+      'Nền tảng': 'Discord Bot & Web Alpha Studio'
+    },
+    scoreBreakdown: { design: 9.8, performance: 9.7, value: 9.3, usability: 9.6 },
+    badge: 'AI Tạo Ảnh Đẹp Nhất',
+    status: 'published',
+    views: 42100,
+    createdAt: '2024-01-20',
+    updatedAt: '2024-03-19'
+  },
+  // --- AI MỚI 4: ElevenLabs Voice AI ---
+  {
+    id: 'prod-elevenlabs-ai-voice',
+    name: 'ElevenLabs Prime Voice AI Generator',
+    slug: 'elevenlabs-prime-voice-ai',
+    type: 'digital',
+    category: 'Trí tuệ nhân tạo (AI Tools)',
+    categorySlug: 'ai-media',
+    groupSlug: 'ai',
+    brand: 'ElevenLabs',
+    image: 'https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=800&q=80',
+    score: 9.3,
+    ratingCount: 1240,
+    price: 550000,
+    originalPrice: 650000,
+    priceUnit: 'đ/tháng',
+    pros: [
+      'Tái tạo giọng nói tự nhiên 99% như người thật với đầy đủ cảm xúc, ngắt nghỉ và thở nhẹ',
+      'Tính năng Voice Cloning nhân bản giọng nói chuẩn xác chỉ từ mẫu âm thanh 1 phút',
+      'Hỗ trợ 29+ ngôn ngữ bao gồm tiếng Việt chuẩn giọng 3 miền Bắc - Trung - Nam'
+    ],
+    cons: [
+      'Gói Starter giới hạn số lượng ký tự chuyển đổi mỗi tháng',
+      'Cần xác minh bản quyền giọng nói để tránh lạm dụng mạo danh'
+    ],
+    bestFor: 'YouTuber, Podcaster, Nhà làm phim, Đội ngũ sản xuất nội dung TikTok/Reels và Audiobooks',
+    shortDescription: 'Công cụ sinh giọng nói AI siêu thực với khả năng nhân bản giọng đọc và lồng tiếng đa ngôn ngữ.',
+    deepReview: 'ElevenLabs xóa mờ hoàn toàn ranh giới giữa giọng đọc máy tính vô hồn và chất giọng truyền cảm của MC chuyên nghiệp.',
+    specs: {
+      'Ngôn ngữ hỗ trợ': '29+ ngôn ngữ (có Tiếng Việt)',
+      'Tính năng': 'Text-to-Speech, Voice Cloning, AI Dubbing lồng tiếng video, Speech-to-Speech',
+      'Định dạng xuất': 'MP3 192kbps, WAV 44.1kHz',
+      'API': 'REST API latency cực thấp < 300ms'
+    },
+    scoreBreakdown: { design: 9.4, performance: 9.5, value: 9.0, usability: 9.3 },
+    badge: 'AI Giọng Nói Tốt Nhất',
+    status: 'published',
+    views: 26800,
+    createdAt: '2024-02-18',
+    updatedAt: '2024-03-18'
+  },
+  // --- AI MỚI 5: Jasper AI ---
+  {
+    id: 'prod-jasper-ai-writer',
+    name: 'Jasper AI Copywriting & Marketing Platform',
+    slug: 'jasper-ai-marketing-platform',
+    type: 'digital',
+    category: 'Trí tuệ nhân tạo (AI Tools)',
+    categorySlug: 'ai-copywriting',
+    groupSlug: 'ai',
+    brand: 'Jasper',
+    image: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=800&q=80',
+    score: 9.1,
+    ratingCount: 1560,
+    price: 990000,
+    originalPrice: 1200000,
+    priceUnit: 'đ/tháng',
+    pros: [
+      'Bộ hơn 50+ template viết bài chuẩn Marketing: Bài chuẩn SEO, Quảng cáo Facebook/Google, Email sales',
+      'Tính năng Brand Voice học phong cách thương hiệu để viết bài đồng bộ 100%',
+      'Tích hợp trực tiếp công cụ SurferSEO phân tích từ khóa và tối ưu thứ hạng bài viết'
+    ],
+    cons: [
+      'Chi phí hàng tháng khá cao so với mặt bằng chung',
+      'Cần tinh chỉnh prompt để có giọng văn tiếng Việt tự nhiên nhất'
+    ],
+    bestFor: 'Digital Agency, Copywriter, Content Manager và Chủ doanh nghiệp Thương mại điện tử',
+    shortDescription: 'Nền tảng viết bài AI chuyên nghiệp cho Marketing, tối ưu SEO và học phong cách thương hiệu.',
+    deepReview: 'Jasper AI là giải pháp toàn diện giúp các đội ngũ Marketing sản xuất nội dung chất lượng cao gấp 5 lần.',
+    specs: {
+      'Templates': '50+ mẫu viết quảng cáo & SEO',
+      'Tích hợp': 'SurferSEO, Grammarly, Copyscape Plagiarism Checker',
+      'Tính năng': 'Brand Voice, Campaign Workflows, Chrome Extension',
+      'Bảo mật': 'Enterprise SOC2 Type II Certified'
+    },
+    scoreBreakdown: { design: 9.2, performance: 9.1, value: 8.8, usability: 9.3 },
+    badge: 'AI Marketing Hàng Đầu',
+    status: 'published',
+    views: 21400,
+    createdAt: '2024-02-12',
+    updatedAt: '2024-03-17'
   }
 ];
 

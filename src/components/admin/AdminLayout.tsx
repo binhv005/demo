@@ -1,17 +1,11 @@
 import React, { useState } from 'react';
-import { Navigate, Outlet, Link } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { Outlet, Link } from 'react-router-dom';
 import { AdminSidebar } from './AdminSidebar';
 import { PageTransition } from '../layout/PageTransition';
 import { Menu, ExternalLink } from 'lucide-react';
 
 export const AdminLayout: React.FC = () => {
-  const { isAuthenticated } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  if (!isAuthenticated) {
-    return <Navigate to="/admin/login" replace />;
-  }
 
   return (
     <div className="flex h-screen max-h-screen w-full overflow-hidden bg-[#0d1527] font-sans text-slate-800">
@@ -31,9 +25,9 @@ export const AdminLayout: React.FC = () => {
               <Menu className="w-5 h-5" />
             </button>
 
-            <Link to="/admin/products" className="flex items-center gap-2">
+            <Link to="/admin" className="flex items-center gap-2">
               <div className="w-7 h-7 rounded-full overflow-hidden flex items-center justify-center flex-shrink-0 shadow-xs">
-                <img src="/brand-logo.png" alt="TechReview Icon" className="w-full h-full object-contain" />
+                <img src="/brand-logo.webp" alt="TechReview Icon" className="w-full h-full object-contain" />
               </div>
               <span className="font-extrabold text-sm tracking-tight">Admin <span className="text-orange-400">CMS</span></span>
             </Link>

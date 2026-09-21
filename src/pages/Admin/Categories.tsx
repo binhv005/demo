@@ -10,7 +10,8 @@ import { Input } from '../../components/ui/Input';
 import { Select } from '../../components/ui/Select';
 import { Badge } from '../../components/ui/Badge';
 import { renderCategoryIcon } from '../../utils/icons';
-import { Plus, Edit2, Trash2, Search, Power, CheckCircle, FolderTree } from 'lucide-react';
+import { toSlug } from '../../utils/formatters';
+import { Plus, Edit2, Trash2, Search, Power, CheckCircle, FolderTree, ChevronDown } from 'lucide-react';
 
 export const AdminCategoriesPage: React.FC = () => {
   const { categories, addCategory, updateCategory, deleteCategory, toggleCategoryStatus } = useData();
@@ -53,7 +54,7 @@ export const AdminCategoriesPage: React.FC = () => {
     e.preventDefault();
     if (!name.trim()) return;
 
-    const generatedSlug = slug.trim() || name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const generatedSlug = toSlug(slug.trim()) || toSlug(name);
 
     if (editingCategory) {
       updateCategory(editingCategory.id, {
@@ -110,7 +111,7 @@ export const AdminCategoriesPage: React.FC = () => {
   return (
     <div className="space-y-6 pb-12">
       <AdminHeader
-        title="Quản Lý Danh Mục (Categories)"
+        title="Quản Lý Danh Mục"
         description="Thêm mới, chỉnh sửa thông tin, cấu hình icon và bật tắt hiển thị các danh mục trên website."
         actions={
           <Button variant="primary" size="sm" leftIcon={<Plus className="w-4 h-4" />} onClick={openAddModal}>
@@ -122,7 +123,7 @@ export const AdminCategoriesPage: React.FC = () => {
       <div className="px-6 space-y-6">
         {/* Search & Filter Bar */}
         <div className="p-4 bg-white rounded-2xl border border-slate-200/80 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="relative flex-1 max-w-sm">
+          <div className="relative flex-1">
             <input
               type="text"
               placeholder="Tìm kiếm danh mục..."
@@ -133,7 +134,7 @@ export const AdminCategoriesPage: React.FC = () => {
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
             {[
               { id: 'all', label: 'Tất cả' },
               { id: 'physical', label: 'Vật lý' },
@@ -180,38 +181,32 @@ export const AdminCategoriesPage: React.FC = () => {
                 </div>
 
                 <p className="text-xs text-slate-600 line-clamp-2">{cat.description}</p>
-
-                {/* Subcategories list */}
-                <div className="space-y-1.5 pt-2 border-t border-slate-100">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-                    Danh mục con ({cat.subcategories.length}):
-                  </span>
-                  <div className="flex flex-wrap gap-1">
-                    {cat.subcategories.map((sub) => (
-                      <span key={sub.id} className="text-[11px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-medium">
-                        {sub.name}
-                      </span>
-                    ))}
-                  </div>
-                </div>
               </div>
 
               {/* Action Buttons */}
               <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
-                <button
-                  onClick={() => {
-                    toggleCategoryStatus(cat.id);
-                    showToast(`Đã chuyển trạng thái danh mục "${cat.name}"`, { type: 'info' });
-                  }}
-                  className={`flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-lg transition-colors ${
-                    cat.status === 'inactive'
-                      ? 'bg-slate-200 text-slate-700 hover:bg-emerald-100 hover:text-emerald-800'
-                      : 'bg-emerald-50 text-emerald-700 hover:bg-slate-200 hover:text-slate-800'
-                  }`}
-                >
-                  <Power className="w-3.5 h-3.5" />
-                  <span>{cat.status === 'inactive' ? 'Kích hoạt' : 'Đang bật'}</span>
-                </button>
+                <div className="relative inline-block">
+                  <select
+                    value={cat.status || 'active'}
+                    onChange={(e) => {
+                      const newStatus = e.target.value as 'active' | 'inactive';
+                      updateCategory(cat.id, { status: newStatus });
+                      showToast(
+                        `Đã chuyển trạng thái danh mục "${cat.name}" sang "${newStatus === 'active' ? 'Đang bật' : 'Tạm ngưng'}"`,
+                        { type: 'info' }
+                      );
+                    }}
+                    className={`text-xs font-bold px-3 py-1 rounded-xl border appearance-none pr-7 cursor-pointer focus:outline-none focus:ring-2 transition-all ${
+                      cat.status !== 'inactive'
+                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100/70 focus:ring-emerald-400'
+                        : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200/70 focus:ring-slate-400'
+                    }`}
+                  >
+                    <option value="active">Đang bật</option>
+                    <option value="inactive">Tạm ngưng</option>
+                  </select>
+                  <ChevronDown className="w-3.5 h-3.5 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none opacity-60 text-slate-600" />
+                </div>
 
                 <div className="flex items-center gap-1">
                   <button
@@ -248,7 +243,7 @@ export const AdminCategoriesPage: React.FC = () => {
             onChange={(e) => {
               setName(e.target.value);
               if (!editingCategory) {
-                setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
+                setSlug(toSlug(e.target.value));
               }
             }}
             placeholder="Ví dụ: Thiết bị nhà bếp"
@@ -258,7 +253,7 @@ export const AdminCategoriesPage: React.FC = () => {
           <Input
             label="Slug đường dẫn (URL)"
             value={slug}
-            onChange={(e) => setSlug(e.target.value)}
+            onChange={(e) => setSlug(toSlug(e.target.value))}
             placeholder="thiet-bi-nha-bep"
           />
 
@@ -273,22 +268,82 @@ export const AdminCategoriesPage: React.FC = () => {
           />
 
           <Select
-            label="Icon đại diện (Lucide)"
+            label="Icon đại diện"
             value={icon}
             onChange={(e) => setIcon(e.target.value)}
             options={[
-              { value: 'Utensils', label: 'Utensils (Gia dụng/Bếp)' },
-              { value: 'Laptop', label: 'Laptop (Điện tử)' },
-              { value: 'HeartPulse', label: 'HeartPulse (Sức khỏe)' },
-              { value: 'ShoppingBag', label: 'ShoppingBag (Thời trang)' },
-              { value: 'Baby', label: 'Baby (Mẹ & Bé)' },
-              { value: 'Trophy', label: 'Trophy (Thể thao)' },
-              { value: 'Sparkles', label: 'Sparkles (AI/Đặc biệt)' },
-              { value: 'AppWindow', label: 'AppWindow (Phần mềm)' },
-              { value: 'Server', label: 'Server (Hosting)' },
-              { value: 'ShieldCheck', label: 'ShieldCheck (Bảo mật/VPN)' },
-              { value: 'TrendingUp', label: 'TrendingUp (Marketing)' },
-              { value: 'GraduationCap', label: 'GraduationCap (Khóa học)' }
+              // Gia dụng & Đời sống
+              { value: 'Utensils', label: 'Bếp & Gia dụng (Utensils)' },
+              { value: 'Home', label: 'Nhà cửa & Đời sống (Home)' },
+              { value: 'Tv', label: 'Thiết bị Nghe nhìn / Tivi (Tv)' },
+              { value: 'Coffee', label: 'Cà phê & Đồ uống (Coffee)' },
+              { value: 'Armchair', label: 'Nội thất & Bàn ghế (Armchair)' },
+              { value: 'Fan', label: 'Quạt & Điều hòa (Fan)' },
+              { value: 'Bed', label: 'Phòng ngủ & Chăn ga (Bed)' },
+              { value: 'Bath', label: 'Phòng tắm & Vệ sinh (Bath)' },
+
+              // Điện tử & Công nghệ
+              { value: 'Laptop', label: 'Laptop & Máy tính (Laptop)' },
+              { value: 'Smartphone', label: 'Điện thoại & Di động (Smartphone)' },
+              { value: 'Headphones', label: 'Tai nghe & Âm thanh (Headphones)' },
+              { value: 'Camera', label: 'Máy ảnh & Quay phim (Camera)' },
+              { value: 'Watch', label: 'Đồng hồ thông minh (Watch)' },
+              { value: 'Gamepad2', label: 'Gaming & Máy chơi game (Gamepad)' },
+              { value: 'Printer', label: 'Máy in & Thiết bị văn phòng (Printer)' },
+              { value: 'Wifi', label: 'Thiết bị Mạng & Wifi (Wifi)' },
+
+              // Sức khỏe & Thể thao
+              { value: 'HeartPulse', label: 'Sức khỏe & Y tế (HeartPulse)' },
+              { value: 'Dumbbell', label: 'Gym & Thể hình (Dumbbell)' },
+              { value: 'Trophy', label: 'Thể thao & Thi đấu (Trophy)' },
+              { value: 'Bike', label: 'Xe đạp & Vận động ngoài trời (Bike)' },
+              { value: 'Activity', label: 'Theo dõi thể lực (Activity)' },
+
+              // Thời trang & Làm đẹp
+              { value: 'ShoppingBag', label: 'Thời trang & Mua sắm (ShoppingBag)' },
+              { value: 'Shirt', label: 'Quần áo & Trang phục (Shirt)' },
+              { value: 'Scissors', label: 'Chăm sóc tóc & Spa (Scissors)' },
+              { value: 'Sparkles', label: 'Mỹ phẩm & Làm đẹp (Sparkles)' },
+              { value: 'Glasses', label: 'Mắt kính & Phụ kiện (Glasses)' },
+              { value: 'Crown', label: 'Hàng cao cấp / Luxury (Crown)' },
+
+              // Mẹ & Bé, Gia đình
+              { value: 'Baby', label: 'Mẹ & Bé (Baby)' },
+              { value: 'Smile', label: 'Đồ chơi & Trẻ em (Smile)' },
+              { value: 'Heart', label: 'Gia đình & Tình cảm (Heart)' },
+
+              // Phương tiện & Du lịch
+              { value: 'Car', label: 'Ô tô & Phụ kiện xe (Car)' },
+              { value: 'Plane', label: 'Du lịch & Vé máy bay (Plane)' },
+              { value: 'Luggage', label: 'Vali & Hành lý (Luggage)' },
+
+              // Phần mềm, AI & Dịch vụ số
+              { value: 'Bot', label: 'Trí tuệ nhân tạo / AI (Bot)' },
+              { value: 'AppWindow', label: 'Phần mềm & Ứng dụng (AppWindow)' },
+              { value: 'Code', label: 'Lập trình & Công cụ Dev (Code)' },
+              { value: 'Cloud', label: 'Điện toán đám mây / Cloud (Cloud)' },
+              { value: 'Server', label: 'Máy chủ & Hosting (Server)' },
+              { value: 'ShieldCheck', label: 'Bảo mật, Antivirus & VPN (ShieldCheck)' },
+              { value: 'Database', label: 'Cơ sở dữ liệu & Lưu trữ (Database)' },
+              { value: 'Cpu', label: 'Phần cứng & Vi xử lý (Cpu)' },
+
+              // Kinh doanh & Marketing
+              { value: 'TrendingUp', label: 'Marketing & SEO (TrendingUp)' },
+              { value: 'CreditCard', label: 'Tài chính & Thanh toán (CreditCard)' },
+              { value: 'Briefcase', label: 'Doanh nghiệp & B2B (Briefcase)' },
+              { value: 'DollarSign', label: 'Đầu tư & Kiếm tiền (DollarSign)' },
+
+              // Giáo dục & Sáng tạo
+              { value: 'GraduationCap', label: 'Khóa học & Đào tạo (GraduationCap)' },
+              { value: 'BookOpen', label: 'Sách & Tri thức (BookOpen)' },
+              { value: 'Lightbulb', label: 'Ý tưởng & Đổi mới (Lightbulb)' },
+              { value: 'Palette', label: 'Thiết kế & Đồ họa (Palette)' },
+              { value: 'Music', label: 'Âm nhạc & Nhạc cụ (Music)' },
+
+              // Thú cưng & Sân vườn
+              { value: 'Dog', label: 'Thú cưng & Chăm sóc thú nuôi (Dog)' },
+              { value: 'Trees', label: 'Cây cảnh & Sân vườn (Trees)' },
+              { value: 'Flower2', label: 'Hoa tươi & Quà tặng (Flower2)' }
             ]}
           />
 

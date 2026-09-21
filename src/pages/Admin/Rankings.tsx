@@ -9,8 +9,9 @@ import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Select } from '../../components/ui/Select';
 import { Badge } from '../../components/ui/Badge';
-import { Plus, Edit2, Trash2, ArrowUp, ArrowDown, Eye, Award, ExternalLink } from 'lucide-react';
+import { Plus, Edit2, Trash2, ArrowUp, ArrowDown, Eye, Award, ExternalLink, ChevronDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { toSlug } from '../../utils/formatters';
 
 export const AdminRankingsPage: React.FC = () => {
   const { rankings, products, updateRanking, deleteRanking, addRanking } = useData();
@@ -25,6 +26,7 @@ export const AdminRankingsPage: React.FC = () => {
   const [subtitle, setSubtitle] = useState('');
   const [type, setType] = useState<'physical' | 'digital'>('physical');
   const [categorySlug, setCategorySlug] = useState('noi-chien');
+  const [status, setStatus] = useState<'published' | 'draft'>('published');
 
   const openAddModal = () => {
     setEditingRanking(null);
@@ -33,6 +35,7 @@ export const AdminRankingsPage: React.FC = () => {
     setSubtitle('');
     setType('physical');
     setCategorySlug('noi-chien');
+    setStatus('published');
     setModalOpen(true);
   };
 
@@ -43,6 +46,7 @@ export const AdminRankingsPage: React.FC = () => {
     setSubtitle(r.subtitle);
     setType(r.type);
     setCategorySlug(r.categorySlug);
+    setStatus(r.status || 'published');
     setModalOpen(true);
   };
 
@@ -50,7 +54,7 @@ export const AdminRankingsPage: React.FC = () => {
     e.preventDefault();
     if (!title.trim()) return;
 
-    const generatedSlug = slug.trim() || title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const generatedSlug = toSlug(slug.trim()) || toSlug(title);
 
     if (editingRanking) {
       updateRanking(editingRanking.id, {
@@ -58,7 +62,8 @@ export const AdminRankingsPage: React.FC = () => {
         slug: generatedSlug,
         subtitle,
         type,
-        categorySlug
+        categorySlug,
+        status
       });
       showToast(`Đã cập nhật bảng xếp hạng "${title}"!`, { type: 'success' });
     } else {
@@ -86,7 +91,7 @@ export const AdminRankingsPage: React.FC = () => {
         })),
         conclusion: 'Lựa chọn sản phẩm phù hợp nhất với điều kiện ngân sách và nhu cầu của bạn.',
         faq: [{ q: 'Sản phẩm nào bền nhất?', a: 'Sản phẩm đạt vị trí số 1 là lựa chọn cân bằng nhất.' }],
-        status: 'published'
+        status
       });
       showToast(`Đã tạo bảng xếp hạng "${title}"!`, { type: 'success' });
     }
@@ -131,7 +136,7 @@ export const AdminRankingsPage: React.FC = () => {
   return (
     <div className="space-y-6 pb-12">
       <AdminHeader
-        title="Quản Lý Bảng Xếp Hạng (Rankings)"
+        title="Quản Lý Bảng Xếp Hạng"
         description="Quản lý danh sách Top 5 / Top 10, thay đổi thứ tự sản phẩm và cập nhật Quick Picks."
         actions={
           <Button variant="primary" size="sm" leftIcon={<Plus className="w-4 h-4" />} onClick={openAddModal}>
@@ -154,6 +159,28 @@ export const AdminRankingsPage: React.FC = () => {
                     <Badge variant={ranking.type === 'physical' ? 'warning' : 'indigo'} size="sm">
                       {ranking.type === 'physical' ? 'Sản phẩm vật lý' : 'Sản phẩm số'}
                     </Badge>
+                    <div className="relative inline-block">
+                      <select
+                        value={ranking.status || 'published'}
+                        onChange={(e) => {
+                          const newStatus = e.target.value as 'published' | 'draft';
+                          updateRanking(ranking.id, { status: newStatus });
+                          showToast(
+                            `Đã chuyển trạng thái bảng xếp hạng sang "${newStatus === 'published' ? 'Xuất bản' : 'Bản nháp'}"`,
+                            { type: 'success' }
+                          );
+                        }}
+                        className={`text-xs font-bold px-3 py-1 rounded-xl border appearance-none pr-7 cursor-pointer focus:outline-none focus:ring-2 transition-all ${
+                          ranking.status === 'published'
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100/70 focus:ring-emerald-400'
+                            : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200/70 focus:ring-slate-400'
+                        }`}
+                      >
+                        <option value="published">Xuất bản</option>
+                        <option value="draft">Bản nháp</option>
+                      </select>
+                      <ChevronDown className="w-3.5 h-3.5 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none opacity-60 text-slate-600" />
+                    </div>
                     <span className="text-xs text-slate-400">Cập nhật: {ranking.updatedAt}</span>
                   </div>
                   <h3 className="font-extrabold text-slate-900 text-lg">{ranking.title}</h3>
@@ -210,7 +237,7 @@ export const AdminRankingsPage: React.FC = () => {
                             className="w-10 h-10 rounded-xl object-cover flex-shrink-0"
                           />
                           <div className="min-w-0">
-                            <h5 className="font-bold text-xs text-slate-900 truncate">{prod.name}</h5>
+                            <h5 className="font-bold text-xs text-slate-900 leading-snug">{prod.name}</h5>
                             <span className="text-[11px] text-indigo-600 font-semibold">{item.highlight}</span>
                           </div>
                         </div>
@@ -258,7 +285,7 @@ export const AdminRankingsPage: React.FC = () => {
             onChange={(e) => {
               setTitle(e.target.value);
               if (!editingRanking) {
-                setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
+                setSlug(toSlug(e.target.value));
               }
             }}
             placeholder="Top 10 Nồi Chiên Không Dầu..."
@@ -268,19 +295,30 @@ export const AdminRankingsPage: React.FC = () => {
           <Input
             label="Slug URL"
             value={slug}
-            onChange={(e) => setSlug(e.target.value)}
+            onChange={(e) => setSlug(toSlug(e.target.value))}
             placeholder="top-noi-chien-khong-dau"
           />
 
-          <Select
-            label="Loại sản phẩm"
-            value={type}
-            onChange={(e) => setType(e.target.value as any)}
-            options={[
-              { value: 'physical', label: 'Sản phẩm vật lý' },
-              { value: 'digital', label: 'Sản phẩm số & AI' }
-            ]}
-          />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Select
+              label="Loại sản phẩm"
+              value={type}
+              onChange={(e) => setType(e.target.value as any)}
+              options={[
+                { value: 'physical', label: 'Sản phẩm vật lý' },
+                { value: 'digital', label: 'Sản phẩm số & AI' }
+              ]}
+            />
+            <Select
+              label="Trạng thái"
+              value={status}
+              onChange={(e) => setStatus(e.target.value as any)}
+              options={[
+                { value: 'published', label: 'Xuất bản (Hiển thị)' },
+                { value: 'draft', label: 'Bản nháp (Ẩn)' }
+              ]}
+            />
+          </div>
 
           <div>
             <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">

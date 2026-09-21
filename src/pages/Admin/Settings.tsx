@@ -5,7 +5,8 @@ import { useConfirm } from '../../context/ConfirmContext';
 import { AdminHeader } from '../../components/admin/AdminHeader';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
-import { RotateCcw, Save, ShieldCheck, Globe, Bell, Sliders } from 'lucide-react';
+import { RotateCcw, Save, ShieldCheck, Globe, Bell, Sliders, Cloud } from 'lucide-react';
+import { uploadApi } from '../../services/api';
 
 export const AdminSettingsPage: React.FC = () => {
   const { resetData } = useData();
@@ -18,10 +19,36 @@ export const AdminSettingsPage: React.FC = () => {
   const [itemsPerPage, setItemsPerPage] = useState('12');
   const [enableComments, setEnableComments] = useState(true);
   const [autoApproveReviews, setAutoApproveReviews] = useState(false);
+  const [isSyncingImages, setIsSyncingImages] = useState(false);
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     showToast('Đã lưu cấu hình hệ thống thành công!', { type: 'success' });
+  };
+
+  const handleSyncImages = async () => {
+    const ok = await confirm({
+      title: 'Đồng bộ ảnh sang Cloudinary WebP',
+      message: 'Hệ thống sẽ quét toàn bộ ảnh của Sản phẩm, Bài viết, Chuyên gia và Danh mục để tải lên Cloudinary và chuyển sang định dạng WebP. Quá trình này có thể mất vài phút.',
+      confirmText: 'Bắt đầu đồng bộ WebP',
+      cancelText: 'Hủy bỏ',
+      type: 'info'
+    });
+    if (!ok) return;
+
+    try {
+      setIsSyncingImages(true);
+      const res = await uploadApi.syncAllImages();
+      if (res.success) {
+        showToast(res.message || `Đã đồng bộ ${res.syncedCount} ảnh sang Cloudinary WebP!`, { type: 'success' });
+      } else {
+        showToast(res.message || 'Lỗi khi đồng bộ ảnh', { type: 'error' });
+      }
+    } catch (err: any) {
+      showToast(err?.response?.data?.message || err.message || 'Không thể đồng bộ ảnh lên Cloudinary', { type: 'error' });
+    } finally {
+      setIsSyncingImages(false);
+    }
   };
 
   const handleResetData = async () => {
@@ -41,8 +68,8 @@ export const AdminSettingsPage: React.FC = () => {
   return (
     <div className="space-y-6 pb-12">
       <AdminHeader
-        title="Thiết Lập Hệ Thống (Settings)"
-        description="Cấu hình thông số website, thương hiệu và quản lý bộ nhớ đệm Mock Data."
+        title="Thiết Lập Hệ Thống"
+        description="Cấu hình thông số website, thương hiệu và quản lý bộ nhớ đệm cơ sở dữ liệu."
       />
 
       <div className="px-6 max-w-4xl space-y-8">
@@ -54,7 +81,7 @@ export const AdminSettingsPage: React.FC = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <Input
-              label="Tên nền tảng (Site Title)"
+              label="Tên nền tảng"
               value={siteName}
               onChange={(e) => setSiteName(e.target.value)}
               required
@@ -115,18 +142,41 @@ export const AdminSettingsPage: React.FC = () => {
           </div>
         </form>
 
-        {/* Mock Data Reset Section */}
+        {/* Đồng bộ ảnh Cloudinary WebP */}
+        <div className="bg-white rounded-3xl border border-sky-200/80 p-8 shadow-sm space-y-4">
+          <div className="flex items-center gap-2 text-sky-600 font-bold text-base">
+            <Cloud className="w-5 h-5" />
+            <span>Đồng Bộ Toàn Bộ Ảnh Lên Cloudinary (Định Dạng WebP)</span>
+          </div>
+          <p className="text-xs text-slate-600 leading-relaxed">
+            Chuyển đổi và đồng bộ toàn bộ hình ảnh trong cơ sở dữ liệu (Sản phẩm, Bài viết, Chuyên gia, Danh mục) sang CDN Cloudinary với chuẩn nén tối ưu <strong>WebP</strong> (tự động chuyển đổi đuôi và định dạng sang WebP) nhằm tăng tốc độ tải trang tối đa và tiết kiệm băng thông.
+          </p>
+          <div>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={handleSyncImages}
+              disabled={isSyncingImages}
+              leftIcon={isSyncingImages ? <RotateCcw className="w-4 h-4 animate-spin" /> : <Cloud className="w-4 h-4" />}
+            >
+              {isSyncingImages ? 'Đang đồng bộ WebP lên Cloudinary...' : 'Đồng bộ toàn bộ ảnh sang WebP'}
+            </Button>
+          </div>
+        </div>
+
+        {/* Cơ sở dữ liệu Reset Section */}
         <div className="bg-white rounded-3xl border border-rose-200/80 p-8 shadow-sm space-y-4">
           <div className="flex items-center gap-2 text-rose-600 font-bold text-base">
             <RotateCcw className="w-5 h-5" />
-            <span>Khôi Phục Dữ Liệu Demo (Reset Mock Data)</span>
+            <span>Khôi Phục Cơ Sở Dữ Liệu</span>
           </div>
           <p className="text-xs text-slate-600 leading-relaxed">
             Nếu bạn đã thử nghiệm thêm, sửa, xóa nhiều sản phẩm/danh mục và muốn khôi phục lại toàn bộ dữ liệu mẫu chuẩn ban đầu, nhấn nút bên dưới.
           </p>
           <div>
             <Button variant="danger" size="sm" onClick={handleResetData}>
-              Khôi phục toàn bộ Mock Data
+              Khôi phục toàn bộ cơ sở dữ liệu
             </Button>
           </div>
         </div>

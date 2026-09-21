@@ -25,3 +25,28 @@ export function getScoreColor(score: number): { bg: string; text: string; ring: 
     return { bg: 'bg-[#B89D8D]', text: 'text-[#B89D8D]', ring: 'ring-[#B89D8D]/20', label: 'Trung bình' };
   }
 }
+
+export function toSlug(str: string): string {
+  if (!str) return '';
+  return str
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[đĐ]/g, 'd')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
+}
+
+/**
+ * Kiểm tra số điện thoại Việt Nam hợp lệ:
+ * - Đầu số di động 10 số: 03, 05, 07, 08, 09 (hoặc định dạng quốc tế +84 / 84)
+ */
+export function isValidVietnamesePhone(phone: string): boolean {
+  if (!phone) return false;
+  const cleaned = phone.replace(/[\s.-]/g, '');
+  const vnPhoneRegex = /^(0|\+84|84)(3|5|7|8|9)[0-9]{8}$/;
+  return vnPhoneRegex.test(cleaned);
+}
+

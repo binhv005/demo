@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Article } from '../../types';
 import { Badge } from '../ui/Badge';
-import { Clock, Calendar, ArrowRight, BookOpen, Scale, Sparkles } from 'lucide-react';
+import { Clock, Calendar, ArrowRight, BookOpen, Scale, Sparkles, Star, Check } from 'lucide-react';
 
 interface ArticleCardProps {
   article: Article;
@@ -24,6 +24,15 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
     }
   };
 
+  const getArticleUrl = (art: Article) => {
+    if (art.type === 'guide') return `/huong-dan/${art.slug}`;
+    if (art.type === 'review') return `/danh-gia/${art.slug}`;
+    if (art.type === 'comparison') return `/so-sanh/${art.slug}`;
+    return `/huong-dan/${art.slug}`;
+  };
+
+  const articleUrl = getArticleUrl(article);
+
   const typeLabels = {
     guide: { label: 'Hướng dẫn chọn mua', variant: 'indigo' as const, icon: <BookOpen className="w-3 h-3" /> },
     comparison: { label: 'So sánh sản phẩm', variant: 'warning' as const, icon: <Scale className="w-3 h-3" /> },
@@ -41,9 +50,9 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
     return (
       <div
         onClick={handleClick}
-        className={`bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-sm hover:shadow-xl hover:border-slate-300 transition-all duration-300 grid grid-cols-1 md:grid-cols-12 group ${onClick ? 'cursor-pointer' : ''} ${className}`}
+        className={`bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-sm hover:shadow-xl hover:border-slate-300 transition-all duration-300 grid grid-cols-1 md:grid-cols-12 group ${className}`}
       >
-        <div className="md:col-span-5 relative h-64 sm:h-80 md:h-full bg-slate-100 overflow-hidden min-h-[280px]">
+        <Link to={articleUrl} className="md:col-span-5 relative h-64 sm:h-80 md:h-full bg-slate-100 overflow-hidden min-h-[280px] block">
           <img
             src={article.coverImage || fallbackArticleImg}
             alt={article.title}
@@ -66,9 +75,13 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
               <Sparkles className="w-3.5 h-3.5 text-amber-300" />
               <span>Cập nhật mới nhất</span>
             </span>
-            <span className="text-amber-200 font-bold">4.9 ★ (1.2k+ đọc)</span>
+            <span className="text-amber-200 font-bold flex items-center gap-1">
+              <span>4.9</span>
+              <Star className="w-3 h-3 fill-amber-400 text-amber-400 inline" />
+              <span>(1.2k+ đọc)</span>
+            </span>
           </div>
-        </div>
+        </Link>
 
         <div className="md:col-span-7 p-6 sm:p-7 flex flex-col justify-between space-y-4">
           <div className="space-y-3.5">
@@ -84,9 +97,11 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
               </span>
             </div>
 
-            <h3 className="font-extrabold text-lg sm:text-xl text-slate-900 group-hover:text-orange-600 transition-colors leading-tight">
-              {article.title}
-            </h3>
+            <Link to={articleUrl} className="block">
+              <h3 className="font-extrabold text-lg sm:text-xl text-slate-900 group-hover:text-orange-600 transition-colors leading-tight">
+                {article.title}
+              </h3>
+            </Link>
 
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal line-clamp-2">
               {article.excerpt}
@@ -100,11 +115,11 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
               </div>
               <ul className="space-y-1 text-[11.5px] text-slate-700">
                 <li className="flex items-center gap-1.5">
-                  <span className="text-orange-500 font-bold leading-none">✓</span>
+                  <Check className="w-3.5 h-3.5 text-orange-500 flex-shrink-0" />
                   <span>Tiêu chuẩn dung tích, công suất & an toàn thực phẩm.</span>
                 </li>
                 <li className="flex items-center gap-1.5">
-                  <span className="text-orange-500 font-bold leading-none">✓</span>
+                  <Check className="w-3.5 h-3.5 text-orange-500 flex-shrink-0" />
                   <span>Top 3 mẫu nồi chiên đáng mua theo từng phân khúc.</span>
                 </li>
               </ul>
@@ -126,15 +141,34 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
             </div>
           </div>
 
-          {article.tags && article.tags.length > 0 && (
-            <div className="pt-3 border-t border-slate-100 flex items-center gap-1.5 flex-wrap min-w-0">
-              {article.tags.slice(0, 2).map((tag, idx) => (
+          {/* Article Footer & CTA */}
+          <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2 flex-wrap">
+            <div className="flex items-center gap-1.5 flex-wrap min-w-0">
+              {article.tags && article.tags.slice(0, 2).map((tag, idx) => (
                 <span key={idx} className="text-[11px] font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200/70 transition-colors px-2 py-0.5 rounded-lg truncate">
                   #{tag}
                 </span>
               ))}
             </div>
-          )}
+            {onClick ? (
+              <button
+                type="button"
+                onClick={handleClick}
+                className="px-3.5 py-1.5 rounded-xl bg-orange-50 text-orange-600 group-hover:bg-orange-600 group-hover:text-white font-bold text-xs transition-all duration-200 flex items-center gap-1 shadow-2xs cursor-pointer ml-auto"
+              >
+                <span>Xem chi tiết</span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+              </button>
+            ) : (
+              <Link
+                to={articleUrl}
+                className="px-3.5 py-1.5 rounded-xl bg-orange-50 text-orange-600 group-hover:bg-orange-600 group-hover:text-white font-bold text-xs transition-all duration-200 flex items-center gap-1 shadow-2xs cursor-pointer ml-auto"
+              >
+                <span>Xem chi tiết</span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+            )}
+          </div>
         </div>
       </div>
     );
@@ -145,9 +179,9 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
     return (
       <div
         onClick={handleClick}
-        className={`bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 hover:shadow-lg hover:border-slate-300 transition-all duration-200 flex flex-col sm:flex-row gap-4 sm:gap-5 items-start sm:items-center group ${onClick ? 'cursor-pointer' : ''} ${className}`}
+        className={`bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 hover:shadow-lg hover:border-slate-300 transition-all duration-200 flex flex-col sm:flex-row gap-4 sm:gap-5 items-start sm:items-center group ${className}`}
       >
-        <div className="relative w-full sm:w-36 h-36 sm:h-28 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0">
+        <Link to={articleUrl} className="relative w-full sm:w-36 h-36 sm:h-28 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0 block">
           <img
             src={article.coverImage || fallbackArticleImg}
             alt={article.title}
@@ -157,7 +191,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
               if (target.src !== fallbackArticleImg) target.src = fallbackArticleImg;
             }}
           />
-        </div>
+        </Link>
 
         <div className="flex-1 space-y-2 min-w-0">
           <div className="flex items-center gap-2 text-[11px] text-slate-400">
@@ -166,13 +200,36 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
             <span>{article.readingTime}</span>
           </div>
 
-          <h4 className="font-bold text-sm sm:text-base text-slate-900 group-hover:text-orange-600 transition-colors line-clamp-2 leading-snug">
-            {article.title}
-          </h4>
+          <Link to={articleUrl} className="block">
+            <h4 className="font-bold text-sm sm:text-base text-slate-900 group-hover:text-orange-600 transition-colors line-clamp-2 leading-snug">
+              {article.title}
+            </h4>
+          </Link>
 
           <p className="text-xs text-slate-500 line-clamp-1">
             {article.excerpt}
           </p>
+
+          <div className="pt-1">
+            {onClick ? (
+              <button
+                type="button"
+                onClick={handleClick}
+                className="flex items-center gap-1 text-xs font-bold text-orange-600 group-hover:text-orange-700 cursor-pointer"
+              >
+                <span>Xem chi tiết</span>
+                <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+              </button>
+            ) : (
+              <Link
+                to={articleUrl}
+                className="flex items-center gap-1 text-xs font-bold text-orange-600 group-hover:text-orange-700"
+              >
+                <span>Xem chi tiết</span>
+                <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+            )}
+          </div>
         </div>
       </div>
     );
@@ -182,9 +239,9 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
   return (
     <div
       onClick={handleClick}
-      className={`bg-white rounded-2xl border border-slate-200/80 overflow-hidden hover:shadow-lg hover:border-slate-300 transition-all duration-200 flex flex-col group ${onClick ? 'cursor-pointer' : ''} ${className}`}
+      className={`bg-white rounded-2xl border border-slate-200/80 overflow-hidden hover:shadow-lg hover:border-slate-300 transition-all duration-200 flex flex-col group ${className}`}
     >
-      <div className="relative h-48 bg-slate-100 overflow-hidden">
+      <Link to={articleUrl} className="relative h-48 bg-slate-100 overflow-hidden block">
         <img
           src={article.coverImage || fallbackArticleImg}
           alt={article.title}
@@ -199,7 +256,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
             {typeInfo.label}
           </Badge>
         </div>
-      </div>
+      </Link>
 
       <div className="p-5 flex-1 flex flex-col justify-between space-y-3">
         <div className="space-y-2">
@@ -208,19 +265,35 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
             <span>•</span>
             <span>{article.readingTime}</span>
           </div>
-          <h4 className="font-bold text-base text-slate-900 group-hover:text-orange-600 transition-colors line-clamp-2">
-            {article.title}
-          </h4>
+          <Link to={articleUrl} className="block">
+            <h4 className="font-bold text-base text-slate-900 group-hover:text-orange-600 transition-colors line-clamp-2">
+              {article.title}
+            </h4>
+          </Link>
           <p className="text-xs text-slate-500 line-clamp-2">
             {article.excerpt}
           </p>
         </div>
 
         <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-          <span className="font-bold text-orange-600 group-hover:text-orange-700 flex items-center gap-1">
-            <span>Xem bài viết</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </span>
+          {onClick ? (
+            <button
+              type="button"
+              onClick={handleClick}
+              className="font-bold text-orange-600 group-hover:text-orange-700 flex items-center gap-1 cursor-pointer"
+            >
+              <span>Xem chi tiết</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          ) : (
+            <Link
+              to={articleUrl}
+              className="font-bold text-orange-600 group-hover:text-orange-700 flex items-center gap-1"
+            >
+              <span>Xem chi tiết</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          )}
         </div>
       </div>
     </div>

@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
 import { useToast } from '../../context/ToastContext';
+import { leadApi } from '../../services/api';
 import { Container } from '../../components/ui/Container';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
@@ -9,13 +11,17 @@ import { Modal } from '../../components/ui/Modal';
 import { ProductCard } from '../../components/product/ProductCard';
 import { RankingCard } from '../../components/ranking/RankingCard';
 import { ArticleCard } from '../../components/article/ArticleCard';
+import { ArticleBodyRenderer } from '../../components/article/ArticleBodyRenderer';
 import { Accordion } from '../../components/ui/Accordion';
 import { ComparisonWidget } from '../../components/home/ComparisonWidget';
 import { TestimonialsSection } from '../../components/home/TestimonialsSection';
 import { RevealOnScroll } from '../../components/ui/RevealOnScroll';
+import { CountUp } from '../../components/ui/CountUp';
 import { renderCategoryIcon } from '../../utils/icons';
-import { formatPrice } from '../../utils/formatters';
-import { Product, Ranking, Article, Category } from '../../types';
+import { formatPrice, isValidVietnamesePhone } from '../../utils/formatters';
+import { Product, Ranking, Article, Category, Expert } from '../../types';
+import { mockArticles } from '../../data/articles';
+import { mockCategories } from '../../data/categories';
 import {
   Search,
   ArrowRight,
@@ -44,6 +50,7 @@ import {
   ExternalLink,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   Shield,
   Eye,
   CheckCircle,
@@ -55,8 +62,10 @@ import {
   Lightbulb,
   X,
   Laptop,
-  Code,
-  Globe
+  Globe,
+  Clock,
+  Trophy,
+  Medal
 } from 'lucide-react';
 
 export const HomePage: React.FC = () => {
@@ -66,17 +75,22 @@ export const HomePage: React.FC = () => {
   const [selectedDigitalCategorySlug, setSelectedDigitalCategorySlug] = useState<string>('all');
   const [digitalSearchVal, setDigitalSearchVal] = useState('');
   const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [newsletterPhone, setNewsletterPhone] = useState('');
   const [isSubscribing, setIsSubscribing] = useState(false);
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [subscribedEmail, setSubscribedEmail] = useState('');
 
   // Modals for Single Page Experience
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedRanking, setSelectedRanking] = useState<Ranking | null>(null);
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
+  const [selectedExpert, setSelectedExpert] = useState<Expert | null>(null);
 
   const physicalCategoryScrollRef = useRef<HTMLDivElement>(null);
   const digitalCategoryScrollRef = useRef<HTMLDivElement>(null);
   const physicalProductScrollRef = useRef<HTMLDivElement>(null);
   const digitalProductScrollRef = useRef<HTMLDivElement>(null);
+  const top10ScrollRef = useRef<HTMLDivElement>(null);
 
   const handleScrollContainer = (ref: React.RefObject<HTMLDivElement | null>, direction: 'left' | 'right', amount = 260) => {
     if (ref.current) {
@@ -128,21 +142,84 @@ export const HomePage: React.FC = () => {
     window.dispatchEvent(new CustomEvent('open-search'));
   };
 
-  const handleNewsletterSubmit = (e: React.FormEvent) => {
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newsletterEmail || !newsletterEmail.includes('@')) {
-      showToast('Vui lòng nhập địa chỉ email hợp lệ!', { type: 'error' });
+    const emailToSave = newsletterEmail.trim();
+    const phoneToSave = newsletterPhone.trim();
+
+    if (!emailToSave) {
+      showToast('Vui lòng nhập địa chỉ email (không được bỏ trống)!', { type: 'error' });
       return;
     }
-    setIsSubscribing(true);
-    setTimeout(() => {
-      setIsSubscribing(false);
+    if (!emailToSave.includes('@') || !emailToSave.includes('.')) {
+      showToast('Vui lòng nhập định dạng email hợp lệ!', { type: 'error' });
+      return;
+    }
+    if (!phoneToSave) {
+      showToast('Vui lòng nhập số điện thoại (không được bỏ trống)!', { type: 'error' });
+      return;
+    }
+    if (!isValidVietnamesePhone(phoneToSave)) {
+      showToast('Số điện thoại không hợp lệ! Vui lòng nhập số điện thoại Việt Nam (đầu số 03, 05, 07, 08, 09 hoặc +84).', { type: 'error' });
+      return;
+    }
+
+    try {
+      setIsSubscribing(true);
+      const newLead = await leadApi.create({
+        email: emailToSave,
+        phone: phoneToSave,
+        service: 'Nhận Bảng Xếp Hạng & Deal Tốt Nhất',
+        source: 'homepage_banner'
+      });
+
+      // Sync to local cache
+      try {
+        const cached = localStorage.getItem('techreview_leads_cache');
+        let list = cached ? JSON.parse(cached) : [];
+        if (newLead) {
+          list = [newLead, ...list.filter((l: any) => l.email !== emailToSave)];
+          localStorage.setItem('techreview_leads_cache', JSON.stringify(list));
+        }
+      } catch { }
+
+      setSubscribedEmail(emailToSave);
+      setIsSubscribed(true);
       setNewsletterEmail('');
-      showToast('Đăng ký thành công!', {
+      setNewsletterPhone('');
+      showToast('Đăng ký nhận tin thành công!', {
         type: 'success',
         description: 'Bản tin Top 10 sản phẩm tốt nhất sẽ được gửi đến hòm thư của bạn hàng tuần.'
       });
-    }, 500);
+    } catch {
+      // Offline fallback: save locally so admin dashboard always reflects the lead
+      try {
+        const fallbackLead = {
+          id: 'lead_' + Date.now(),
+          email: emailToSave,
+          phone: phoneToSave,
+          service: 'Nhận Bảng Xếp Hạng & Deal Tốt Nhất',
+          status: 'new',
+          source: 'homepage_banner',
+          createdAt: new Date().toISOString()
+        };
+        const cached = localStorage.getItem('techreview_leads_cache');
+        let list = cached ? JSON.parse(cached) : [];
+        list = [fallbackLead, ...list.filter((l: any) => l.email !== emailToSave)];
+        localStorage.setItem('techreview_leads_cache', JSON.stringify(list));
+      } catch { }
+
+      setSubscribedEmail(emailToSave);
+      setIsSubscribed(true);
+      setNewsletterEmail('');
+      setNewsletterPhone('');
+      showToast('Đăng ký nhận tin thành công!', {
+        type: 'success',
+        description: 'Bản tin Top 10 sản phẩm tốt nhất sẽ được gửi đến hòm thư của bạn hàng tuần.'
+      });
+    } finally {
+      setIsSubscribing(false);
+    }
   };
 
   const scrollToSection = (id: string) => {
@@ -181,6 +258,46 @@ export const HomePage: React.FC = () => {
     () => products.filter((p) => p.type === 'digital' && p.status === 'published'),
     [products]
   );
+
+  // Top 6 physical categories with the most products
+  const top6PhysicalCategories = useMemo(() => {
+    const allPhysicalCats = [...physicalCategories];
+    mockCategories
+      .filter((mc) => mc.group === 'physical' && mc.status !== 'inactive')
+      .forEach((mc) => {
+        if (!allPhysicalCats.some((c) => c.slug === mc.slug || c.name.toLowerCase() === mc.name.toLowerCase())) {
+          allPhysicalCats.push(mc);
+        }
+      });
+
+    const withCount = allPhysicalCats.map((cat) => {
+      const prodCount = physicalProducts.filter((p) => {
+        if (p.categorySlug === cat.slug || p.groupSlug === cat.slug) return true;
+        if (p.category && cat.name && p.category.trim().toLowerCase() === cat.name.trim().toLowerCase()) return true;
+        if (cat.subcategories && Array.isArray(cat.subcategories)) {
+          return cat.subcategories.some(
+            (s) => s.slug === p.categorySlug || (p.category && s.name && s.name.trim().toLowerCase() === p.category.trim().toLowerCase())
+          );
+        }
+        return false;
+      }).length;
+
+      return {
+        ...cat,
+        computedCount: prodCount,
+        displayReviewCount: prodCount > 0 ? prodCount : (cat.count || 0)
+      };
+    });
+
+    return withCount
+      .sort((a, b) => {
+        if (b.computedCount !== a.computedCount) {
+          return b.computedCount - a.computedCount;
+        }
+        return (b.count || 0) - (a.count || 0);
+      })
+      .slice(0, 6);
+  }, [physicalCategories, physicalProducts]);
 
   // Filtered Physical Products
   const filteredPhysicalProducts = useMemo(() => {
@@ -235,8 +352,87 @@ export const HomePage: React.FC = () => {
     [rankings]
   );
 
-  const featuredArticle = articles.find((a) => a.type === 'guide') || articles[0];
-  const otherArticles = articles.filter((a) => a.id !== featuredArticle?.id);
+  const top10Articles = useMemo(() => {
+    const published = articles.filter((a) => a.status === 'published');
+    const sourceList = published.length > 0 ? published : mockArticles;
+
+    // Filter out excluded articles
+    const eligible = sourceList.filter(
+      (a) => a.isTopRanking !== false && a.topRankOrder !== -1
+    );
+
+    const getManualRank = (a: Article): number | null => {
+      if (typeof a.topRankOrder === 'number' && a.topRankOrder >= 1 && a.topRankOrder <= 10) {
+        return a.topRankOrder;
+      }
+      if (typeof a.isTopRanking === 'number' && a.isTopRanking >= 1 && a.isTopRanking <= 10) {
+        return a.isTopRanking;
+      }
+      if (a.isTopRanking === true) {
+        return 1; // legacy fallback
+      }
+      return null;
+    };
+
+    const manualMap = new Map<number, Article[]>();
+    const autoArticles: Article[] = [];
+
+    for (const a of eligible) {
+      const manualRank = getManualRank(a);
+      if (manualRank !== null) {
+        if (!manualMap.has(manualRank)) manualMap.set(manualRank, []);
+        manualMap.get(manualRank)!.push(a);
+      } else {
+        autoArticles.push(a);
+      }
+    }
+
+    // Sort auto articles descending by views
+    autoArticles.sort((a, b) => (b.views || 0) - (a.views || 0));
+
+    const result: Article[] = [];
+    const usedIds = new Set<string>();
+    let autoIndex = 0;
+
+    for (let slot = 1; slot <= 10; slot++) {
+      if (manualMap.has(slot) && manualMap.get(slot)!.length > 0) {
+        const item = manualMap.get(slot)!.shift()!;
+        result.push(item);
+        usedIds.add(item.id);
+      } else {
+        while (autoIndex < autoArticles.length && usedIds.has(autoArticles[autoIndex].id)) {
+          autoIndex++;
+        }
+        if (autoIndex < autoArticles.length) {
+          const item = autoArticles[autoIndex++];
+          result.push(item);
+          usedIds.add(item.id);
+        }
+      }
+    }
+
+    // Fill remaining if needed
+    while (result.length < 10 && autoIndex < autoArticles.length) {
+      const item = autoArticles[autoIndex++];
+      if (!usedIds.has(item.id)) {
+        result.push(item);
+        usedIds.add(item.id);
+      }
+    }
+
+    return result;
+  }, [articles]);
+
+  const activeArticles = useMemo(() => {
+    const published = articles.filter((a) => a.status === 'published');
+    const sourceList = published.length > 0 ? published : mockArticles;
+    const featured = sourceList.filter((a) => a.isFeatured);
+    const nonFeatured = sourceList.filter((a) => !a.isFeatured);
+    return [...featured, ...nonFeatured];
+  }, [articles]);
+
+  const featuredArticle = activeArticles[0];
+  const otherArticles = activeArticles.slice(1, 3);
 
   const digitalUseCases = [
     { title: 'Dành cho Lập trình viên', desc: 'AI coding, Hosting VPS, Git & Task Management', tag: 'Lập trình' },
@@ -275,13 +471,13 @@ export const HomePage: React.FC = () => {
       {/* ========================================================================= */}
       {/* SECTION 1 — BOTANICAL ORGANIC LUXURY HERO SECTION (PERFECT VIEWPORT FIT) */}
       {/* ========================================================================= */}
-      <section id="hero" className="relative w-full bg-[#f4efe8] border-b border-[#e2d9cd] overflow-hidden scroll-mt-20 min-h-[440px] sm:min-h-[480px] lg:min-h-[510px] flex items-center">
+      <section id="hero" className="relative w-full bg-[#f4efe8] border-b border-[#e2d9cd] overflow-hidden scroll-mt-20 min-h-[500px] lg:min-h-[calc(100vh-5rem)] flex items-center">
         {/* Full-bleed Seamless Right Photo (Spans top-to-bottom and flush to right with zero borders) */}
         <div className="absolute right-0 top-0 bottom-0 w-full lg:w-[60%] h-full pointer-events-none select-none z-0 overflow-hidden">
           <img
-            src="/hero-tech-lifestyle.jpg"
+            src="/hero-tech-lifestyle.webp"
             alt="Thiết bị công nghệ &amp; đồ gia dụng thông minh được kiểm nghiệm"
-            className="w-full h-full object-cover object-center"
+            className="w-full h-full object-cover object-bottom lg:object-center"
             style={{
               maskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.5) 18%, black 48%)',
               WebkitMaskImage: 'linear-gradient(to right, transparent 0%, rgba(0,0,0,0.5) 18%, black 48%)'
@@ -298,18 +494,18 @@ export const HomePage: React.FC = () => {
           <span className="text-[7.5px] sm:text-[8.5px] font-extrabold tracking-wider uppercase opacity-95">TOP 10 CHUẨN XÁC</span>
         </div>
 
-        <Container size="xl" className="relative z-10 py-10 sm:py-13 lg:py-15">
+        <Container size="xl" className="relative z-10 py-12 sm:py-16 lg:py-20 w-full">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
             {/* Left Column - Content */}
-            <div className="lg:col-span-6 space-y-5 max-w-xl">
+            <div className="lg:col-span-6 space-y-6 max-w-xl">
               {/* Main Headline */}
-              <h1 className="text-3xl sm:text-4xl lg:text-[46px] font-outfit font-bold text-[#153424] tracking-tight leading-[1.18]">
+              <h1 className="text-3xl sm:text-4xl lg:text-[48px] xl:text-[52px] font-outfit font-bold text-[#153424] tracking-tight leading-[1.16]">
                 Đánh Giá Chuẩn Xác.<br />
                 <span className="text-[#ea580c] font-outfit font-bold">Chọn Mua Thông Minh.</span>
               </h1>
 
               {/* Subtitle */}
-              <p className="text-sm sm:text-base text-slate-700 font-normal leading-relaxed max-w-lg">
+              <p className="text-sm sm:text-base lg:text-lg text-slate-700 font-normal leading-relaxed max-w-lg">
                 Đo kiểm thực tế từ phòng lab và trải nghiệm đời thực. Khám phá bảng xếp hạng Top 10 đồ gia dụng, thiết bị công nghệ và công cụ AI đáng mua nhất.
               </p>
 
@@ -320,7 +516,7 @@ export const HomePage: React.FC = () => {
                     const el = document.getElementById('physical');
                     if (el) el.scrollIntoView({ behavior: 'smooth' });
                   }}
-                  className="inline-flex items-center gap-2.5 px-6 py-3 sm:px-7 sm:py-3.5 rounded-full bg-[#1b3d2c] hover:bg-[#122b1e] text-white font-bold text-xs sm:text-sm shadow-md hover:shadow-lg transition-all active:scale-95 cursor-pointer"
+                  className="inline-flex items-center gap-2.5 px-6 py-3.5 sm:px-7 sm:py-4 rounded-full bg-[#1b3d2c] hover:bg-[#122b1e] text-white font-bold text-xs sm:text-sm shadow-md hover:shadow-lg transition-all active:scale-95 cursor-pointer"
                 >
                   <span>Khám Phá Sản Phẩm</span>
                   <ArrowRight className="w-4 h-4" />
@@ -331,10 +527,26 @@ export const HomePage: React.FC = () => {
                     const el = document.getElementById('ranking');
                     if (el) el.scrollIntoView({ behavior: 'smooth' });
                   }}
-                  className="inline-flex items-center gap-2 px-5 py-3 sm:px-6 sm:py-3.5 rounded-full bg-[#faf8f3]/90 hover:bg-white text-slate-800 font-bold text-xs sm:text-sm border border-[#d6ccbc] shadow-xs transition-all active:scale-95 cursor-pointer backdrop-blur-xs"
+                  className="inline-flex items-center gap-2 px-5 py-3.5 sm:px-6 sm:py-4 rounded-full bg-[#faf8f3]/90 hover:bg-white text-slate-800 font-bold text-xs sm:text-sm border border-[#d6ccbc] shadow-xs transition-all active:scale-95 cursor-pointer backdrop-blur-xs"
                 >
                   <span>Top 10 Bảng Xếp Hạng</span>
                 </button>
+              </div>
+
+              {/* Trust Badges / Stats Micro Bar */}
+              <div className="pt-4 sm:pt-6 flex items-center gap-5 sm:gap-7 border-t border-[#e2d9cd]/80 text-xs text-slate-600">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="font-bold text-slate-800">100% Độc Lập</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                  <span className="font-semibold text-slate-700">Kiểm Nghiệm Lab</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-amber-500" />
+                  <span className="font-semibold text-slate-700">1.2M+ Độc Giả</span>
+                </div>
               </div>
             </div>
 
@@ -342,6 +554,18 @@ export const HomePage: React.FC = () => {
             <div className="hidden lg:block lg:col-span-6 h-[300px]" />
           </div>
         </Container>
+
+        {/* Subtle Scroll Hint Indicator */}
+        <button
+          onClick={() => {
+            const el = document.getElementById('tinh-nang');
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+          }}
+          className="hidden lg:flex absolute bottom-5 left-1/2 -translate-x-1/2 z-20 items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/80 hover:bg-white text-slate-700 hover:text-slate-900 border border-[#e2d9cd] text-[11px] font-bold shadow-2xs transition-all cursor-pointer backdrop-blur-xs"
+        >
+          <span>Khám phá các tiêu chuẩn</span>
+          <ChevronDown className="w-3.5 h-3.5 animate-bounce text-orange-600" />
+        </button>
       </section>
 
       {/* ========================================================================= */}
@@ -725,11 +949,11 @@ export const HomePage: React.FC = () => {
                   </button>
                 </div>
 
-                {/* Compact Physical Categories Grid (6 Categories) - High-Contrast Warm Cream/Ivory Theme */}
+                {/* Compact Physical Categories Grid (Top 6 Categories with most products) - High-Contrast Warm Cream/Ivory Theme */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-                  {physicalCategories.map((cat) => (
+                  {top6PhysicalCategories.map((cat, cIdx) => (
                     <div
-                      key={cat.id}
+                      key={cat.id || cat.slug || `pcat-${cIdx}`}
                       className="group bg-[#faf6ee] rounded-2xl p-4 sm:p-5 shadow-xl shadow-black/25 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between space-y-3 text-slate-900 border border-[#ebdccb]"
                     >
                       <div className="space-y-2.5">
@@ -739,29 +963,12 @@ export const HomePage: React.FC = () => {
                           </div>
                           <div className="min-w-0">
                             <h3 className="font-extrabold text-slate-900 text-sm sm:text-base leading-snug truncate group-hover:text-amber-800 transition-colors">{cat.name}</h3>
-                            <span className="text-[11px] font-medium text-slate-500">{cat.count}+ bài đánh giá</span>
+                            <span className="text-[11px] font-medium text-slate-500">{cat.displayReviewCount || cat.count || 0}+ bài đánh giá</span>
                           </div>
                         </div>
                         <p className="text-xs text-slate-600 line-clamp-2 font-normal leading-relaxed">
                           {cat.description}
                         </p>
-                        {/* Subcategories pills - 3 items in 1 single row, no line breaks */}
-                        <div className="grid grid-cols-3 gap-1.5 pt-0.5 w-full">
-                          {cat.subcategories.slice(0, 3).map((sub) => (
-                            <button
-                              key={sub.id}
-                              onClick={() => {
-                                setSelectedPhysicalCategorySlug(cat.slug);
-                                const el = document.getElementById('physical-explorer');
-                                if (el) el.scrollIntoView({ behavior: 'smooth' });
-                              }}
-                              title={sub.name}
-                              className="text-[10px] sm:text-[11px] font-semibold text-amber-900 bg-[#f3eae0] hover:bg-[#ead7c3] hover:text-amber-950 border border-[#e2d2be] px-1.5 py-1 rounded-lg transition-colors cursor-pointer whitespace-nowrap text-center truncate block w-full"
-                            >
-                              {sub.name}
-                            </button>
-                          ))}
-                        </div>
                       </div>
 
                       <div className="pt-2.5 border-t border-[#eddcd0] flex items-center justify-between">
@@ -829,9 +1036,9 @@ export const HomePage: React.FC = () => {
                     >
                       Tất cả ({physicalProducts.length})
                     </button>
-                    {physicalCategories.map((c) => (
+                    {physicalCategories.map((c, cIdx) => (
                       <button
-                        key={c.id}
+                        key={c.id || c.slug || `pcat-btn-${cIdx}`}
                         onClick={() => setSelectedPhysicalCategorySlug(c.slug)}
                         className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 cursor-pointer ${selectedPhysicalCategorySlug === c.slug
                           ? 'bg-orange-600 text-white shadow-xs'
@@ -903,12 +1110,12 @@ export const HomePage: React.FC = () => {
                     className="flex items-stretch gap-5 overflow-x-auto scroll-smooth py-2 select-none animate-grid-filter"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                   >
-                    {filteredPhysicalProducts.map((p) => (
+                    {filteredPhysicalProducts.map((p, pIdx) => (
                       <div
-                        key={p.id}
+                        key={p.id || `pprod-${pIdx}`}
                         className="w-[280px] sm:w-[300px] flex-shrink-0"
                       >
-                        <ProductCard product={p} variant="grid" className="h-full" />
+                        <ProductCard product={p} variant="grid" className="h-full" showDetailButton={false} />
                       </div>
                     ))}
                   </div>
@@ -987,9 +1194,9 @@ export const HomePage: React.FC = () => {
                     >
                       Tất cả ({digitalProducts.length})
                     </button>
-                    {digitalCategories.map((c) => (
+                    {digitalCategories.map((c, cIdx) => (
                       <button
-                        key={c.id}
+                        key={c.id || c.slug || `dcat-btn-${cIdx}`}
                         onClick={() => setSelectedDigitalCategorySlug(c.slug)}
                         className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 cursor-pointer ${selectedDigitalCategorySlug === c.slug
                           ? 'bg-indigo-600 text-white shadow-xs'
@@ -1061,12 +1268,12 @@ export const HomePage: React.FC = () => {
                     className="flex items-stretch gap-5 overflow-x-auto scroll-smooth py-2 select-none animate-grid-filter"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                   >
-                    {filteredDigitalProducts.map((p) => (
+                    {filteredDigitalProducts.map((p, pIdx) => (
                       <div
-                        key={p.id}
+                        key={p.id || `dprod-${pIdx}`}
                         className="w-[280px] sm:w-[300px] flex-shrink-0"
                       >
-                        <ProductCard product={p} variant="grid" className="h-full" />
+                        <ProductCard product={p} variant="grid" className="h-full" showDetailButton={false} />
                       </div>
                     ))}
                   </div>
@@ -1096,28 +1303,154 @@ export const HomePage: React.FC = () => {
       </section>
 
       {/* ========================================================================= */}
-      {/* SECTION 6 — BẢNG XẾP HẠNG TOP 10 (#ranking) */}
+      {/* SECTION 6 — TOP 10 BÀI VIẾT ĐƯỢC XEM NHIỀU NHẤT (#ranking) */}
       {/* ========================================================================= */}
       <section id="ranking" className="bg-slate-100/70 py-16 border-y border-slate-200/80 scroll-mt-24">
         <RevealOnScroll animation="zoom-in">
           <Container size="xl">
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
+            {/* Header with Scroll Controls */}
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
               <div>
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-500/10 text-orange-600 font-bold text-xs uppercase tracking-wider mb-2.5 border border-orange-500/20">
+                  <Flame className="w-3.5 h-3.5 text-orange-500" />
+                  <span>Được Quan Tâm Nhất</span>
+                </div>
                 <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                  Top 10 Bảng Xếp Hạng Được Xem Nhiều Nhất
+                  Top 10 Bài Viết Được Xem Nhiều Nhất
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                  Tổng hợp các bảng xếp hạng uy tín nhất theo từng nhóm sản phẩm và công cụ.
+                  Tổng hợp các bài viết, cẩm nang và hướng dẫn chọn mua có lượt xem cao nhất từ độc giả.
                 </p>
+              </div>
+
+              {/* Navigation Controls: Scroll Left / Right & See All */}
+              <div className="flex items-center gap-3 self-start sm:self-end">
+                <div className="flex items-center gap-1 bg-white p-1 rounded-2xl border border-slate-200 shadow-2xs">
+                  <button
+                    type="button"
+                    onClick={() => handleScrollContainer(top10ScrollRef, 'left', 380)}
+                    className="p-2 rounded-xl text-slate-600 hover:text-orange-600 hover:bg-orange-50 transition-colors cursor-pointer"
+                    title="Cuộn sang trái"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <div className="w-[1px] h-4 bg-slate-200" />
+                  <button
+                    type="button"
+                    onClick={() => handleScrollContainer(top10ScrollRef, 'right', 380)}
+                    className="p-2 rounded-xl text-slate-600 hover:text-orange-600 hover:bg-orange-50 transition-colors cursor-pointer"
+                    title="Cuộn sang phải"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </div>
+
+                <Link
+                  to="/bai-viet"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white hover:bg-orange-50 text-slate-700 hover:text-orange-600 font-bold text-xs sm:text-sm transition-all border border-slate-200 hover:border-orange-200 shadow-2xs group flex-shrink-0 cursor-pointer"
+                >
+                  <span>Xem tất cả</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-grid-filter">
-              {filteredRankings.slice(0, 3).map((ranking) => (
-                <div key={ranking.id}>
-                  <RankingCard ranking={ranking} />
-                </div>
-              ))}
+            {/* SINGLE HORIZONTAL SCROLL ROW (1 DÒNG TRƯỢT NGANG TOP 10) */}
+            <div
+              ref={top10ScrollRef}
+              className="flex gap-6 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory py-2 px-1"
+            >
+              {top10Articles.map((art, idx) => {
+                const rank = idx + 1;
+                const artUrl = art.type === 'guide' ? `/huong-dan/${art.slug}` : art.type === 'review' ? `/danh-gia/${art.slug}` : `/bai-viet/${art.slug}`;
+
+                const rankBadgeConfig: Array<{ label: string; badgeClass: string; icon: React.ReactNode; cardClass: string }> = [
+                  { label: 'TOP 1', badgeClass: 'bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-400 text-slate-950 shadow-amber-500/25 ring-2 ring-amber-300/60', icon: <Trophy className="w-3.5 h-3.5" />, cardClass: 'border-amber-300 ring-2 ring-amber-400/20 shadow-md' },
+                  { label: 'TOP 2', badgeClass: 'bg-gradient-to-r from-slate-200 to-slate-400 text-slate-900 shadow-slate-400/20 ring-1 ring-slate-300', icon: <Award className="w-3.5 h-3.5" />, cardClass: 'border-slate-300 shadow-sm' },
+                  { label: 'TOP 3', badgeClass: 'bg-gradient-to-r from-amber-700 to-orange-600 text-white shadow-orange-500/20 ring-1 ring-amber-600/50', icon: <Medal className="w-3.5 h-3.5" />, cardClass: 'border-orange-200/90 shadow-sm' },
+                ];
+
+                const currentConfig = rankBadgeConfig[idx] || {
+                  label: `TOP ${rank}`,
+                  badgeClass: 'bg-slate-900/90 backdrop-blur-md text-white border border-slate-700 shadow-xs',
+                  icon: <Flame className="w-3.5 h-3.5 text-orange-400" />,
+                  cardClass: 'border-slate-200/90 shadow-xs hover:border-orange-300'
+                };
+
+                return (
+                  <div
+                    key={art.id || `top-${rank}`}
+                    className={`w-[300px] sm:w-[340px] lg:w-[360px] flex-shrink-0 snap-start bg-white rounded-3xl border ${currentConfig.cardClass} overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col group relative`}
+                  >
+                    {/* Rank Badge */}
+                    <div className="absolute top-3.5 left-3.5 z-10">
+                      <span className={`px-2.5 py-1 rounded-full text-xs font-black flex items-center gap-1.5 shadow-md ${currentConfig.badgeClass}`}>
+                        {currentConfig.icon}
+                        <span>{currentConfig.label}</span>
+                      </span>
+                    </div>
+
+                    {/* Image with Link */}
+                    <Link to={artUrl} className="relative block aspect-[16/10] w-full overflow-hidden bg-slate-100">
+                      <img
+                        src={art.coverImage}
+                        alt={art.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/10 to-transparent" />
+
+                      {/* Views & Reading Time overlay at bottom */}
+                      <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white text-[11px] font-semibold">
+                        <span className="flex items-center gap-1 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-lg">
+                          <Eye className="w-3.5 h-3.5 text-orange-400" />
+                          <span>{(art.views || 0).toLocaleString('vi-VN')} lượt xem</span>
+                        </span>
+                        {art.readingTime && (
+                          <span className="flex items-center gap-1 bg-black/60 backdrop-blur-md px-2 py-1 rounded-lg">
+                            <Clock className="w-3 h-3 text-slate-300" />
+                            <span>{art.readingTime}</span>
+                          </span>
+                        )}
+                      </div>
+                    </Link>
+
+                    {/* Content */}
+                    <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                      <div className="space-y-2.5">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10.5px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-orange-50 text-orange-700 border border-orange-200/60">
+                            {art.tags?.[0] || 'Cẩm nang'}
+                          </span>
+                        </div>
+
+                        <Link to={artUrl} className="block">
+                          <h3 className="font-extrabold text-base sm:text-lg text-slate-900 group-hover:text-orange-600 transition-colors line-clamp-2 leading-snug">
+                            {art.title}
+                          </h3>
+                        </Link>
+
+                        <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed font-normal">
+                          {art.excerpt}
+                        </p>
+                      </div>
+
+                      <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                        <span className="text-[11px] text-slate-400 font-medium">
+                          {art.publishedAt}
+                        </span>
+                        <Link
+                          to={artUrl}
+                          className="inline-flex items-center gap-1 text-xs font-bold text-orange-600 group-hover:text-orange-700 group-hover:translate-x-0.5 transition-all"
+                        >
+                          <span>Đọc bài viết</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </Container>
         </RevealOnScroll>
@@ -1129,14 +1462,23 @@ export const HomePage: React.FC = () => {
       <section id="so-sanh" className="scroll-mt-24">
         <RevealOnScroll animation="fade-up">
           <Container size="xl">
-            <div className="text-center space-y-3 max-w-2xl mx-auto mb-10">
-              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-                <span>So Sánh Sản Phẩm Đối Đầu</span>{' '}
-                <span className="block sm:inline whitespace-nowrap">Trực Quan</span>
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-600">
-                Trải nghiệm công cụ so sánh trực tiếp để thấy rõ sự chênh lệch về hiệu năng, tính năng và giá bán.
-              </p>
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+              <div className="space-y-1.5">
+                <h2 className="text-[17px] xs:text-xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                  <span>So Sánh Sản Phẩm Đối Đầu</span>{' '}
+                  <span className="block sm:inline whitespace-nowrap">Trực Quan</span>
+                </h2>
+                <p className="text-xs sm:text-sm text-slate-600 max-w-2xl">
+                  Trải nghiệm công cụ so sánh trực tiếp để thấy rõ sự chênh lệch về hiệu năng, tính năng và giá bán.
+                </p>
+              </div>
+              <Link
+                to="/so-sanh"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-orange-50 hover:bg-orange-100 text-orange-600 hover:text-orange-700 font-bold text-xs sm:text-sm transition-all border border-orange-200/70 hover:border-orange-300 shadow-2xs group flex-shrink-0 cursor-pointer self-start sm:self-end"
+              >
+                <span>Xem toàn bộ các bài so sánh</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
             </div>
 
             <ComparisonWidget />
@@ -1150,12 +1492,19 @@ export const HomePage: React.FC = () => {
       <section id="guides" className="scroll-mt-24">
         <RevealOnScroll animation="fade-up">
           <Container size="xl">
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
               <div>
                 <h2 className="text-[17px] xs:text-xl sm:text-3xl font-black text-slate-900 tracking-tight whitespace-nowrap">
                   Bài Viết &amp; Hướng Dẫn Chọn Mua Mới
                 </h2>
               </div>
+              <Link
+                to="/bai-viet"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-orange-50 hover:bg-orange-100 text-orange-600 hover:text-orange-700 font-bold text-xs sm:text-sm transition-all border border-orange-200/70 hover:border-orange-300 shadow-2xs group flex-shrink-0 cursor-pointer"
+              >
+                <span>Xem toàn bộ bài viết</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
@@ -1165,13 +1514,14 @@ export const HomePage: React.FC = () => {
                 </div>
               )}
               <div className="lg:col-span-5 flex flex-col gap-5 justify-between">
-                {otherArticles.map((art) => (
-                  <div key={art.id} className="flex-1">
+                {otherArticles.map((art, aIdx) => (
+                  <div key={art.id || `art-${aIdx}`} className="flex-1">
                     <ArticleCard article={art} variant="horizontal" className="h-full" />
                   </div>
                 ))}
               </div>
             </div>
+
           </Container>
         </RevealOnScroll>
       </section>
@@ -1238,19 +1588,27 @@ export const HomePage: React.FC = () => {
                 {/* Statistics Grid */}
                 <div className="lg:col-span-6 grid grid-cols-2 gap-4">
                   <div className="p-6 rounded-3xl bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/80 text-center space-y-1">
-                    <span className="text-3xl sm:text-4xl font-extrabold text-white block">500+</span>
+                    <span className="text-3xl sm:text-4xl font-extrabold text-white block">
+                      <CountUp end={500} suffix="+" duration={1800} />
+                    </span>
                     <span className="text-xs font-semibold text-slate-300">Sản phẩm thử nghiệm</span>
                   </div>
                   <div className="p-6 rounded-3xl bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/80 text-center space-y-1">
-                    <span className="text-3xl sm:text-4xl font-extrabold text-orange-400 block">100+</span>
+                    <span className="text-3xl sm:text-4xl font-extrabold text-orange-400 block">
+                      <CountUp end={100} suffix="+" duration={1800} />
+                    </span>
                     <span className="text-xs font-semibold text-slate-300">Bài đánh giá chuyên sâu</span>
                   </div>
                   <div className="p-6 rounded-3xl bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/80 text-center space-y-1">
-                    <span className="text-3xl sm:text-4xl font-extrabold text-emerald-400 block">50+</span>
+                    <span className="text-3xl sm:text-4xl font-extrabold text-emerald-400 block">
+                      <CountUp end={50} suffix="+" duration={1800} />
+                    </span>
                     <span className="text-xs font-semibold text-slate-300">Bảng xếp hạng Top 10</span>
                   </div>
                   <div className="p-6 rounded-3xl bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/80 text-center space-y-1">
-                    <span className="text-3xl sm:text-4xl font-extrabold text-amber-400 block">20+</span>
+                    <span className="text-3xl sm:text-4xl font-extrabold text-amber-400 block">
+                      <CountUp end={20} suffix="+" duration={1800} />
+                    </span>
                     <span className="text-xs font-semibold text-slate-300">Chuyên gia &amp; Reviewers</span>
                   </div>
                 </div>
@@ -1259,6 +1617,7 @@ export const HomePage: React.FC = () => {
           </Container>
         </RevealOnScroll>
       </section>
+
 
       {/* ========================================================================= */}
       {/* SECTION 10 — TESTIMONIALS & SOCIAL PROOF (#danh-gia) */}
@@ -1427,45 +1786,83 @@ export const HomePage: React.FC = () => {
               </svg>
             </div>
 
-            <div className="relative z-10 max-w-3xl mx-auto text-center space-y-6">
-              <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white leading-tight">
-                <span>Nhận Bảng Xếp Hạng</span>{' '}
-                <span className="block xs:inline whitespace-nowrap">&amp; Deal Tốt Nhất Mỗi Tuần</span>
-              </h2>
+            {isSubscribed ? (
+              <div className="relative z-10 max-w-2xl mx-auto text-center py-6 sm:py-8 space-y-6 animate-fade-in">
+                <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-md text-white border-2 border-white/40 flex items-center justify-center mx-auto shadow-2xl">
+                  <CheckCircle2 className="w-10 h-10 text-white" />
+                </div>
 
-              <p className="text-[11.5px] min-[390px]:text-xs sm:text-sm md:text-base text-orange-100 max-w-xl mx-auto font-normal leading-relaxed">
-                <span className="block whitespace-nowrap">Đăng ký ngay để nhận cẩm nang chọn mua độc quyền</span>
-                <span className="block whitespace-nowrap">và danh sách Top 10 sản phẩm giảm giá thực chất nhất</span>
-                <span className="block whitespace-nowrap">được lọc bởi chuyên gia.</span>
-              </p>
+                <div className="space-y-3">
+                  <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
+                    Đăng Ký Thành Công!
+                  </h2>
+                  <p className="text-sm sm:text-lg text-orange-100 font-medium max-w-xl mx-auto leading-relaxed">
+                    Cảm ơn bạn! Cẩm nang chọn mua độc quyền và danh sách Top 10 deal tốt nhất tuần này sẽ được gửi tới hòm thư:
+                  </p>
+                  <div className="inline-block px-5 py-2.5 rounded-2xl bg-white/20 backdrop-blur-md border border-white/40 text-white font-extrabold text-base sm:text-lg shadow-inner">
+                    {subscribedEmail}
+                  </div>
+                </div>
 
-              <form
-                onSubmit={handleNewsletterSubmit}
-                className="flex flex-col sm:flex-row items-stretch gap-3 max-w-md mx-auto pt-2"
-              >
-                <input
-                  type="email"
-                  placeholder="Nhập địa chỉ email của bạn..."
-                  value={newsletterEmail}
-                  onChange={(e) => setNewsletterEmail(e.target.value)}
-                  required
-                  className="flex-1 px-4 py-3 rounded-xl bg-white text-slate-900 placeholder:text-slate-400 text-sm focus:outline-none focus:ring-4 focus:ring-orange-300 shadow-md"
-                />
-                <button
-                  type="submit"
-                  disabled={isSubscribing}
-                  className="px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-black text-sm rounded-xl transition-all shadow-md active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+                <div className="pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsSubscribed(false)}
+                    className="px-6 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm border border-white/30 backdrop-blur-md transition-all cursor-pointer shadow-sm active:scale-95"
+                  >
+                    ← Đăng ký bằng thông tin khác
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="relative z-10 max-w-3xl mx-auto text-center space-y-6">
+                <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white leading-tight">
+                  <span>Nhận Bảng Xếp Hạng</span>{' '}
+                  <span className="block xs:inline whitespace-nowrap">&amp; Deal Tốt Nhất Mỗi Tuần</span>
+                </h2>
+
+                <p className="text-[11.5px] min-[390px]:text-xs sm:text-sm md:text-base text-orange-100 max-w-xl mx-auto font-normal leading-relaxed">
+                  <span className="block whitespace-nowrap">Đăng ký ngay để nhận cẩm nang chọn mua độc quyền</span>
+                  <span className="block whitespace-nowrap">và danh sách Top 10 sản phẩm giảm giá thực chất nhất</span>
+                  <span className="block whitespace-nowrap">được lọc bởi chuyên gia.</span>
+                </p>
+
+                <form
+                  onSubmit={handleNewsletterSubmit}
+                  className="flex flex-col sm:flex-row items-stretch gap-3 max-w-2xl mx-auto pt-2"
                 >
-                  {isSubscribing ? 'Đang gửi...' : 'Đăng ký ngay'}
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </form>
+                  <input
+                    type="email"
+                    placeholder="Nhập địa chỉ email của bạn..."
+                    value={newsletterEmail}
+                    onChange={(e) => setNewsletterEmail(e.target.value)}
+                    required
+                    className="flex-1 px-4 py-3 rounded-xl bg-white text-slate-900 placeholder:text-slate-400 text-sm focus:outline-none focus:ring-4 focus:ring-orange-300 shadow-md min-w-0 font-medium"
+                  />
+                  <input
+                    type="tel"
+                    placeholder="SĐT (VD: 0988...)"
+                    value={newsletterPhone}
+                    onChange={(e) => setNewsletterPhone(e.target.value)}
+                    required
+                    className="w-full sm:w-48 px-4 py-3 rounded-xl bg-white text-slate-900 placeholder:text-slate-400 text-sm focus:outline-none focus:ring-4 focus:ring-orange-300 shadow-md min-w-0 font-medium"
+                  />
+                  <button
+                    type="submit"
+                    disabled={isSubscribing}
+                    className="px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-black text-sm rounded-xl transition-all shadow-md active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer flex-shrink-0"
+                  >
+                    {isSubscribing ? 'Đang gửi...' : 'Đăng ký ngay'}
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </form>
 
-              <p className="text-[11px] text-orange-100/80 inline-flex items-center justify-center gap-1.5">
-                <Lock className="w-3.5 h-3.5 text-orange-200" />
-                <span>Chúng tôi tôn trọng quyền riêng tư. Không spam. Huỷ đăng ký bất cứ lúc nào.</span>
-              </p>
-            </div>
+                <p className="text-[11px] text-orange-100/80 inline-flex items-center justify-center gap-1.5">
+                  <Lock className="w-3.5 h-3.5 text-orange-200" />
+                  <span>Chúng tôi tôn trọng quyền riêng tư. Không spam. Huỷ đăng ký bất cứ lúc nào.</span>
+                </p>
+              </div>
+            )}
           </div>
         </RevealOnScroll>
       </section>
@@ -1630,11 +2027,11 @@ export const HomePage: React.FC = () => {
               </h4>
 
               <div className="space-y-3">
-                {selectedRanking.items.map((item) => {
+                {selectedRanking.items.map((item, itemIdx) => {
                   const product = products.find((p) => p.id === item.productId);
                   return (
                     <div
-                      key={item.rank}
+                      key={item.productId || `rank-item-${item.rank || itemIdx}`}
                       className={`p-4 rounded-2xl border flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between ${item.rank === 1
                         ? 'bg-amber-50/50 border-amber-300 ring-2 ring-amber-400/20'
                         : 'bg-white border-slate-200'
@@ -1732,12 +2129,8 @@ export const HomePage: React.FC = () => {
             </div>
 
             {/* Article Body Content */}
-            <div className="space-y-4 pt-2 border-t border-slate-100 text-xs sm:text-sm text-slate-700 leading-relaxed">
-              {selectedArticle.content.split('\n\n').map((paragraph, idx) => (
-                <p key={idx} className="bg-slate-50 p-3.5 rounded-xl border border-slate-100">
-                  {paragraph}
-                </p>
-              ))}
+            <div className="pt-2 border-t border-slate-100">
+              <ArticleBodyRenderer blocks={selectedArticle.blocks} content={selectedArticle.content} />
             </div>
 
             {/* Tags */}
@@ -1747,6 +2140,64 @@ export const HomePage: React.FC = () => {
                   #{tag}
                 </span>
               ))}
+            </div>
+          </div>
+        )}
+      </Modal>
+
+      {/* 4. EXPERT DETAIL MODAL */}
+      <Modal
+        isOpen={!!selectedExpert}
+        onClose={() => setSelectedExpert(null)}
+        title={selectedExpert?.name || 'Hồ Sơ Chuyên Gia'}
+        maxWidth="2xl"
+      >
+        {selectedExpert && (
+          <div className="space-y-5">
+            <div className="flex flex-col sm:flex-row gap-5 items-center sm:items-start text-center sm:text-left">
+              <div className="w-24 h-24 rounded-2xl overflow-hidden bg-slate-100 border-2 border-orange-500 shadow-md flex-shrink-0">
+                <img
+                  src={selectedExpert.avatar}
+                  alt={selectedExpert.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="space-y-1.5 flex-1 min-w-0">
+                <h3 className="text-xl font-extrabold text-slate-900">{selectedExpert.name}</h3>
+                <p className="text-xs font-bold text-orange-600 uppercase tracking-wider">{selectedExpert.role}</p>
+                <div className="flex items-center justify-center sm:justify-start gap-3 pt-1 text-xs text-slate-500">
+                  <span className="font-semibold text-slate-700">{selectedExpert.experienceYears} năm kinh nghiệm</span>
+                  <span>•</span>
+                  <span className="font-semibold text-slate-700">{selectedExpert.articlesCount} bài kiểm nghiệm</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-2">
+              <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider">Tiểu Sử & Chuyên Môn:</h4>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
+                {selectedExpert.bio}
+              </p>
+            </div>
+
+            {selectedExpert.credentials && selectedExpert.credentials.length > 0 && (
+              <div className="space-y-2">
+                <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider">Chứng Chỉ & Bằng Cấp:</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {selectedExpert.credentials.map((cred, idx) => (
+                    <div key={idx} className="p-2.5 rounded-xl bg-white border border-slate-200 flex items-center gap-2 text-xs font-semibold text-slate-700">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                      <span>{cred}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="pt-3 border-t border-slate-200 flex justify-end">
+              <Button variant="outline" size="sm" onClick={() => setSelectedExpert(null)}>
+                Đóng
+              </Button>
             </div>
           </div>
         )}

@@ -1,71 +1,33 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
-import { useToast } from '../../context/ToastContext';
-import { useConfirm } from '../../context/ConfirmContext';
 import { AdminHeader } from '../../components/admin/AdminHeader';
 import { StatCard } from '../../components/admin/StatCard';
 import { Badge } from '../../components/ui/Badge';
-import { ScoreBadge } from '../../components/ui/ScoreBadge';
-import { Button } from '../../components/ui/Button';
 import {
   Box,
   FolderTree,
   Award,
   FileText,
   Eye,
-  Plus,
   ArrowUpRight,
   Sparkles,
-  RotateCcw,
   TrendingUp,
   CheckCircle2,
   Clock
 } from 'lucide-react';
 
 export const AdminDashboardPage: React.FC = () => {
-  const { products, categories, rankings, articles, comparisons, resetData } = useData();
-  const { showToast } = useToast();
-  const { confirm } = useConfirm();
+  const { products, categories, rankings, articles, comparisons } = useData();
 
   const totalViews = products.reduce((acc, p) => acc + p.views, 0) + articles.reduce((acc, a) => acc + a.views, 0);
   const draftsCount = products.filter((p) => p.status === 'draft').length + articles.filter((a) => a.status === 'draft').length;
 
-  const handleReset = async () => {
-    const ok = await confirm({
-      title: 'Khôi phục dữ liệu gốc',
-      message: 'Bạn có chắc chắn muốn đặt lại toàn bộ mock data về trạng thái ban đầu? Mọi dữ liệu tự thêm sẽ bị xóa.',
-      confirmText: 'Đặt lại dữ liệu',
-      cancelText: 'Hủy bỏ',
-      type: 'warning'
-    });
-    if (ok) {
-      resetData();
-      showToast('Đã khôi phục dữ liệu gốc thành công!', { type: 'info' });
-    }
-  };
-
   return (
     <div className="space-y-6 pb-12">
       <AdminHeader
-        title="Tổng Quan Quản Trị (Dashboard)"
+        title="Tổng Quan Quản Trị"
         description="Theo dõi toàn bộ sản phẩm, danh mục, bảng xếp hạng và bài viết thời gian thực."
-        actions={
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleReset}
-              className="p-2 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
-              title="Đặt lại dữ liệu gốc"
-            >
-              <RotateCcw className="w-4 h-4" />
-            </button>
-            <Link to="/admin/products">
-              <Button variant="primary" size="sm" leftIcon={<Plus className="w-4 h-4" />}>
-                Thêm sản phẩm
-              </Button>
-            </Link>
-          </div>
-        }
       />
 
       <div className="px-6 space-y-6">
@@ -81,15 +43,15 @@ export const AdminDashboardPage: React.FC = () => {
           <StatCard
             title="Danh Mục Hoạt Động"
             value={categories.filter((c) => c.status !== 'inactive').length}
-            subtitle={`${categories.reduce((acc, c) => acc + c.subcategories.length, 0)} danh mục con`}
+            subtitle={`${categories.filter((c) => c.group === 'physical').length} vật lý · ${categories.filter((c) => c.group === 'digital').length} số`}
             icon={<FolderTree className="w-4 h-4" />}
             color="blue"
           />
           <StatCard
-            title="Bảng Xếp Hạng Top"
-            value={rankings.length}
-            growth="+4 mới"
-            icon={<Award className="w-4 h-4" />}
+            title="Bài Viết & Cẩm Nang"
+            value={articles.length}
+            growth="+5 mới"
+            icon={<FileText className="w-4 h-4 text-amber-500" />}
             color="amber"
           />
           <StatCard
@@ -127,7 +89,6 @@ export const AdminDashboardPage: React.FC = () => {
                     </div>
                   </div>
                   <div className="flex items-center gap-3 flex-shrink-0">
-                    <ScoreBadge score={p.score} size="sm" />
                     <Badge variant={p.status === 'published' ? 'success' : 'warning'} size="sm">
                       {p.status === 'published' ? 'Xuất bản' : 'Bản nháp'}
                     </Badge>
@@ -185,10 +146,10 @@ export const AdminDashboardPage: React.FC = () => {
                   Quản lý Danh Mục
                 </Link>
                 <Link
-                  to="/admin/rankings"
+                  to="/admin/articles"
                   className="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-semibold transition-colors block text-center"
                 >
-                  Sắp xếp Bảng Xếp Hạng
+                  Quản lý Bài Viết
                 </Link>
               </div>
             </div>

@@ -13,6 +13,7 @@ interface ProductCardProps {
   rank?: number;
   className?: string;
   onClick?: (product: Product) => void;
+  showDetailButton?: boolean;
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({
@@ -20,7 +21,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   variant = 'grid',
   rank,
   className = '',
-  onClick
+  onClick,
+  showDetailButton = true
 }) => {
   const fallbackImg = product.type === 'physical'
     ? 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=800&q=80'
@@ -37,10 +39,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     return (
       <div
         onClick={handleClick}
-        className={`bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 hover:shadow-md hover:border-slate-300 transition-all flex flex-col md:flex-row gap-6 items-start ${onClick ? 'cursor-pointer' : ''} ${className}`}
+        className={`bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 hover:shadow-md hover:border-slate-300 transition-all flex flex-col md:flex-row gap-6 items-start ${className}`}
       >
         {/* Left: Image & Rank Badge */}
-        <div className="relative w-full md:w-56 h-48 md:h-44 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0 group">
+        <Link
+          to={`/danh-gia/${product.slug}`}
+          className="relative w-full md:w-56 h-48 md:h-44 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0 group block"
+        >
           <img
             src={product.image || fallbackImg}
             alt={product.name}
@@ -62,7 +67,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               </Badge>
             </div>
           )}
-        </div>
+        </Link>
 
         {/* Middle: Info & Specs */}
         <div className="flex-1 space-y-3 min-w-0">
@@ -75,9 +80,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             <span className="text-xs text-slate-500">{product.category}</span>
           </div>
 
-          <h3 className="font-bold text-base sm:text-lg text-slate-900 hover:text-orange-600 transition-colors">
-            {product.name}
-          </h3>
+          <Link to={`/danh-gia/${product.slug}`} className="block group/title">
+            <h3 className="font-bold text-base sm:text-lg text-slate-900 group-hover/title:text-orange-600 transition-colors">
+              {product.name}
+            </h3>
+          </Link>
 
           <p className="text-xs sm:text-sm text-slate-600 line-clamp-2">
             {product.shortDescription}
@@ -111,9 +118,17 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </div>
 
           <div className="w-full space-y-2">
-            <Button variant="primary" size="sm" className="w-full">
-              Xem chi tiết
-            </Button>
+            {onClick ? (
+              <Button variant="primary" size="sm" className="w-full" onClick={handleClick}>
+                Xem chi tiết
+              </Button>
+            ) : (
+              <Link to={`/danh-gia/${product.slug}`} className="w-full block">
+                <Button variant="primary" size="sm" className="w-full">
+                  Xem chi tiết
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </div>
@@ -124,10 +139,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   return (
     <div
       onClick={handleClick}
-      className={`bg-white rounded-2xl border border-slate-200/80 overflow-hidden hover:shadow-lg hover:border-slate-300 transition-all duration-200 flex flex-col group ${onClick ? 'cursor-pointer' : ''} ${className}`}
+      className={`bg-white rounded-2xl border border-slate-200/80 overflow-hidden hover:shadow-lg hover:border-slate-300 transition-all duration-200 flex flex-col group ${className}`}
     >
       {/* Image Container */}
-      <div className="relative h-48 bg-slate-100 overflow-hidden">
+      <Link to={`/danh-gia/${product.slug}`} className="relative h-48 bg-slate-100 overflow-hidden block">
         <img
           src={product.image || fallbackImg}
           alt={product.name}
@@ -158,7 +173,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             </span>
           </div>
         )}
-      </div>
+      </Link>
 
       {/* Content */}
       <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
@@ -166,22 +181,44 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">
             {product.category}
           </span>
-          <h4 className="font-bold text-slate-900 group-hover:text-orange-600 transition-colors line-clamp-2 text-base leading-snug">
-            {product.name}
-          </h4>
+          <Link to={`/danh-gia/${product.slug}`}>
+            <h4 className="font-bold text-slate-900 group-hover:text-orange-600 transition-colors line-clamp-2 text-base leading-snug">
+              {product.name}
+            </h4>
+          </Link>
           <p className="hidden sm:block text-xs text-slate-500 line-clamp-2">
             {product.bestFor}
           </p>
         </div>
 
         {/* Price & Action */}
-        <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+        <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
           <div>
             <span className="text-xs text-slate-400 block">Giá tham khảo</span>
             <span className="font-bold text-slate-900 text-sm sm:text-base">
               {formatPrice(product.price, product.priceUnit)}
             </span>
           </div>
+          {showDetailButton && (
+            onClick ? (
+              <button
+                type="button"
+                onClick={handleClick}
+                className="px-3 py-1.5 rounded-xl bg-orange-50 text-orange-600 group-hover:bg-orange-600 group-hover:text-white font-bold text-xs transition-all duration-200 flex items-center gap-1 shadow-2xs cursor-pointer flex-shrink-0"
+              >
+                <span>Xem chi tiết</span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+              </button>
+            ) : (
+              <Link
+                to={`/danh-gia/${product.slug}`}
+                className="px-3 py-1.5 rounded-xl bg-orange-50 text-orange-600 group-hover:bg-orange-600 group-hover:text-white font-bold text-xs transition-all duration-200 flex items-center gap-1 shadow-2xs cursor-pointer flex-shrink-0"
+              >
+                <span>Xem chi tiết</span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+            )
+          )}
         </div>
       </div>
     </div>

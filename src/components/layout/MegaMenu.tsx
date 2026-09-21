@@ -16,7 +16,7 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ type, onClose }) => {
   const filteredCategories = categories.filter((c) => c.group === type && c.status !== 'inactive');
   const featuredRanking = rankings.find((r) => r.type === type);
   const featuredProduct = products.find((p) => p.type === type);
-  const featuredComparison = comparisons.find((c) => c.type === type);
+  const featuredComparison = comparisons.find((c) => c.type === type && c.isFeatured) || comparisons.find((c) => c.type === type);
 
   const isPhysical = type === 'physical';
   const themeColor = isPhysical ? 'orange' : 'indigo';

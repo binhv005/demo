@@ -10,8 +10,10 @@ import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Select } from '../../components/ui/Select';
 import { Badge } from '../../components/ui/Badge';
-import { Plus, Edit2, Trash2, Eye, Scale } from 'lucide-react';
+import { ImageUpload } from '../../components/ui/ImageUpload';
+import { Plus, Edit2, Trash2, Eye, Scale, ChevronDown, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { toSlug } from '../../utils/formatters';
 
 export const AdminComparisonsPage: React.FC = () => {
   const { comparisons, products, addComparison, updateComparison, deleteComparison } = useData();
@@ -27,8 +29,11 @@ export const AdminComparisonsPage: React.FC = () => {
   const [productAId, setProductAId] = useState(products[0]?.id || '');
   const [productBId, setProductBId] = useState(products[1]?.id || '');
   const [winnerId, setWinnerId] = useState(products[0]?.id || '');
+  const [image, setImage] = useState('');
   const [verdict, setVerdict] = useState('');
   const [finalRec, setFinalRec] = useState('');
+  const [status, setStatus] = useState<'published' | 'draft'>('published');
+  const [isFeatured, setIsFeatured] = useState<boolean>(false);
 
   const openAddModal = () => {
     setEditingComp(null);
@@ -37,8 +42,11 @@ export const AdminComparisonsPage: React.FC = () => {
     setProductAId(products[0]?.id || '');
     setProductBId(products[1]?.id || '');
     setWinnerId(products[0]?.id || '');
+    setImage('');
     setVerdict('Nhận định tổng quan về người chiến thắng...');
     setFinalRec('Khuyến nghị lựa chọn phù hợp theo từng đối tượng...');
+    setStatus('published');
+    setIsFeatured(false);
     setModalOpen(true);
   };
 
@@ -49,8 +57,11 @@ export const AdminComparisonsPage: React.FC = () => {
     setProductAId(c.productAId);
     setProductBId(c.productBId);
     setWinnerId(c.winnerId);
+    setImage(c.image || '');
     setVerdict(c.verdict);
     setFinalRec(c.finalRecommendation);
+    setStatus(c.status || 'published');
+    setIsFeatured(c.isFeatured ?? false);
     setModalOpen(true);
   };
 
@@ -58,7 +69,16 @@ export const AdminComparisonsPage: React.FC = () => {
     e.preventDefault();
     if (!title.trim()) return;
 
-    const generatedSlug = slug.trim() || title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    if (isFeatured) {
+      // Unpin any other featured comparisons so only this single comparison is featured
+      comparisons.forEach((c) => {
+        if (c.isFeatured && (!editingComp || c.id !== editingComp.id)) {
+          updateComparison(c.id, { isFeatured: false });
+        }
+      });
+    }
+
+    const generatedSlug = toSlug(slug.trim()) || toSlug(title);
     const selectedProdA = products.find((p) => p.id === productAId);
 
     if (editingComp) {
@@ -68,8 +88,11 @@ export const AdminComparisonsPage: React.FC = () => {
         productAId,
         productBId,
         winnerId,
+        image,
         verdict,
-        finalRecommendation: finalRec
+        finalRecommendation: finalRec,
+        status,
+        isFeatured
       });
       showToast('Đã cập nhật bài so sánh đối đầu!', { type: 'success' });
     } else {
@@ -81,6 +104,7 @@ export const AdminComparisonsPage: React.FC = () => {
         productAId,
         productBId,
         winnerId,
+        image,
         verdict,
         priceComparison: 'So sánh mức giá tham khảo giữa 2 dòng sản phẩm.',
         features: [
@@ -92,7 +116,8 @@ export const AdminComparisonsPage: React.FC = () => {
         finalRecommendation: finalRec,
         authorId: 'expert-1',
         faq: [{ q: 'Sản phẩm nào phù hợp hơn cho người mới?', a: 'Sản phẩm A có giao diện thân thiện hơn.' }],
-        status: 'published'
+        status,
+        isFeatured
       });
       showToast('Đã tạo bài so sánh mới thành công!', { type: 'success' });
     }
@@ -121,29 +146,41 @@ export const AdminComparisonsPage: React.FC = () => {
 
   const columns = [
     {
-      header: 'Tiêu đề so sánh',
-      accessor: (c: Comparison) => (
-        <div className="space-y-1">
-          <span className="font-bold text-xs text-slate-900 block">{c.title}</span>
-          <span className="text-[11px] text-slate-400 block line-clamp-1">{c.verdict}</span>
-        </div>
-      )
+      header: 'Bài so sánh',
+      className: 'min-w-[280px] sm:min-w-[340px] max-w-md',
+      accessor: (c: Comparison) => {
+        const pA = products.find((p) => p.id === c.productAId);
+        const displayImg = c.image || pA?.image || 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=300&q=80';
+        return (
+          <div className="flex items-center gap-3">
+            <img
+              src={displayImg}
+              alt={c.title}
+              className="w-11 h-11 rounded-xl object-cover border border-slate-200 flex-shrink-0"
+            />
+            <div className="min-w-0 flex-1">
+              <span className="font-bold text-xs sm:text-sm text-slate-900 block leading-snug line-clamp-2">{c.title}</span>
+            </div>
+          </div>
+        );
+      }
     },
     {
       header: 'Sản phẩm A vs B',
+      className: 'whitespace-nowrap min-w-[240px]',
       accessor: (c: Comparison) => {
         const pA = products.find((p) => p.id === c.productAId);
         const pB = products.find((p) => p.id === c.productBId);
         return (
-          <span className="text-xs text-slate-700 font-medium">
-            {pA?.name || 'Sản phẩm A'} <strong className="text-indigo-600">vs</strong> {pB?.name || 'Sản phẩm B'}
+          <span className="text-xs text-slate-700 font-medium whitespace-nowrap inline-block">
+            {pA?.name || 'Sản phẩm A'} <strong className="text-orange-500 font-bold px-1">vs</strong> {pB?.name || 'Sản phẩm B'}
           </span>
         );
       }
     },
     {
       header: 'Người chiến thắng',
-      className: 'whitespace-nowrap',
+      className: 'whitespace-nowrap min-w-[160px]',
       accessor: (c: Comparison) => {
         const winner = products.find((p) => p.id === c.winnerId);
         return (
@@ -154,9 +191,69 @@ export const AdminComparisonsPage: React.FC = () => {
       }
     },
     {
-      header: 'Cập nhật',
-      className: 'whitespace-nowrap',
-      accessor: (c: Comparison) => <span className="text-xs text-slate-400">{c.updatedAt}</span>
+      header: 'Trạng thái',
+      className: 'whitespace-nowrap min-w-[140px]',
+      accessor: (c: Comparison) => (
+        <div className="relative inline-block">
+          <select
+            value={c.status || 'published'}
+            onChange={(e) => {
+              const newStatus = e.target.value as 'published' | 'draft';
+              updateComparison(c.id, { status: newStatus });
+              showToast(
+                `Đã chuyển trạng thái bài so sánh sang "${newStatus === 'published' ? 'Xuất bản' : 'Bản nháp'}"`,
+                { type: 'success' }
+              );
+            }}
+            className={`text-xs font-bold px-3 py-1.5 rounded-xl border appearance-none pr-7 cursor-pointer focus:outline-none focus:ring-2 transition-all ${
+              c.status === 'published'
+                ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100/70 focus:ring-emerald-400'
+                : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200/70 focus:ring-slate-400'
+            }`}
+          >
+            <option value="published">Xuất bản</option>
+            <option value="draft">Bản nháp</option>
+          </select>
+          <ChevronDown className="w-3.5 h-3.5 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none opacity-60 text-slate-600" />
+        </div>
+      )
+    },
+    {
+      header: 'Trang chính',
+      className: 'text-center whitespace-nowrap min-w-[130px]',
+      accessor: (c: Comparison) => {
+        const isCurrentlyFeatured = c.isFeatured ?? false;
+        return (
+          <button
+            type="button"
+            onClick={() => {
+              const next = !isCurrentlyFeatured;
+              if (next) {
+                // Unpin any other featured comparison so only 1 is active
+                comparisons.forEach((comp) => {
+                  if (comp.isFeatured && comp.id !== c.id) {
+                    updateComparison(comp.id, { isFeatured: false });
+                  }
+                });
+                updateComparison(c.id, { isFeatured: true });
+                showToast('Đã ghim bài so sánh làm tiêu điểm duy nhất trên trang chính!', { type: 'success' });
+              } else {
+                updateComparison(c.id, { isFeatured: false });
+                showToast('Đã bỏ hiển thị bài so sánh trên trang chính!', { type: 'info' });
+              }
+            }}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-2xs ${
+              isCurrentlyFeatured
+                ? 'bg-amber-100 text-amber-900 border border-amber-300 hover:bg-amber-200'
+                : 'bg-slate-100 text-slate-400 border border-slate-200/80 hover:bg-slate-200/70 hover:text-slate-600'
+            }`}
+            title={isCurrentlyFeatured ? 'Bấm để bỏ hiển thị trên trang chính' : 'Bấm để chọn làm bài so sánh tiêu điểm duy nhất trên trang chính'}
+          >
+            <Star className={`w-3.5 h-3.5 ${isCurrentlyFeatured ? 'fill-amber-500 text-amber-500' : 'text-slate-400'}`} />
+            <span>{isCurrentlyFeatured ? 'Tiêu điểm' : 'Không'}</span>
+          </button>
+        );
+      }
     },
     {
       header: 'Hành động',
@@ -192,8 +289,8 @@ export const AdminComparisonsPage: React.FC = () => {
   return (
     <div className="space-y-6 pb-12">
       <AdminHeader
-        title="Quản Lý Bài So Sánh (Comparisons)"
-        description="Quản lý các bài so sánh trực diện hai sản phẩm A và B cùng bảng tính năng đối đầu."
+        title="Quản Lý Bài So Sánh"
+        description="Quản lý các bài viết so sánh đối đầu 1-1 giữa 2 sản phẩm cụ thể."
         actions={
           <Button variant="primary" size="sm" leftIcon={<Plus className="w-4 h-4" />} onClick={openAddModal}>
             Tạo bài so sánh mới
@@ -225,7 +322,7 @@ export const AdminComparisonsPage: React.FC = () => {
             onChange={(e) => {
               setTitle(e.target.value);
               if (!editingComp) {
-                setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
+                setSlug(toSlug(e.target.value));
               }
             }}
             placeholder="So sánh Product A vs Product B..."
@@ -235,8 +332,15 @@ export const AdminComparisonsPage: React.FC = () => {
           <Input
             label="Slug URL"
             value={slug}
-            onChange={(e) => setSlug(e.target.value)}
+            onChange={(e) => setSlug(toSlug(e.target.value))}
             placeholder="aircook-vs-homechef"
+          />
+
+          <ImageUpload
+            label="Hình ảnh bài so sánh"
+            value={image}
+            onChange={setImage}
+            multiple={false}
           />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -254,15 +358,39 @@ export const AdminComparisonsPage: React.FC = () => {
             />
           </div>
 
-          <Select
-            label="Sản phẩm chiến thắng chung cuộc (Overall Winner)"
-            value={winnerId}
-            onChange={(e) => setWinnerId(e.target.value)}
-            options={[
-              { value: productAId, label: `Sản phẩm A (${products.find((p) => p.id === productAId)?.name || 'A'})` },
-              { value: productBId, label: `Sản phẩm B (${products.find((p) => p.id === productBId)?.name || 'B'})` }
-            ]}
-          />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Select
+              label="Sản phẩm chiến thắng chung cuộc (Overall Winner)"
+              value={winnerId}
+              onChange={(e) => setWinnerId(e.target.value)}
+              options={[
+                { value: productAId, label: `Sản phẩm A (${products.find((p) => p.id === productAId)?.name || 'A'})` },
+                { value: productBId, label: `Sản phẩm B (${products.find((p) => p.id === productBId)?.name || 'B'})` }
+              ]}
+            />
+            <Select
+              label="Trạng thái"
+              value={status}
+              onChange={(e) => setStatus(e.target.value as any)}
+              options={[
+                { value: 'published', label: 'Xuất bản (Hiển thị)' },
+                { value: 'draft', label: 'Bản nháp (Ẩn)' }
+              ]}
+            />
+          </div>
+
+          <div className="p-3 bg-slate-50 border border-slate-200/80 rounded-xl">
+            <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-700 select-none">
+              <input
+                type="checkbox"
+                checked={isFeatured}
+                onChange={(e) => setIsFeatured(e.target.checked)}
+                className="w-4 h-4 rounded text-orange-600 focus:ring-orange-500 border-slate-300 cursor-pointer"
+              />
+              <Star className={`w-3.5 h-3.5 ${isFeatured ? 'fill-amber-500 text-amber-500' : 'text-slate-400'}`} />
+              <span>Ghim làm bài so sánh tiêu điểm duy nhất trên trang chính (Tối đa 1 bài)</span>
+            </label>
+          </div>
 
           <div>
             <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">

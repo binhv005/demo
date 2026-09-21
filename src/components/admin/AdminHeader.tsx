@@ -16,9 +16,6 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ title, description, ac
       <div>
         <div className="flex items-center gap-2">
           <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">{title}</h1>
-          <span className="text-[10px] bg-indigo-50 text-indigo-700 font-bold px-2 py-0.5 rounded-full border border-indigo-200/60 whitespace-nowrap flex-shrink-0 inline-block">
-            Mock Mode
-          </span>
         </div>
         {description && <p className="text-xs text-slate-500 mt-0.5">{description}</p>}
       </div>
@@ -33,7 +30,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ title, description, ac
               {user?.name || 'Quản Trị Viên'}
             </span>
             <span className="text-[10px] text-slate-400 font-medium">
-              {user?.email || 'admin@example.com'}
+              {user?.email || 'admin@techreview.vn'}
             </span>
           </div>
         </div>

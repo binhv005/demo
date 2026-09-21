@@ -5,7 +5,7 @@ import { Star } from 'lucide-react';
 interface ScoreBadgeProps {
   score: number;
   showLabel?: boolean;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'compact';
   className?: string;
 }
 
@@ -16,6 +16,22 @@ export const ScoreBadge: React.FC<ScoreBadgeProps> = ({
   className = ''
 }) => {
   const colorInfo = getScoreColor(score);
+
+  if (size === 'compact') {
+    return (
+      <div className={`flex flex-col items-center justify-center px-3 py-1.5 rounded-xl text-white shadow-xs ${colorInfo.bg} ${className}`}>
+        <div className="flex items-baseline gap-0.5">
+          <span className="text-xl font-black tracking-tight leading-none">{score.toFixed(1)}</span>
+          <span className="text-[10px] font-bold opacity-80 leading-none">/10</span>
+        </div>
+        {showLabel && (
+          <span className="text-[9px] font-bold mt-0.5 uppercase tracking-wider opacity-95 leading-none">
+            {colorInfo.label}
+          </span>
+        )}
+      </div>
+    );
+  }
 
   if (size === 'sm') {
     return (

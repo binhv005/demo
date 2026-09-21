@@ -7,6 +7,7 @@ import { AdminHeader } from '../../components/admin/AdminHeader';
 import { Modal } from '../../components/ui/Modal';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
+import { ImageUpload } from '../../components/ui/ImageUpload';
 import { Plus, Edit2, Trash2, Award, CheckCircle2, Users } from 'lucide-react';
 
 export const AdminExpertsPage: React.FC = () => {
@@ -95,7 +96,7 @@ export const AdminExpertsPage: React.FC = () => {
   return (
     <div className="space-y-6 pb-12">
       <AdminHeader
-        title="Quản Lý Đội Ngũ Chuyên Gia (Experts)"
+        title="Quản Lý Đội Ngũ Chuyên Gia"
         description="Quản lý hồ sơ ban biên tập, chuyên gia kiểm nghiệm và chứng chỉ chuyên môn."
         actions={
           <Button variant="primary" size="sm" leftIcon={<Plus className="w-4 h-4" />} onClick={openAddModal}>
@@ -188,10 +189,10 @@ export const AdminExpertsPage: React.FC = () => {
             required
           />
 
-          <Input
-            label="Ảnh đại diện (Avatar URL)"
+          <ImageUpload
+            label="Ảnh đại diện"
             value={avatar}
-            onChange={(e) => setAvatar(e.target.value)}
+            onChange={setAvatar}
             required
           />
 

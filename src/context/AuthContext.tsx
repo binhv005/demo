@@ -18,14 +18,25 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(() => {
     const saved = localStorage.getItem('demo_admin_user');
-    return saved ? JSON.parse(saved) : null;
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed.name) {
+          parsed.name = parsed.name.replace(/\s*\(Demo\)/gi, '').trim();
+        }
+        return parsed;
+      } catch {
+        return null;
+      }
+    }
+    return null;
   });
 
   const login = (email: string, pass: string): boolean => {
     if (email.trim().toLowerCase() === 'admin@example.com' && pass === '123456') {
       const demoUser = {
         email: 'admin@example.com',
-        name: 'Quản Trị Viên (Demo)',
+        name: 'Quản Trị Viên',
         role: 'Senior Editorial Admin'
       };
       setUser(demoUser);

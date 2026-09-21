@@ -27,7 +27,7 @@ export const Logo: React.FC<LogoProps> = ({
   if (useImageOnly) {
     return (
       <img
-        src={isDark ? '/logo-dark.png' : '/logo.png'}
+        src={isDark ? '/logo-dark.webp' : '/logo.webp'}
         alt="Tech Review - Đánh giá & So sánh"
         className={`${dimensions.imgH} w-auto object-contain transition-transform ${className}`}
       />
@@ -36,12 +36,12 @@ export const Logo: React.FC<LogoProps> = ({
 
   return (
     <div className={`flex items-center gap-2.5 select-none ${className}`}>
-      {/* Brand Icon Image from 29c88610362fb8c8c9091d37ff0b1ebf.jpg */}
+      {/* Brand Icon Image */}
       <div
         className={`${dimensions.iconSize} rounded-full overflow-hidden flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-105 shadow-sm`}
       >
         <img
-          src="/brand-logo.png"
+          src="/brand-logo.webp"
           alt="TechReview Icon"
           className="w-full h-full object-contain"
         />

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Star, Quote, CheckCircle } from 'lucide-react';
 import { Container } from '../ui/Container';
+import { CountUp } from '../ui/CountUp';
 
 export const TestimonialsSection: React.FC = () => {
   const testimonials = [
@@ -104,17 +105,23 @@ export const TestimonialsSection: React.FC = () => {
         {/* Highlight Trust Strip */}
         <div className="mt-12 p-6 rounded-3xl bg-slate-900 text-white flex flex-col md:flex-row items-center justify-around gap-6 text-center border border-slate-800 shadow-xl">
           <div className="space-y-0.5">
-            <div className="text-2xl sm:text-3xl font-black text-orange-400">98.6%</div>
+            <div className="text-2xl sm:text-3xl font-black text-orange-400">
+              <CountUp end={98.6} decimals={1} suffix="%" duration={1800} />
+            </div>
             <div className="text-xs text-slate-300">Độc giả tin tưởng quyết định mua sắm</div>
           </div>
           <div className="h-8 w-px bg-slate-700 hidden md:block" />
           <div className="space-y-0.5">
-            <div className="text-2xl sm:text-3xl font-black text-white">1.2M+</div>
+            <div className="text-2xl sm:text-3xl font-black text-white">
+              <CountUp end={1.2} decimals={1} suffix="M+" duration={1800} />
+            </div>
             <div className="text-xs text-slate-300">Lượt tra cứu & so sánh mỗi tháng</div>
           </div>
           <div className="h-8 w-px bg-slate-700 hidden md:block" />
           <div className="space-y-0.5">
-            <div className="text-2xl sm:text-3xl font-black text-emerald-400">0 VNĐ</div>
+            <div className="text-2xl sm:text-3xl font-black text-emerald-400">
+              <CountUp end={0} suffix=" VNĐ" duration={1000} />
+            </div>
             <div className="text-xs text-slate-300">Không nhận tiền tài trợ đổi thứ hạng</div>
           </div>
         </div>

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
 import { ScoreBadge } from '../ui/ScoreBadge';
 import { formatPrice } from '../../utils/formatters';
@@ -20,13 +21,15 @@ import {
 
 export const ComparisonWidget: React.FC = () => {
   const { comparisons, products } = useData();
-  const [selectedCompId, setSelectedCompId] = useState<string>(
-    comparisons[0]?.id || ''
-  );
-  const [showDetails, setShowDetails] = useState<boolean>(false);
 
-  const activeComparison =
-    comparisons.find((c) => c.id === selectedCompId) || comparisons[0];
+  // Filter published comparisons, prioritizing single featured one
+  const publishedComparisons = useMemo(() => {
+    return comparisons.filter((c) => c.status !== 'draft');
+  }, [comparisons]);
+
+  const activeComparison = useMemo(() => {
+    return publishedComparisons.find((c) => c.isFeatured) || publishedComparisons[0];
+  }, [publishedComparisons]);
 
   if (!activeComparison) return null;
 
@@ -35,38 +38,25 @@ export const ComparisonWidget: React.FC = () => {
 
   return (
     <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xl overflow-hidden">
-      {/* Header / Comparison Selector Tabs */}
+      {/* Header Bar */}
       <div className="p-5 sm:p-6 bg-slate-900 text-white flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-slate-800">
-        <div className="space-y-1.5">
-          <h3 className="text-lg sm:text-xl font-black text-white line-clamp-1">
+        <div className="space-y-1 min-w-0 flex-1">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-orange-600/90 text-[11px] font-black uppercase tracking-wider text-white mb-1">
+            <Scale className="w-3.5 h-3.5" />
+            <span>Đối Đầu Tiêu Điểm</span>
+          </div>
+          <h3 className="text-lg sm:text-xl font-black text-white leading-snug">
             {activeComparison.title}
           </h3>
         </div>
 
-        {/* Quick Comparison Selector */}
-        <div className="flex flex-wrap items-center gap-2 pt-1 md:pt-0">
-          {comparisons.map((c) => (
-            <button
-              key={c.id}
-              onClick={() => setSelectedCompId(c.id)}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                selectedCompId === c.id
-                  ? 'bg-orange-600 text-white shadow-md'
-                  : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white'
-              }`}
-            >
-              {c.type === 'physical' ? (
-                <span className="inline-flex items-center gap-1.5">
-                  <Flame className="w-3.5 h-3.5 text-orange-400" /> Gia Dụng
-                </span>
-              ) : (
-                <span className="inline-flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-indigo-400" /> Trợ Lý AI
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
+        <Link
+          to={`/so-sanh/${activeComparison.slug}`}
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-800 hover:bg-orange-600 text-white text-xs font-bold transition-all shadow-xs flex-shrink-0 cursor-pointer"
+        >
+          <span>Xem chi tiết đối đầu</span>
+          <ArrowRight className="w-3.5 h-3.5" />
+        </Link>
       </div>
 
       {/* Main Comparison Area */}
@@ -118,11 +108,18 @@ export const ComparisonWidget: React.FC = () => {
                 </div>
               </div>
 
-              {/* Highlights */}
-              <div className="mt-4 pt-3 border-t border-slate-100 text-xs text-slate-600 space-y-1">
-                <p className="line-clamp-2">
+              {/* Highlights & Action */}
+              <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between gap-2 text-xs">
+                <p className="text-slate-600 line-clamp-1 flex-1">
                   <strong className="text-slate-800">Điểm mạnh:</strong> {productA.shortDescription}
                 </p>
+                <Link
+                  to={`/danh-gia/${productA.slug}`}
+                  className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-orange-50 hover:text-orange-600 font-bold text-[11px] text-slate-700 transition-colors flex items-center gap-1 flex-shrink-0 cursor-pointer"
+                >
+                  <span>Xem chi tiết</span>
+                  <ArrowRight className="w-3 h-3" />
+                </Link>
               </div>
             </div>
           )}
@@ -167,93 +164,19 @@ export const ComparisonWidget: React.FC = () => {
                 </div>
               </div>
 
-              {/* Highlights */}
-              <div className="mt-4 pt-3 border-t border-slate-100 text-xs text-slate-600 space-y-1">
-                <p className="line-clamp-2">
+              {/* Highlights & Action */}
+              <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between gap-2 text-xs">
+                <p className="text-slate-600 line-clamp-1 flex-1">
                   <strong className="text-slate-800">Điểm mạnh:</strong> {productB.shortDescription}
                 </p>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Feature Comparison Matrix Rows (Collapsible / Toggleable) */}
-        <div className="space-y-3 pt-1">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center flex-shrink-0">
-                <Zap className="w-4 h-4 text-orange-600" />
-              </div>
-              <div>
-                <h4 className="text-xs sm:text-sm font-black text-slate-800 uppercase tracking-wider">
-                  Bảng Tiêu Chí So Sánh Trực Tiếp
-                </h4>
-                <p className="text-[11px] text-slate-500">
-                  {showDetails
-                    ? 'Hiển thị đầy đủ thông số đo lường đối đầu giữa 2 sản phẩm'
-                    : 'Nhấn "Hiện chi tiết" để xem toàn bộ bảng thông số đối đầu'}
-                </p>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setShowDetails(!showDetails)}
-              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-[#FF5722] hover:bg-[#F4511E] text-white transition-all cursor-pointer shadow-sm active:scale-95 self-start sm:self-auto"
-            >
-              {showDetails ? (
-                <>
-                  <span>Ẩn chi tiết</span>
-                  <ChevronUp className="w-4 h-4" />
-                </>
-              ) : (
-                <>
-                  <Eye className="w-3.5 h-3.5" />
-                  <span>Hiện chi tiết</span>
-                  <ChevronDown className="w-4 h-4" />
-                </>
-              )}
-            </button>
-          </div>
-
-          {/* Collapsible Content */}
-          {showDetails && (
-            <div className="divide-y divide-slate-100 border border-slate-200/80 rounded-2xl overflow-hidden bg-slate-50/50 animate-grid-filter">
-              {activeComparison.features.map((feat, idx) => (
-                <div
-                  key={idx}
-                  className="grid grid-cols-1 md:grid-cols-12 p-3.5 sm:p-4 gap-2 sm:gap-4 items-center hover:bg-white transition-colors text-xs"
+                <Link
+                  to={`/danh-gia/${productB.slug}`}
+                  className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-orange-50 hover:text-orange-600 font-bold text-[11px] text-slate-700 transition-colors flex items-center gap-1 flex-shrink-0 cursor-pointer"
                 >
-                  <div className="md:col-span-4 font-bold text-slate-900 flex items-center gap-1.5">
-                    <Zap className="w-3.5 h-3.5 text-orange-500 flex-shrink-0" />
-                    <span>{feat.feature}</span>
-                  </div>
-                  <div className="md:col-span-4 text-slate-600 flex items-start gap-1.5">
-                    <span
-                      className={`font-semibold ${
-                        feat.winner === 'A' ? 'text-emerald-700 font-bold' : ''
-                      }`}
-                    >
-                      {feat.productA}
-                    </span>
-                    {feat.winner === 'A' && (
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0 mt-0.5" />
-                    )}
-                  </div>
-                  <div className="md:col-span-4 text-slate-600 flex items-start gap-1.5">
-                    <span
-                      className={`font-semibold ${
-                        feat.winner === 'B' ? 'text-emerald-700 font-bold' : ''
-                      }`}
-                    >
-                      {feat.productB}
-                    </span>
-                    {feat.winner === 'B' && (
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0 mt-0.5" />
-                    )}
-                  </div>
-                </div>
-              ))}
+                  <span>Xem chi tiết</span>
+                  <ArrowRight className="w-3 h-3" />
+                </Link>
+              </div>
             </div>
           )}
         </div>
@@ -269,6 +192,25 @@ export const ComparisonWidget: React.FC = () => {
               {activeComparison.verdict}
             </p>
           </div>
+        </div>
+
+        {/* Bottom Actions Bar */}
+        <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-slate-100">
+          <Link
+            to={`/so-sanh/${activeComparison.slug}`}
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-orange-600 text-white font-bold text-xs sm:text-sm transition-all shadow-sm cursor-pointer group"
+          >
+            <span>Đọc bài phân tích đối đầu chi tiết</span>
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </Link>
+
+          <Link
+            to="/so-sanh"
+            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-orange-600 hover:text-orange-700 hover:underline transition-colors"
+          >
+            <span>Xem toàn bộ các bài so sánh</span>
+            <ChevronRight className="w-4 h-4" />
+          </Link>
         </div>
       </div>
     </div>

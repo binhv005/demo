@@ -9,7 +9,7 @@ export const mockRankings: Ranking[] = [
     type: 'physical',
     groupSlug: 'gia-dung',
     categorySlug: 'noi-chien',
-    image: '/airfryer-lab-testing.jpg',
+    image: '/airfryer-lab-testing.webp',
     subtitle: 'Đội ngũ chuyên gia của chúng tôi đã thử nghiệm chiên nướng hơn 20 mẫu nồi chiên trong 90 ngày để tìm ra sản phẩm giòn đều, an toàn và dễ vệ sinh nhất.',
     updatedAt: '12 Tháng 03, 2024',
     authorId: 'expert-1',

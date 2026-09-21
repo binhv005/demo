@@ -95,7 +95,7 @@ export const Header: React.FC = () => {
     { label: 'Tiêu chuẩn', id: 'tinh-nang', icon: Zap },
     { label: 'Sản phẩm vật lý', id: 'physical', icon: Flame },
     { label: 'Sản phẩm số', id: 'digital', icon: Sparkles },
-    { label: 'Bảng xếp hạng', id: 'ranking', icon: Award },
+    { label: 'Top 10 bài viết', id: 'ranking', icon: Award },
     { label: 'So sánh', id: 'so-sanh', icon: Scale },
     { label: 'Cẩm nang', id: 'guides', icon: BookOpen },
     { label: 'Hỏi đáp', id: 'faq', icon: HelpCircle }
@@ -140,18 +140,6 @@ export const Header: React.FC = () => {
               );
             })}
           </nav>
-
-          {/* ACTIONS: ADMIN */}
-          <div className="hidden sm:flex items-center gap-2 flex-shrink-0 whitespace-nowrap">
-            <Link
-              to="/admin/products"
-              className="px-4 py-2.5 bg-slate-900 text-white hover:bg-slate-800 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm whitespace-nowrap flex-shrink-0"
-              title="Quản trị Sản phẩm"
-            >
-              <Shield className="w-3.5 h-3.5 text-orange-400 flex-shrink-0" />
-              <span className="whitespace-nowrap">Admin Demo</span>
-            </Link>
-          </div>
 
           {/* MOBILE ACTIONS */}
           <div className="flex lg:hidden items-center gap-2">
@@ -231,21 +219,6 @@ export const Header: React.FC = () => {
                   );
                 })}
               </nav>
-            </div>
-
-            {/* Drawer Footer Action */}
-            <div className="p-4 border-t border-slate-100 bg-slate-50/80 flex-shrink-0">
-              <Link
-                to="/admin/products"
-                onClick={closeMenus}
-                className="flex items-center justify-between py-2.5 px-3 rounded-xl bg-slate-900 text-white font-semibold text-xs shadow-md hover:bg-slate-800 transition-colors whitespace-nowrap"
-              >
-                <span className="flex items-center gap-2 whitespace-nowrap">
-                  <Shield className="w-4 h-4 text-orange-400 flex-shrink-0" />
-                  <span className="whitespace-nowrap">Khu vực Quản trị Admin</span>
-                </span>
-                <ArrowRight className="w-4 h-4 text-slate-400" />
-              </Link>
             </div>
           </div>
         </>,

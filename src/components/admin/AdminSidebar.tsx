@@ -1,13 +1,17 @@
 import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import {
+  LayoutDashboard,
   Box,
+  FolderTree,
+  Award,
+  FileText,
+  Scale,
+  Mail,
   ExternalLink,
-  LogOut,
   X,
   Shield
 } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
 import { useData } from '../../context/DataContext';
 
 interface AdminSidebarProps {
@@ -16,14 +20,22 @@ interface AdminSidebarProps {
 }
 
 export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen = false, onClose }) => {
-  const { user, logout } = useAuth();
-  const { products } = useData();
+  const { products, categories, rankings, articles, comparisons } = useData();
 
   const handleLinkClick = () => {
     if (onClose) {
       onClose();
     }
   };
+
+  const navItems = [
+    { to: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard', badge: null },
+    { to: '/admin/products', icon: Box, label: 'Quản lý sản phẩm', badge: products.length },
+    { to: '/admin/categories', icon: FolderTree, label: 'Quản lý danh mục', badge: categories.length },
+    { to: '/admin/articles', icon: FileText, label: 'Bài viết & Cẩm nang', badge: articles.length },
+    { to: '/admin/comparisons', icon: Scale, label: 'So sánh đối đầu', badge: comparisons.length },
+    { to: '/admin/leads', icon: Mail, label: 'Khách hàng & Leads', badge: null }
+  ];
 
   return (
     <>
@@ -35,7 +47,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen = false, onCl
         />
       )}
 
-      {/* Sidebar Container - Exactly 100vh full height with no empty space */}
+      {/* Sidebar Container */}
       <aside
         className={`
           fixed inset-y-0 left-0 z-50 w-72 h-screen max-h-screen bg-[#0d1527] text-slate-300 flex flex-col justify-between border-r border-slate-800 shadow-2xl transition-transform duration-300 ease-in-out flex-shrink-0
@@ -47,14 +59,14 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen = false, onCl
         <div className="p-4 border-b border-slate-800/80 flex items-center justify-between bg-slate-950/60 flex-shrink-0">
           <Link to="/" onClick={handleLinkClick} className="flex items-center gap-2.5 group">
             <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform shadow-sm">
-              <img src="/brand-logo.png" alt="TechReview Icon" className="w-full h-full object-contain" />
+              <img src="/brand-logo.webp" alt="TechReview Icon" className="w-full h-full object-contain" />
             </div>
             <div>
               <div className="font-extrabold text-white text-sm tracking-tight flex items-center gap-1.5">
                 <span>Tech<span className="text-orange-500">Review</span></span>
                 <span className="text-[9px] font-bold text-orange-400 bg-orange-500/15 px-1.5 py-0.5 rounded border border-orange-500/30">CMS</span>
               </div>
-              <span className="block text-[9.5px] text-slate-400 font-medium">Quản lý sản phẩm</span>
+              <span className="block text-[9.5px] text-slate-400 font-medium">Bảng Điều Khiển Quản Trị</span>
             </div>
           </Link>
 
@@ -69,63 +81,44 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen = false, onCl
         </div>
 
         {/* Navigation Sections */}
-        <div className="flex-1 px-3 py-4 space-y-6 overflow-y-auto custom-scrollbar">
-          {/* Main Navigation - ONLY PRODUCT MANAGEMENT */}
-          <div className="space-y-1.5">
+        <div className="flex-1 px-3 py-4 space-y-4 overflow-y-auto custom-scrollbar">
+          <div className="space-y-1">
             <span className="px-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">
-              QUẢN LÝ NỘI DUNG
+              QUẢN LÝ DỮ LIỆU
             </span>
 
-            {/* Products Management Link */}
-            <NavLink
-              to="/admin/products"
-              onClick={handleLinkClick}
-              className={({ isActive }) =>
-                `flex items-center justify-between px-3.5 py-3 rounded-xl text-xs font-bold transition-all group ${
-                  isActive
-                    ? 'bg-gradient-to-r from-orange-600 to-amber-600 text-white shadow-lg shadow-orange-950/50 ring-1 ring-white/10'
-                    : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
-                }`
-              }
-            >
-              <div className="flex items-center gap-2.5 truncate">
-                <Box className="w-4 h-4 flex-shrink-0 text-white" />
-                <span>Quản lý sản phẩm</span>
-              </div>
-              <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-slate-900/80 text-orange-300 border border-orange-400/30">
-                {products.length}
-              </span>
-            </NavLink>
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  onClick={handleLinkClick}
+                  className={({ isActive }) =>
+                    `flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all group ${
+                      isActive
+                        ? 'bg-gradient-to-r from-orange-600 to-amber-600 text-white shadow-lg shadow-orange-950/50 ring-1 ring-white/10'
+                        : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
+                    }`
+                  }
+                >
+                  <div className="flex items-center gap-2.5 truncate">
+                    <Icon className="w-4 h-4 flex-shrink-0" />
+                    <span>{item.label}</span>
+                  </div>
+                  {item.badge !== null && (
+                    <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-slate-900/80 text-orange-300 border border-orange-400/30">
+                      {item.badge}
+                    </span>
+                  )}
+                </NavLink>
+              );
+            })}
           </div>
         </div>
 
-        {/* Bottom Actions & User Profile Card */}
-        <div className="p-3.5 border-t border-slate-800/90 space-y-2.5 bg-[#090f1d] flex-shrink-0">
-          {/* User Mini Profile Card */}
-          <div className="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center justify-between gap-2 shadow-xs">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-600 to-orange-500 text-white font-bold flex items-center justify-center text-xs shadow-xs flex-shrink-0">
-                <Shield className="w-4 h-4" />
-              </div>
-              <div className="min-w-0">
-                <span className="text-xs font-bold text-white block truncate">
-                  {user?.name || 'Quản Trị Viên (Demo)'}
-                </span>
-                <span className="flex items-center gap-1 text-[10px] text-emerald-400 font-medium">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-pulse" />
-                  Đang hoạt động
-                </span>
-              </div>
-            </div>
-            <button
-              onClick={logout}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 transition-all flex-shrink-0 cursor-pointer"
-              title="Đăng xuất"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
-          </div>
-
+        {/* Bottom Actions */}
+        <div className="p-3.5 border-t border-slate-800/90 space-y-2 bg-[#090f1d] flex-shrink-0">
           {/* Return to Public Website */}
           <Link
             to="/"
