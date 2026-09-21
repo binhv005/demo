@@ -45,6 +45,7 @@ export const SearchPage: React.FC = () => {
   // Filter Products
   const filteredProducts = useMemo(() => {
     return products.filter((p) => {
+      if (p.status === 'draft') return false;
       const matchQuery =
         !query ||
         p.name.toLowerCase().includes(query.toLowerCase()) ||
@@ -63,6 +64,7 @@ export const SearchPage: React.FC = () => {
   // Filter Rankings
   const filteredRankings = useMemo(() => {
     return rankings.filter((r) => {
+      if (r.status === 'draft') return false;
       const matchQuery =
         !query ||
         r.title.toLowerCase().includes(query.toLowerCase()) ||
@@ -75,6 +77,7 @@ export const SearchPage: React.FC = () => {
   // Filter Comparisons
   const filteredComparisons = useMemo(() => {
     return comparisons.filter((c) => {
+      if (c.status === 'draft') return false;
       const matchQuery =
         !query ||
         c.title.toLowerCase().includes(query.toLowerCase()) ||
@@ -87,6 +90,7 @@ export const SearchPage: React.FC = () => {
   // Filter Guides & Articles
   const filteredGuides = useMemo(() => {
     return articles.filter((a) => {
+      if (a.status === 'draft') return false;
       const matchQuery =
         !query ||
         a.title.toLowerCase().includes(query.toLowerCase()) ||

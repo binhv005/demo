@@ -68,7 +68,9 @@ export const AdminComparisonsPage: React.FC = () => {
     e.preventDefault();
     if (!title.trim()) return;
 
-    if (isFeatured) {
+    const finalIsFeatured = status === 'draft' ? false : isFeatured;
+
+    if (finalIsFeatured) {
       // Unpin any other featured comparisons so only this single comparison is featured
       comparisons.forEach((c) => {
         if (c.isFeatured && (!editingComp || c.id !== editingComp.id)) {
@@ -91,7 +93,7 @@ export const AdminComparisonsPage: React.FC = () => {
         verdict,
         finalRecommendation: finalRec,
         status,
-        isFeatured
+        isFeatured: finalIsFeatured
       });
       showToast('Đã cập nhật bài so sánh đối đầu!', { type: 'success' });
     } else {
@@ -116,7 +118,7 @@ export const AdminComparisonsPage: React.FC = () => {
         authorId: 'expert-1',
         faq: [{ q: 'Sản phẩm nào phù hợp hơn cho người mới?', a: 'Sản phẩm A có giao diện thân thiện hơn.' }],
         status,
-        isFeatured
+        isFeatured: finalIsFeatured
       });
       showToast('Đã tạo bài so sánh mới thành công!', { type: 'success' });
     }
@@ -198,11 +200,20 @@ export const AdminComparisonsPage: React.FC = () => {
             value={c.status || 'published'}
             onChange={(e) => {
               const newStatus = e.target.value as 'published' | 'draft';
-              updateComparison(c.id, { status: newStatus });
-              showToast(
-                `Đã chuyển trạng thái bài so sánh sang "${newStatus === 'published' ? 'Xuất bản' : 'Bản nháp'}"`,
-                { type: 'success' }
-              );
+              const updates: Partial<Comparison> = { status: newStatus };
+              if (newStatus === 'draft' && c.isFeatured) {
+                updates.isFeatured = false;
+                showToast(
+                  'Đã chuyển sang Bản nháp và tự động bỏ ghim khỏi Trang chính!',
+                  { type: 'info' }
+                );
+              } else {
+                showToast(
+                  `Đã chuyển trạng thái bài so sánh sang "${newStatus === 'published' ? 'Xuất bản' : 'Bản nháp'}"`,
+                  { type: 'success' }
+                );
+              }
+              updateComparison(c.id, updates);
             }}
             className={`text-xs font-bold px-3 py-1.5 rounded-xl border appearance-none pr-7 cursor-pointer focus:outline-none focus:ring-2 transition-all ${
               c.status === 'published'
@@ -221,11 +232,21 @@ export const AdminComparisonsPage: React.FC = () => {
       header: 'Trang chính',
       className: 'text-center whitespace-nowrap min-w-[130px]',
       accessor: (c: Comparison) => {
-        const isCurrentlyFeatured = c.isFeatured ?? false;
+        const isCurrentlyFeatured = (c.status === 'published' || !c.status) && (c.isFeatured ?? false);
+        const isDraft = c.status === 'draft';
+
         return (
           <button
             type="button"
             onClick={() => {
+              if (isDraft) {
+                showToast(
+                  'Bài so sánh đang là Bản nháp! Vui lòng chuyển sang "Xuất bản" trước khi đưa lên Trang chính.',
+                  { type: 'error' }
+                );
+                return;
+              }
+
               const next = !isCurrentlyFeatured;
               if (next) {
                 // Unpin any other featured comparison so only 1 is active
@@ -241,12 +262,20 @@ export const AdminComparisonsPage: React.FC = () => {
                 showToast('Đã bỏ hiển thị bài so sánh trên trang chính!', { type: 'info' });
               }
             }}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-2xs ${
-              isCurrentlyFeatured
-                ? 'bg-amber-100 text-amber-900 border border-amber-300 hover:bg-amber-200'
-                : 'bg-slate-100 text-slate-400 border border-slate-200/80 hover:bg-slate-200/70 hover:text-slate-600'
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-2xs ${
+              isDraft
+                ? 'bg-slate-50 text-slate-300 border border-slate-200/60 cursor-not-allowed opacity-70'
+                : isCurrentlyFeatured
+                ? 'bg-amber-100 text-amber-900 border border-amber-300 hover:bg-amber-200 cursor-pointer'
+                : 'bg-slate-100 text-slate-400 border border-slate-200/80 hover:bg-slate-200/70 hover:text-slate-600 cursor-pointer'
             }`}
-            title={isCurrentlyFeatured ? 'Bấm để bỏ hiển thị trên trang chính' : 'Bấm để chọn làm bài so sánh tiêu điểm duy nhất trên trang chính'}
+            title={
+              isDraft
+                ? 'Không thể đưa bài nháp lên trang chính. Vui lòng chuyển trạng thái sang Xuất bản trước.'
+                : isCurrentlyFeatured
+                ? 'Bấm để bỏ hiển thị trên trang chính'
+                : 'Bấm để chọn làm bài so sánh tiêu điểm duy nhất trên trang chính'
+            }
           >
             <Star className={`w-3.5 h-3.5 ${isCurrentlyFeatured ? 'fill-amber-500 text-amber-500' : 'text-slate-400'}`} />
             <span>{isCurrentlyFeatured ? 'Tiêu điểm' : 'Không'}</span>
@@ -363,25 +392,43 @@ export const AdminComparisonsPage: React.FC = () => {
             <Select
               label="Trạng thái"
               value={status}
-              onChange={(e) => setStatus(e.target.value as any)}
+              onChange={(e) => {
+                const newStatus = e.target.value as 'published' | 'draft';
+                setStatus(newStatus);
+                if (newStatus === 'draft') {
+                  setIsFeatured(false);
+                }
+              }}
               options={[
                 { value: 'published', label: 'Xuất bản (Hiển thị)' },
-                { value: 'draft', label: 'Bản nháp (Ẩn)' }
+                { value: 'draft', label: 'Bản nháp (Ẩn khỏi trang chính)' }
               ]}
             />
           </div>
 
-          <div className="p-3 bg-slate-50 border border-slate-200/80 rounded-xl">
-            <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-700 select-none">
+          <div className={`p-3 rounded-xl border transition-colors ${
+            status === 'draft'
+              ? 'bg-slate-50/60 border-slate-200/60 opacity-60 cursor-not-allowed'
+              : 'bg-slate-50 border-slate-200/80'
+          }`}>
+            <label className={`flex items-center gap-2 text-xs font-bold ${
+              status === 'draft' ? 'text-slate-400 cursor-not-allowed' : 'text-slate-700 cursor-pointer'
+            } select-none`}>
               <input
                 type="checkbox"
-                checked={isFeatured}
+                disabled={status === 'draft'}
+                checked={status === 'published' && isFeatured}
                 onChange={(e) => setIsFeatured(e.target.checked)}
-                className="w-4 h-4 rounded text-orange-600 focus:ring-orange-500 border-slate-300 cursor-pointer"
+                className="w-4 h-4 rounded text-orange-600 focus:ring-orange-500 border-slate-300 cursor-pointer disabled:cursor-not-allowed"
               />
-              <Star className={`w-3.5 h-3.5 ${isFeatured ? 'fill-amber-500 text-amber-500' : 'text-slate-400'}`} />
+              <Star className={`w-3.5 h-3.5 ${status === 'published' && isFeatured ? 'fill-amber-500 text-amber-500' : 'text-slate-400'}`} />
               <span>Ghim làm bài so sánh tiêu điểm duy nhất trên trang chính (Tối đa 1 bài)</span>
             </label>
+            {status === 'draft' && (
+              <p className="text-[11px] text-amber-600 font-medium mt-1 ml-6">
+                * Bài nháp không được đưa lên trang chính. Vui lòng chuyển trạng thái sang "Xuất bản" để ghim.
+              </p>
+            )}
           </div>
 
           <div>

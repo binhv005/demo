@@ -122,8 +122,30 @@ export const AdminArticlesPage: React.FC = () => {
       return;
     }
 
-    const saveStatus = targetStatus || status;
+    const saveStatus = targetStatus || status || 'published';
     const generatedSlug = toSlug(slug.trim()) || toSlug(title);
+    const isDraft = saveStatus === 'draft';
+    const otherFeaturedCount = articles.filter(
+      (a) => (!editingArticle || a.id !== editingArticle.id) && a.status === 'published' && a.isFeatured
+    ).length;
+
+    let finalIsFeatured = isDraft ? false : isFeatured;
+    if (finalIsFeatured && otherFeaturedCount >= 3) {
+      showToast(
+        'Trang chính chỉ được hiển thị tối đa 3 bài viết! Bài viết đã được lưu nhưng không được ghim lên trang chính.',
+        { type: 'info' }
+      );
+      finalIsFeatured = false;
+    }
+
+    const finalTopRankOrder = isDraft ? null : (topRankOrder ?? null);
+    const finalIsTopRanking = isDraft
+      ? false
+      : topRankOrder === -1
+      ? false
+      : typeof topRankOrder === 'number'
+      ? topRankOrder
+      : undefined;
 
     if (editingArticle) {
       updateArticle(editingArticle.id, {
@@ -136,9 +158,9 @@ export const AdminArticlesPage: React.FC = () => {
         content,
         blocks,
         status: saveStatus,
-        isFeatured,
-        isTopRanking: topRankOrder === -1 ? false : (typeof topRankOrder === 'number' ? topRankOrder : undefined),
-        topRankOrder: topRankOrder ?? null
+        isFeatured: finalIsFeatured,
+        isTopRanking: finalIsTopRanking,
+        topRankOrder: finalTopRankOrder
       });
       showToast(`Đã cập nhật bài viết "${title}"!`, { type: 'success' });
     } else {
@@ -156,9 +178,9 @@ export const AdminArticlesPage: React.FC = () => {
         readingTime: '5 phút đọc',
         tags: [type, productType],
         status: saveStatus,
-        isFeatured,
-        isTopRanking: topRankOrder === -1 ? false : (typeof topRankOrder === 'number' ? topRankOrder : undefined),
-        topRankOrder: topRankOrder ?? null
+        isFeatured: finalIsFeatured,
+        isTopRanking: finalIsTopRanking,
+        topRankOrder: finalTopRankOrder
       });
       showToast(`Đã ${saveStatus === 'published' ? 'xuất bản' : 'lưu nháp'} bài viết thành công!`, {
         type: 'success'
@@ -224,7 +246,24 @@ export const AdminArticlesPage: React.FC = () => {
         <div className="relative inline-block">
           <select
             value={a.status || 'published'}
-            onChange={(e) => updateArticle(a.id, { status: e.target.value as any })}
+            onChange={(e) => {
+              const newStatus = e.target.value as 'published' | 'draft';
+              const updates: Partial<Article> = { status: newStatus };
+              if (newStatus === 'draft') {
+                if (a.isFeatured) updates.isFeatured = false;
+                if (a.topRankOrder !== null && a.topRankOrder !== -1) {
+                  updates.topRankOrder = -1;
+                  updates.isTopRanking = false;
+                }
+                showToast(
+                  'Đã chuyển sang Bản nháp và tự động gỡ khỏi Trang chính & Top Bảng xếp hạng!',
+                  { type: 'info' }
+                );
+              } else {
+                showToast('Đã chuyển bài viết sang trạng thái Xuất bản!', { type: 'success' });
+              }
+              updateArticle(a.id, updates);
+            }}
             className={`text-xs font-bold px-3 py-1.5 rounded-xl border appearance-none pr-8 cursor-pointer focus:outline-none focus:ring-2 transition-all ${
               a.status === 'published'
                 ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100/70 focus:ring-emerald-400'
@@ -239,27 +278,62 @@ export const AdminArticlesPage: React.FC = () => {
       )
     },
     {
-      header: 'Trang chính',
+      header: `Trang chính (${articles.filter((art) => art.status === 'published' && art.isFeatured).length}/3)`,
       className: 'text-center whitespace-nowrap',
       accessor: (a: Article) => {
-        const isCurrentlyFeatured = a.isFeatured ?? false;
+        const isDraft = a.status === 'draft';
+        const isCurrentlyFeatured = !isDraft && (a.isFeatured ?? false);
+        const otherFeaturedCount = articles.filter(
+          (art) => art.id !== a.id && art.status === 'published' && art.isFeatured
+        ).length;
+
         return (
           <button
             type="button"
             onClick={() => {
+              if (isDraft) {
+                showToast(
+                  'Bài viết đang ở trạng thái Bản nháp! Vui lòng chuyển sang "Xuất bản" trước khi đưa lên trang chính.',
+                  { type: 'error' }
+                );
+                return;
+              }
+
               const next = !isCurrentlyFeatured;
+              if (next && otherFeaturedCount >= 3) {
+                showToast(
+                  'Trang chính chỉ được chọn tối đa 3 bài viết! Vui lòng bỏ bớt bài viết khác trước khi ghim bài này.',
+                  { type: 'error' }
+                );
+                return;
+              }
+
               updateArticle(a.id, { isFeatured: next });
               showToast(
-                next ? 'Đã chọn hiển thị bài viết trên trang chính!' : 'Đã bỏ hiển thị bài viết trên trang chính!',
+                next
+                  ? `Đã chọn hiển thị bài viết trên trang chính (${otherFeaturedCount + 1}/3)!`
+                  : `Đã bỏ hiển thị bài viết trên trang chính (${otherFeaturedCount}/3)!`,
                 { type: next ? 'success' : 'info' }
               );
             }}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-2xs ${
-              isCurrentlyFeatured
-                ? 'bg-amber-100 text-amber-900 border border-amber-300 hover:bg-amber-200'
-                : 'bg-slate-100 text-slate-400 border border-slate-200/80 hover:bg-slate-200/70 hover:text-slate-600'
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-2xs ${
+              isDraft
+                ? 'bg-slate-50 text-slate-300 border border-slate-200/60 cursor-not-allowed opacity-70'
+                : isCurrentlyFeatured
+                ? 'bg-amber-100 text-amber-900 border border-amber-300 hover:bg-amber-200 cursor-pointer'
+                : otherFeaturedCount >= 3
+                ? 'bg-slate-100 text-slate-400 border border-slate-200/80 hover:border-amber-300 hover:text-amber-700 cursor-pointer'
+                : 'bg-slate-100 text-slate-400 border border-slate-200/80 hover:bg-slate-200/70 hover:text-slate-600 cursor-pointer'
             }`}
-            title={isCurrentlyFeatured ? 'Bấm để bỏ hiển thị trên trang chính' : 'Bấm để hiển thị trên trang chính'}
+            title={
+              isDraft
+                ? 'Không thể đưa bài nháp lên trang chính. Vui lòng chuyển trạng thái sang Xuất bản trước.'
+                : isCurrentlyFeatured
+                ? 'Bấm để bỏ hiển thị trên trang chính'
+                : otherFeaturedCount >= 3
+                ? 'Đã đủ 3 bài trên trang chính. Bỏ bớt bài khác để thêm bài này.'
+                : 'Bấm để hiển thị trên trang chính (Tối đa 3 bài)'
+            }
           >
             <Star className={`w-3.5 h-3.5 ${isCurrentlyFeatured ? 'fill-amber-500 text-amber-500' : 'text-slate-400'}`} />
             <span>{isCurrentlyFeatured ? 'Trang chính' : 'Không'}</span>
@@ -271,20 +345,21 @@ export const AdminArticlesPage: React.FC = () => {
       header: 'Top Bảng Xếp Hạng',
       className: 'text-center whitespace-nowrap',
       accessor: (a: Article) => {
+        const isDraft = a.status === 'draft';
         const manualRank =
-          typeof a.topRankOrder === 'number' && a.topRankOrder >= 1 && a.topRankOrder <= 10
+          !isDraft && typeof a.topRankOrder === 'number' && a.topRankOrder >= 1 && a.topRankOrder <= 10
             ? a.topRankOrder
-            : typeof a.isTopRanking === 'number' && a.isTopRanking >= 1 && a.isTopRanking <= 10
+            : !isDraft && typeof a.isTopRanking === 'number' && a.isTopRanking >= 1 && a.isTopRanking <= 10
             ? a.isTopRanking
-            : a.isTopRanking === true
+            : !isDraft && a.isTopRanking === true
             ? 1
             : null;
 
-        const isExcluded = a.isTopRanking === false || a.topRankOrder === -1;
+        const isExcluded = isDraft || a.isTopRanking === false || a.topRankOrder === -1;
         const autoRank = autoTopRankMap.get(a.id);
-        const isAutoTop = manualRank === null && !isExcluded && autoRank !== undefined && autoRank <= 10;
+        const isAutoTop = !isDraft && manualRank === null && !isExcluded && autoRank !== undefined && autoRank <= 10;
 
-        let selectVal = 'auto';
+        let selectVal = isDraft ? 'excluded' : 'auto';
         if (manualRank !== null) selectVal = String(manualRank);
         else if (isExcluded) selectVal = 'excluded';
 
@@ -292,7 +367,15 @@ export const AdminArticlesPage: React.FC = () => {
           <div className="relative inline-block text-left">
             <select
               value={selectVal}
+              disabled={isDraft}
               onChange={(e) => {
+                if (isDraft) {
+                  showToast(
+                    'Bài viết đang ở trạng thái Bản nháp! Vui lòng chuyển sang "Xuất bản" trước khi ghim vào Bảng xếp hạng.',
+                    { type: 'error' }
+                  );
+                  return;
+                }
                 const val = e.target.value;
                 if (val === 'excluded') {
                   updateArticle(a.id, { isTopRanking: false, topRankOrder: -1 });
@@ -306,14 +389,16 @@ export const AdminArticlesPage: React.FC = () => {
                   showToast(`Đã ghim bài viết vào vị trí Top #${num}!`, { type: 'success' });
                 }
               }}
-              className={`text-xs font-bold px-3 py-1.5 rounded-xl border appearance-none pr-8 cursor-pointer focus:outline-none focus:ring-2 transition-all ${
-                manualRank !== null
-                  ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white border-orange-600 focus:ring-orange-400 shadow-2xs'
+              className={`text-xs font-bold px-3 py-1.5 rounded-xl border appearance-none pr-8 transition-all ${
+                isDraft
+                  ? 'bg-slate-50 text-slate-300 border-slate-200/60 cursor-not-allowed'
+                  : manualRank !== null
+                  ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white border-orange-600 focus:ring-orange-400 shadow-2xs cursor-pointer'
                   : isExcluded
-                  ? 'bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100 focus:ring-rose-400'
+                  ? 'bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100 focus:ring-rose-400 cursor-pointer'
                   : isAutoTop
-                  ? 'bg-amber-50 text-amber-900 border-amber-300 hover:bg-amber-100 focus:ring-amber-400'
-                  : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200 focus:ring-slate-400'
+                  ? 'bg-amber-50 text-amber-900 border-amber-300 hover:bg-amber-100 focus:ring-amber-400 cursor-pointer'
+                  : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200 focus:ring-slate-400 cursor-pointer'
               }`}
             >
               <option value="auto">
@@ -563,13 +648,67 @@ export const AdminArticlesPage: React.FC = () => {
                     <Select
                       label="Trạng thái xuất bản"
                       value={status}
-                      onChange={(e) => setStatus(e.target.value as any)}
+                      onChange={(e) => {
+                        const newStatus = e.target.value as any;
+                        setStatus(newStatus);
+                        if (newStatus === 'draft') {
+                          setIsFeatured(false);
+                        }
+                      }}
                       options={[
                         { value: 'published', label: 'Xuất bản (Hiển thị ngay)' },
                         { value: 'draft', label: 'Bản nháp (Lưu tạm)' }
                       ]}
                     />
                   </div>
+
+                  {/* Featured on Homepage Toggle (Max 3) */}
+                  {(() => {
+                    const otherFeaturedCount = articles.filter(
+                      (a) => (!editingArticle || a.id !== editingArticle.id) && a.status === 'published' && a.isFeatured
+                    ).length;
+                    const isDraft = status === 'draft';
+                    const isMaxReached = otherFeaturedCount >= 3 && !isFeatured;
+
+                    return (
+                      <div className={`p-3.5 rounded-2xl border transition-colors ${
+                        isDraft
+                          ? 'bg-slate-50/60 border-slate-200/60 opacity-60'
+                          : isFeatured
+                          ? 'bg-amber-50/80 border-amber-200'
+                          : 'bg-slate-50 border-slate-200/80'
+                      }`}>
+                        <label className={`flex items-center gap-2.5 text-xs font-bold ${
+                          isDraft ? 'text-slate-400 cursor-not-allowed' : 'text-slate-800 cursor-pointer'
+                        } select-none`}>
+                          <input
+                            type="checkbox"
+                            disabled={isDraft || isMaxReached}
+                            checked={!isDraft && isFeatured}
+                            onChange={(e) => {
+                              if (e.target.checked && otherFeaturedCount >= 3) {
+                                showToast('Trang chính chỉ được hiển thị tối đa 3 bài viết!', { type: 'error' });
+                                return;
+                              }
+                              setIsFeatured(e.target.checked);
+                            }}
+                            className="w-4 h-4 rounded text-orange-600 focus:ring-orange-500 border-slate-300 cursor-pointer disabled:cursor-not-allowed"
+                          />
+                          <Star className={`w-4 h-4 ${!isDraft && isFeatured ? 'fill-amber-500 text-amber-500' : 'text-slate-400'}`} />
+                          <span>Hiển thị trên Trang chính làm bài tiêu điểm (Tối đa 3 bài - Hiện tại: {otherFeaturedCount + (isFeatured ? 1 : 0)}/3)</span>
+                        </label>
+                        {isDraft ? (
+                          <p className="text-[11px] text-amber-600 font-medium mt-1 ml-6.5">
+                            * Bài nháp không thể đưa lên Trang chính. Vui lòng chuyển trạng thái sang "Xuất bản" để kích hoạt.
+                          </p>
+                        ) : isMaxReached ? (
+                          <p className="text-[11px] text-amber-700 font-medium mt-1 ml-6.5">
+                            * Đã đạt tối đa 3 bài viết trên Trang chính. Vui lòng bỏ bớt bài khác trong danh sách quản lý để ghim bài này.
+                          </p>
+                        ) : null}
+                      </div>
+                    );
+                  })()}
 
                   {/* Excerpt */}
                   <div className="space-y-1.5 pt-2 border-t border-slate-100">

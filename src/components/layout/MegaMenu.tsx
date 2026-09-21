@@ -14,9 +14,9 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ type, onClose }) => {
   const { categories, products, rankings, comparisons } = useData();
 
   const filteredCategories = categories.filter((c) => c.group === type && c.status !== 'inactive');
-  const featuredRanking = rankings.find((r) => r.type === type);
-  const featuredProduct = products.find((p) => p.type === type);
-  const featuredComparison = comparisons.find((c) => c.type === type && c.isFeatured) || comparisons.find((c) => c.type === type);
+  const featuredRanking = rankings.find((r) => r.type === type && r.status !== 'draft');
+  const featuredProduct = products.find((p) => p.type === type && p.status !== 'draft');
+  const featuredComparison = comparisons.find((c) => c.type === type && c.isFeatured && c.status !== 'draft') || comparisons.find((c) => c.type === type && c.status !== 'draft');
 
   const isPhysical = type === 'physical';
   const themeColor = isPhysical ? 'orange' : 'indigo';

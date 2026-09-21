@@ -20,12 +20,17 @@ export const ReviewDetailPage: React.FC = () => {
 
   // Find competitors/alternatives in same category
   const alternatives = products
-    .filter((p) => p.id !== product.id && (p.categorySlug === product.categorySlug || p.type === product.type))
+    .filter(
+      (p) =>
+        p.id !== product.id &&
+        p.status !== 'draft' &&
+        (p.categorySlug === product.categorySlug || p.type === product.type)
+    )
     .slice(0, 3);
 
   // Related comparison if exists
   const relatedComparison = comparisons.find(
-    (c) => c.productAId === product.id || c.productBId === product.id
+    (c) => (c.productAId === product.id || c.productBId === product.id) && c.status !== 'draft'
   );
 
 

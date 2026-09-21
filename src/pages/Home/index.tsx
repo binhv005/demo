@@ -426,9 +426,9 @@ export const HomePage: React.FC = () => {
   const activeArticles = useMemo(() => {
     const published = articles.filter((a) => a.status === 'published');
     const sourceList = published.length > 0 ? published : mockArticles;
-    const featured = sourceList.filter((a) => a.isFeatured);
+    const featured = sourceList.filter((a) => a.isFeatured).slice(0, 3);
     const nonFeatured = sourceList.filter((a) => !a.isFeatured);
-    return [...featured, ...nonFeatured];
+    return [...featured, ...nonFeatured].slice(0, 3);
   }, [articles]);
 
   const featuredArticle = activeArticles[0];

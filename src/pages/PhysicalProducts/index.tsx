@@ -15,9 +15,9 @@ export const PhysicalProductsPage: React.FC = () => {
   const { categories, products, rankings, articles } = useData();
 
   const physicalCategories = categories.filter((c) => c.group === 'physical' && c.status !== 'inactive');
-  const physicalProducts = products.filter((p) => p.type === 'physical');
-  const physicalRankings = rankings.filter((r) => r.type === 'physical');
-  const physicalArticles = articles.filter((a) => a.productType === 'physical');
+  const physicalProducts = products.filter((p) => p.type === 'physical' && p.status !== 'draft');
+  const physicalRankings = rankings.filter((r) => r.type === 'physical' && r.status !== 'draft');
+  const physicalArticles = articles.filter((a) => a.productType === 'physical' && (a.status === 'published' || !a.status));
 
   const faqItems = [
     {

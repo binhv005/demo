@@ -50,17 +50,17 @@ export const CategoryDetailPage: React.FC = () => {
 
   // Rankings in this category
   const categoryRankings = rankings.filter(
-    (r) => r.categorySlug === category || r.groupSlug === group
+    (r) => (r.categorySlug === category || r.groupSlug === group) && r.status !== 'draft'
   );
 
   // Comparisons in this category
   const categoryComparisons = comparisons.filter(
-    (c) => c.categorySlug === category || c.type === matchedCategory?.group
+    (c) => (c.categorySlug === category || c.type === matchedCategory?.group) && c.status !== 'draft'
   );
 
   // Buying guides in this category
   const categoryArticles = articles.filter(
-    (a) => a.categorySlug === category || a.productType === matchedCategory?.group
+    (a) => (a.categorySlug === category || a.productType === matchedCategory?.group) && (a.status === 'published' || !a.status)
   );
 
   const faqItems = [

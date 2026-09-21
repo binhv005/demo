@@ -59,8 +59,9 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({
 
   // Filter products
   const filteredProducts = useMemo(() => {
-    if (!query.trim() && groupFilter === 'all') return products.slice(0, 8);
-    return products.filter((p) => {
+    const published = products.filter((p) => p.status !== 'draft');
+    if (!query.trim() && groupFilter === 'all') return published.slice(0, 8);
+    return published.filter((p) => {
       const matchQuery =
         !query.trim() ||
         p.name.toLowerCase().includes(query.toLowerCase()) ||
@@ -74,8 +75,9 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({
 
   // Filter rankings
   const filteredRankings = useMemo(() => {
-    if (!query.trim() && groupFilter === 'all') return rankings.slice(0, 4);
-    return rankings.filter((r) => {
+    const published = rankings.filter((r) => r.status !== 'draft');
+    if (!query.trim() && groupFilter === 'all') return published.slice(0, 4);
+    return published.filter((r) => {
       const matchQuery =
         !query.trim() ||
         r.title.toLowerCase().includes(query.toLowerCase()) ||
@@ -87,8 +89,9 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({
 
   // Filter articles
   const filteredArticles = useMemo(() => {
-    if (!query.trim() && groupFilter === 'all') return articles.slice(0, 4);
-    return articles.filter((a) => {
+    const published = articles.filter((a) => a.status === 'published' || !a.status);
+    if (!query.trim() && groupFilter === 'all') return published.slice(0, 4);
+    return published.filter((a) => {
       const matchQuery =
         !query.trim() ||
         a.title.toLowerCase().includes(query.toLowerCase()) ||

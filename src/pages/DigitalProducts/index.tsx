@@ -15,9 +15,9 @@ export const DigitalProductsPage: React.FC = () => {
   const { categories, products, rankings, comparisons, articles } = useData();
 
   const digitalCategories = categories.filter((c) => c.group === 'digital' && c.status !== 'inactive');
-  const digitalProducts = products.filter((p) => p.type === 'digital');
-  const digitalRankings = rankings.filter((r) => r.type === 'digital');
-  const digitalComparisons = comparisons.filter((c) => c.type === 'digital');
+  const digitalProducts = products.filter((p) => p.type === 'digital' && p.status !== 'draft');
+  const digitalRankings = rankings.filter((r) => r.type === 'digital' && r.status !== 'draft');
+  const digitalComparisons = comparisons.filter((c) => c.type === 'digital' && c.status !== 'draft');
 
   const useCases = [
     { title: 'Dành cho Lập trình viên', desc: 'AI coding, Hosting VPS, Git & Task Management', link: '/phan-mem/quan-ly-du-an' },

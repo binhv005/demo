@@ -42,7 +42,9 @@ export const GuideDetailPage: React.FC = () => {
     .filter(Boolean) as typeof products;
 
   // Other related articles
-  const otherArticles = articles.filter((a) => a.id !== article.id).slice(0, 2);
+  const otherArticles = articles
+    .filter((a) => a.id !== article.id && (a.status === 'published' || !a.status))
+    .slice(0, 2);
 
   const handleLeadSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
