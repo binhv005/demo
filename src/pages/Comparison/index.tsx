@@ -12,10 +12,15 @@ export const ComparisonDetailPage: React.FC = () => {
   const { comparisons, products, experts } = useData();
 
   const comparison = comparisons.find((c) => c.slug === slug) || comparisons[0];
-  const prodA = products.find((p) => p.id === comparison.productAId) || products[0];
-  const prodB = products.find((p) => p.id === comparison.productBId) || products[1];
-  const winnerProd = products.find((p) => p.id === comparison.winnerId) || prodA;
-  const author = experts.find((e) => e.id === comparison.authorId) || experts[0];
+  const prodA =
+    products.find((p) => p.id === comparison?.productAId || p.slug === comparison?.productAId) ||
+    products[0];
+  const prodB =
+    products.find((p) => p.id === comparison?.productBId || p.slug === comparison?.productBId) ||
+    products[1];
+  const winnerProd =
+    products.find((p) => p.id === comparison?.winnerId || p.slug === comparison?.winnerId) || prodA;
+  const author = experts.find((e) => e.id === comparison?.authorId) || experts[0];
 
   return (
     <div className="space-y-16 pb-20">

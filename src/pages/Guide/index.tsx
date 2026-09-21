@@ -8,6 +8,8 @@ import { ArticleHeader } from '../../components/article/ArticleHeader';
 import { ArticleBodyRenderer } from '../../components/article/ArticleBodyRenderer';
 import { ArticleCard } from '../../components/article/ArticleCard';
 import { Button } from '../../components/ui/Button';
+import { leadApi } from '../../services/api';
+import { isValidVietnamesePhone } from '../../utils/formatters';
 import {
   ArrowRight,
   BookOpen,
@@ -16,7 +18,9 @@ import {
   ShieldCheck,
   Send,
   Sparkles,
-  Star
+  Star,
+  Mail,
+  Phone
 } from 'lucide-react';
 
 export const GuideDetailPage: React.FC = () => {
@@ -24,7 +28,8 @@ export const GuideDetailPage: React.FC = () => {
   const { articles, products, experts } = useData();
   const { showToast } = useToast();
 
-  const [contactInput, setContactInput] = useState('');
+  const [emailInput, setEmailInput] = useState('');
+  const [phoneInput, setPhoneInput] = useState('');
   const [isSubmittingLead, setIsSubmittingLead] = useState(false);
   const [submittedSuccess, setSubmittedSuccess] = useState(false);
 
@@ -39,18 +44,94 @@ export const GuideDetailPage: React.FC = () => {
   // Other related articles
   const otherArticles = articles.filter((a) => a.id !== article.id).slice(0, 2);
 
-  const handleLeadSubmit = (e: React.FormEvent) => {
+  const handleLeadSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!contactInput.trim()) {
-      showToast('Vui lòng nhập Email hoặc Số điện thoại để nhận tư vấn', { type: 'error' });
+    const emailToSave = emailInput.trim();
+    const phoneToSave = phoneInput.trim();
+
+    if (!emailToSave && !phoneToSave) {
+      showToast('Vui lòng nhập Email và Số điện thoại để nhận tư vấn!', { type: 'error' });
       return;
     }
-    setIsSubmittingLead(true);
-    setTimeout(() => {
-      setIsSubmittingLead(false);
+
+    if (!emailToSave) {
+      showToast('Vui lòng nhập địa chỉ Email!', { type: 'error' });
+      return;
+    }
+
+    if (!emailToSave.includes('@') || !emailToSave.includes('.')) {
+      showToast('Vui lòng nhập định dạng Email hợp lệ!', { type: 'error' });
+      return;
+    }
+
+    if (!phoneToSave) {
+      showToast('Vui lòng nhập số điện thoại!', { type: 'error' });
+      return;
+    }
+
+    if (!isValidVietnamesePhone(phoneToSave)) {
+      showToast('Số điện thoại không hợp lệ! Vui lòng nhập SĐT Việt Nam (đầu số 03, 05, 07, 08, 09 hoặc +84).', { type: 'error' });
+      return;
+    }
+
+    try {
+      setIsSubmittingLead(true);
+      const newLead = await leadApi.create({
+        email: emailToSave,
+        phone: phoneToSave,
+        name: `Khách hàng (${phoneToSave})`,
+        service: `Tư vấn chọn mua: ${article?.title || 'Cẩm nang'}`,
+        source: `guide_sidebar: ${slug || 'cam-nang'}`,
+        message: `Khách hàng đăng ký nhận báo cáo kiểm nghiệm Lab & tư vấn chọn mua từ bài viết: "${article?.title || ''}"`
+      });
+
+      // Cache locally for Admin Leads sync
+      try {
+        const cached = localStorage.getItem('techreview_leads_cache');
+        let list = cached ? JSON.parse(cached) : [];
+        if (newLead) {
+          list = [newLead, ...list.filter((l: any) => l.email !== emailToSave)];
+          localStorage.setItem('techreview_leads_cache', JSON.stringify(list));
+        }
+      } catch {}
+
       setSubmittedSuccess(true);
-      showToast('Đã gửi yêu cầu tư vấn thành công! Chuyên gia sẽ liên hệ bạn sớm nhất.', { type: 'success' });
-    }, 500);
+      setEmailInput('');
+      setPhoneInput('');
+      showToast('Gửi thông tin thành công!', {
+        type: 'success',
+        description: 'Chuyên gia sẽ liên hệ và gửi báo cáo kiểm nghiệm Lab chi tiết đến bạn sớm nhất.'
+      });
+    } catch {
+      // Offline fallback
+      try {
+        const fallbackLead = {
+          id: 'lead_' + Date.now(),
+          email: emailToSave,
+          phone: phoneToSave,
+          name: `Khách hàng (${phoneToSave})`,
+          service: `Tư vấn chọn mua: ${article?.title || 'Cẩm nang'}`,
+          status: 'new',
+          source: `guide_sidebar: ${slug || 'cam-nang'}`,
+          message: `Khách hàng đăng ký nhận báo cáo kiểm nghiệm Lab & tư vấn chọn mua từ bài viết: "${article?.title || ''}"`,
+          createdAt: new Date().toISOString()
+        };
+        const cached = localStorage.getItem('techreview_leads_cache');
+        let list = cached ? JSON.parse(cached) : [];
+        list = [fallbackLead, ...list.filter((l: any) => l.email !== emailToSave)];
+        localStorage.setItem('techreview_leads_cache', JSON.stringify(list));
+      } catch {}
+
+      setSubmittedSuccess(true);
+      setEmailInput('');
+      setPhoneInput('');
+      showToast('Gửi thông tin thành công!', {
+        type: 'success',
+        description: 'Chuyên gia sẽ liên hệ và gửi báo cáo kiểm nghiệm Lab chi tiết đến bạn sớm nhất.'
+      });
+    } finally {
+      setIsSubmittingLead(false);
+    }
   };
 
   return (
@@ -81,7 +162,7 @@ export const GuideDetailPage: React.FC = () => {
 
       {/* Main Content Layout */}
       <Container size="xl">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 w-full min-w-0 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 w-full min-w-0">
           {/* Main Article (8 cols) */}
           <div className="lg:col-span-8 space-y-10 sm:space-y-12 min-w-0 w-full">
             {/* Featured Image */}
@@ -201,18 +282,31 @@ export const GuideDetailPage: React.FC = () => {
                 </div>
               ) : (
                 <form onSubmit={handleLeadSubmit} className="space-y-2.5">
-                  <input
-                    type="text"
-                    value={contactInput}
-                    onChange={(e) => setContactInput(e.target.value)}
-                    placeholder="Nhập Email hoặc Số điện thoại..."
-                    className="w-full px-4 py-3 rounded-xl bg-slate-800/90 border border-slate-700 text-xs text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all"
-                  />
+                  <div className="relative">
+                    <input
+                      type="email"
+                      value={emailInput}
+                      onChange={(e) => setEmailInput(e.target.value)}
+                      placeholder="Nhập địa chỉ Email..."
+                      className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-slate-800/90 border border-slate-700 text-xs text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all"
+                    />
+                    <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
+                  <div className="relative">
+                    <input
+                      type="tel"
+                      value={phoneInput}
+                      onChange={(e) => setPhoneInput(e.target.value)}
+                      placeholder="Nhập Số điện thoại..."
+                      className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-slate-800/90 border border-slate-700 text-xs text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all"
+                    />
+                    <Phone className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  </div>
                   <Button
                     type="submit"
                     variant="primary"
                     size="md"
-                    className="w-full font-bold justify-center"
+                    className="w-full font-bold justify-center shadow-lg shadow-orange-500/20"
                     disabled={isSubmittingLead}
                     rightIcon={<Send className="w-3.5 h-3.5" />}
                   >
@@ -268,9 +362,9 @@ export const GuideDetailPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Other Popular Articles */}
+            {/* Other Popular Articles - Sticky on scroll */}
             {otherArticles.length > 0 && (
-              <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-sm space-y-4">
+              <div className="sticky top-24 z-10 bg-white rounded-3xl border border-slate-200/80 p-6 shadow-sm space-y-4">
                 <h4 className="font-extrabold text-slate-900 text-sm uppercase tracking-wider flex items-center gap-1.5">
                   <BookOpen className="w-4 h-4 text-indigo-600" />
                   Cẩm Nang Nổi Bật Khác

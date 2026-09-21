@@ -16,6 +16,38 @@ import {
   systemApi
 } from '../services/api';
 
+const STORAGE_KEYS = {
+  products: 'techreview_products_v2',
+  categories: 'techreview_categories_v2',
+  rankings: 'techreview_rankings_v2',
+  comparisons: 'techreview_comparisons_v2',
+  articles: 'techreview_articles_v2',
+  experts: 'techreview_experts_v2'
+};
+
+const getInitialData = <T,>(key: string, fallback: T[]): T[] => {
+  try {
+    const cached = localStorage.getItem(key);
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+  } catch (e) {
+    console.warn(`[DataContext] Error reading ${key} from storage, fallback to default.`, e);
+  }
+  return fallback;
+};
+
+const saveToStorage = (key: string, data: any) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(data));
+  } catch (e) {
+    console.warn(`[DataContext] Error saving ${key} to storage.`, e);
+  }
+};
+
 interface DataContextType {
   products: Product[];
   categories: Category[];
@@ -58,12 +90,24 @@ interface DataContextType {
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [products, setProducts] = useState<Product[]>(mockProducts);
-  const [categories, setCategories] = useState<Category[]>(mockCategories);
-  const [rankings, setRankings] = useState<Ranking[]>(mockRankings);
-  const [comparisons, setComparisons] = useState<Comparison[]>(mockComparisons);
-  const [articles, setArticles] = useState<Article[]>(mockArticles);
-  const [experts, setExperts] = useState<Expert[]>(mockExperts);
+  const [products, setProducts] = useState<Product[]>(() =>
+    getInitialData(STORAGE_KEYS.products, mockProducts)
+  );
+  const [categories, setCategories] = useState<Category[]>(() =>
+    getInitialData(STORAGE_KEYS.categories, mockCategories)
+  );
+  const [rankings, setRankings] = useState<Ranking[]>(() =>
+    getInitialData(STORAGE_KEYS.rankings, mockRankings)
+  );
+  const [comparisons, setComparisons] = useState<Comparison[]>(() =>
+    getInitialData(STORAGE_KEYS.comparisons, mockComparisons)
+  );
+  const [articles, setArticles] = useState<Article[]>(() =>
+    getInitialData(STORAGE_KEYS.articles, mockArticles)
+  );
+  const [experts, setExperts] = useState<Expert[]>(() =>
+    getInitialData(STORAGE_KEYS.experts, mockExperts)
+  );
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isBackendConnected, setIsBackendConnected] = useState<boolean>(false);
 
@@ -82,25 +126,31 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (pRes.status === 'fulfilled' && pRes.value?.length > 0) {
         setProducts(pRes.value);
+        saveToStorage(STORAGE_KEYS.products, pRes.value);
         setIsBackendConnected(true);
       }
       if (cRes.status === 'fulfilled' && cRes.value?.length > 0) {
         setCategories(cRes.value);
+        saveToStorage(STORAGE_KEYS.categories, cRes.value);
       }
       if (rRes.status === 'fulfilled' && rRes.value?.length > 0) {
         setRankings(rRes.value);
+        saveToStorage(STORAGE_KEYS.rankings, rRes.value);
       }
       if (compRes.status === 'fulfilled' && compRes.value?.length > 0) {
         setComparisons(compRes.value);
+        saveToStorage(STORAGE_KEYS.comparisons, compRes.value);
       }
       if (aRes.status === 'fulfilled' && aRes.value?.length > 0) {
         setArticles(aRes.value);
+        saveToStorage(STORAGE_KEYS.articles, aRes.value);
       }
       if (eRes.status === 'fulfilled' && eRes.value?.length > 0) {
         setExperts(eRes.value);
+        saveToStorage(STORAGE_KEYS.experts, eRes.value);
       }
     } catch (err) {
-      console.warn('[DataContext] Backend API offline, fallback to mock data.', err);
+      console.warn('[DataContext] Backend API offline, continuing with local persistent storage.', err);
       setIsBackendConnected(false);
     } finally {
       setIsLoading(false);
@@ -113,79 +163,101 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Product Methods
   const addProduct = async (prodData: Omit<Product, 'id' | 'createdAt' | 'updatedAt' | 'views'>) => {
+    let created: Product;
     try {
-      const created = await productApi.create(prodData);
-      setProducts((prev) => [created, ...prev]);
-    } catch (e) {
-      const fallbackProd: Product = {
+      created = await productApi.create(prodData);
+    } catch {
+      created = {
         ...prodData,
         id: `prod-${Date.now()}`,
         views: 1,
         createdAt: new Date().toISOString().split('T')[0],
         updatedAt: new Date().toISOString().split('T')[0]
       };
-      setProducts((prev) => [fallbackProd, ...prev]);
     }
+    setProducts((prev) => {
+      const next = [created, ...prev.filter((p) => p.id !== created.id && p.slug !== created.slug)];
+      saveToStorage(STORAGE_KEYS.products, next);
+      return next;
+    });
   };
 
   const updateProduct = async (id: string, updates: Partial<Product>) => {
+    let updated: Product | null = null;
     try {
-      const updated = await productApi.update(id, updates);
-      setProducts((prev) => prev.map((p) => (p.id === id ? updated : p)));
-    } catch (e) {
-      setProducts((prev) =>
-        prev.map((p) =>
-          p.id === id
-            ? { ...p, ...updates, updatedAt: new Date().toISOString().split('T')[0] }
-            : p
-        )
-      );
-    }
+      updated = await productApi.update(id, updates);
+    } catch {}
+    setProducts((prev) => {
+      const next = prev.map((p) => {
+        if (p.id === id || p.slug === id) {
+          return updated || { ...p, ...updates, updatedAt: new Date().toISOString().split('T')[0] };
+        }
+        return p;
+      });
+      saveToStorage(STORAGE_KEYS.products, next);
+      return next;
+    });
   };
 
   const deleteProduct = async (id: string) => {
     try {
       await productApi.delete(id);
-      setProducts((prev) => prev.filter((p) => p.id !== id));
-    } catch (e) {
-      setProducts((prev) => prev.filter((p) => p.id !== id));
-    }
+    } catch {}
+    setProducts((prev) => {
+      const next = prev.filter((p) => p.id !== id && p.slug !== id);
+      saveToStorage(STORAGE_KEYS.products, next);
+      return next;
+    });
   };
 
   // Category Methods
   const addCategory = async (catData: Omit<Category, 'id'>) => {
+    let created: Category;
     try {
-      const created = await categoryApi.create(catData);
-      setCategories((prev) => [...prev, created]);
-    } catch (e) {
-      const fallbackCat: Category = {
+      created = await categoryApi.create(catData);
+    } catch {
+      created = {
         ...catData,
         id: `cat-${Date.now()}`
       };
-      setCategories((prev) => [...prev, fallbackCat]);
     }
+    setCategories((prev) => {
+      const next = [...prev.filter((c) => c.id !== created.id && c.slug !== created.slug), created];
+      saveToStorage(STORAGE_KEYS.categories, next);
+      return next;
+    });
   };
 
   const updateCategory = async (id: string, updates: Partial<Category>) => {
+    let updated: Category | null = null;
     try {
-      const updated = await categoryApi.update(id, updates);
-      setCategories((prev) => prev.map((c) => (c.id === id ? updated : c)));
-    } catch (e) {
-      setCategories((prev) => prev.map((c) => (c.id === id ? { ...c, ...updates } : c)));
-    }
+      updated = await categoryApi.update(id, updates);
+    } catch {}
+    setCategories((prev) => {
+      const next = prev.map((c) => {
+        if (c.id === id || c.slug === id) {
+          return updated || { ...c, ...updates };
+        }
+        return c;
+      });
+      saveToStorage(STORAGE_KEYS.categories, next);
+      return next;
+    });
   };
 
   const deleteCategory = async (id: string) => {
     try {
       await categoryApi.delete(id);
-      setCategories((prev) => prev.filter((c) => c.id !== id));
-    } catch (e) {
-      setCategories((prev) => prev.filter((c) => c.id !== id));
-    }
+    } catch {}
+    setCategories((prev) => {
+      const next = prev.filter((c) => c.id !== id && c.slug !== id);
+      saveToStorage(STORAGE_KEYS.categories, next);
+      return next;
+    });
   };
 
   const toggleCategoryStatus = async (id: string) => {
-    const cat = categories.find((c) => c.id === id);
+    const cat = categories.find((c) => c.id === id || c.slug === id);
     if (!cat) return;
     const newStatus = cat.status === 'inactive' ? 'active' : 'inactive';
     await updateCategory(id, { status: newStatus });
@@ -193,158 +265,212 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Ranking Methods
   const updateRanking = async (id: string, updates: Partial<Ranking>) => {
+    let updated: Ranking | null = null;
     try {
-      const updated = await rankingApi.update(id, updates);
-      setRankings((prev) => prev.map((r) => (r.id === id ? updated : r)));
-    } catch (e) {
-      setRankings((prev) =>
-        prev.map((r) =>
-          r.id === id
-            ? {
-                ...r,
-                ...updates,
-                updatedAt: `${new Date().getDate()} Tháng ${new Date().getMonth() + 1}, ${new Date().getFullYear()}`
-              }
-            : r
-        )
-      );
-    }
+      updated = await rankingApi.update(id, updates);
+    } catch {}
+    setRankings((prev) => {
+      const next = prev.map((r) => {
+        if (r.id === id || r.slug === id) {
+          return updated || {
+            ...r,
+            ...updates,
+            updatedAt: `${new Date().getDate()} Tháng ${new Date().getMonth() + 1}, ${new Date().getFullYear()}`
+          };
+        }
+        return r;
+      });
+      saveToStorage(STORAGE_KEYS.rankings, next);
+      return next;
+    });
   };
 
   const addRanking = async (rankData: Omit<Ranking, 'id' | 'updatedAt'>) => {
+    let created: Ranking;
     try {
-      const created = await rankingApi.create(rankData);
-      setRankings((prev) => [created, ...prev]);
-    } catch (e) {
-      const fallbackRank: Ranking = {
+      created = await rankingApi.create(rankData);
+    } catch {
+      created = {
         ...rankData,
         id: `rank-${Date.now()}`,
         updatedAt: `${new Date().getDate()} Tháng ${new Date().getMonth() + 1}, ${new Date().getFullYear()}`
       };
-      setRankings((prev) => [fallbackRank, ...prev]);
     }
+    setRankings((prev) => {
+      const next = [created, ...prev.filter((r) => r.id !== created.id && r.slug !== created.slug)];
+      saveToStorage(STORAGE_KEYS.rankings, next);
+      return next;
+    });
   };
 
   const deleteRanking = async (id: string) => {
     try {
       await rankingApi.delete(id);
-      setRankings((prev) => prev.filter((r) => r.id !== id));
-    } catch (e) {
-      setRankings((prev) => prev.filter((r) => r.id !== id));
-    }
+    } catch {}
+    setRankings((prev) => {
+      const next = prev.filter((r) => r.id !== id && r.slug !== id);
+      saveToStorage(STORAGE_KEYS.rankings, next);
+      return next;
+    });
   };
 
   // Article Methods
   const addArticle = async (artData: Omit<Article, 'id' | 'publishedAt' | 'views'>) => {
+    let created: Article;
     try {
-      const created = await articleApi.create(artData);
-      setArticles((prev) => [created, ...prev]);
-    } catch (e) {
-      const fallbackArt: Article = {
+      created = await articleApi.create(artData);
+    } catch {
+      created = {
         ...artData,
         id: `art-${Date.now()}`,
         publishedAt: `${new Date().getDate()} Tháng ${new Date().getMonth() + 1}, ${new Date().getFullYear()}`,
         views: 1
       };
-      setArticles((prev) => [fallbackArt, ...prev]);
     }
+    setArticles((prev) => {
+      const next = [created, ...prev.filter((a) => a.id !== created.id && a.slug !== created.slug)];
+      saveToStorage(STORAGE_KEYS.articles, next);
+      return next;
+    });
   };
 
   const updateArticle = async (id: string, updates: Partial<Article>) => {
+    let updated: Article | null = null;
     try {
-      const updated = await articleApi.update(id, updates);
-      setArticles((prev) => prev.map((a) => (a.id === id ? updated : a)));
-    } catch (e) {
-      setArticles((prev) => prev.map((a) => (a.id === id ? { ...a, ...updates } : a)));
-    }
+      updated = await articleApi.update(id, updates);
+    } catch {}
+    setArticles((prev) => {
+      const next = prev.map((a) => {
+        if (a.id === id || a.slug === id) {
+          return updated || { ...a, ...updates };
+        }
+        return a;
+      });
+      saveToStorage(STORAGE_KEYS.articles, next);
+      return next;
+    });
   };
 
   const deleteArticle = async (id: string) => {
     try {
       await articleApi.delete(id);
-      setArticles((prev) => prev.filter((a) => a.id !== id));
-    } catch (e) {
-      setArticles((prev) => prev.filter((a) => a.id !== id));
-    }
+    } catch {}
+    setArticles((prev) => {
+      const next = prev.filter((a) => a.id !== id && a.slug !== id);
+      saveToStorage(STORAGE_KEYS.articles, next);
+      return next;
+    });
   };
 
   // Comparison Methods
   const addComparison = async (compData: Omit<Comparison, 'id' | 'updatedAt'>) => {
+    let created: Comparison;
     try {
-      const created = await comparisonApi.create(compData);
-      setComparisons((prev) => [created, ...prev]);
-    } catch (e) {
-      const fallbackComp: Comparison = {
+      created = await comparisonApi.create(compData);
+    } catch {
+      created = {
         ...compData,
         id: `comp-${Date.now()}`,
         updatedAt: `${new Date().getDate()} Tháng ${new Date().getMonth() + 1}, ${new Date().getFullYear()}`
       };
-      setComparisons((prev) => [fallbackComp, ...prev]);
     }
+    setComparisons((prev) => {
+      const next = [created, ...prev.filter((c) => c.id !== created.id && c.slug !== created.slug)];
+      saveToStorage(STORAGE_KEYS.comparisons, next);
+      return next;
+    });
   };
 
   const updateComparison = async (id: string, updates: Partial<Comparison>) => {
+    let updated: Comparison | null = null;
     try {
-      const updated = await comparisonApi.update(id, updates);
-      setComparisons((prev) => prev.map((c) => (c.id === id ? updated : c)));
-    } catch (e) {
-      setComparisons((prev) => prev.map((c) => (c.id === id ? { ...c, ...updates } : c)));
-    }
+      updated = await comparisonApi.update(id, updates);
+    } catch {}
+    setComparisons((prev) => {
+      const next = prev.map((c) => {
+        if (c.id === id || c.slug === id) {
+          return updated || { ...c, ...updates };
+        }
+        return c;
+      });
+      saveToStorage(STORAGE_KEYS.comparisons, next);
+      return next;
+    });
   };
 
   const deleteComparison = async (id: string) => {
     try {
       await comparisonApi.delete(id);
-      setComparisons((prev) => prev.filter((c) => c.id !== id));
-    } catch (e) {
-      setComparisons((prev) => prev.filter((c) => c.id !== id));
-    }
+    } catch {}
+    setComparisons((prev) => {
+      const next = prev.filter((c) => c.id !== id && c.slug !== id);
+      saveToStorage(STORAGE_KEYS.comparisons, next);
+      return next;
+    });
   };
 
   // Expert Methods
   const addExpert = async (expData: Omit<Expert, 'id'>) => {
+    let created: Expert;
     try {
-      const created = await expertApi.create(expData);
-      setExperts((prev) => [...prev, created]);
-    } catch (e) {
-      const fallbackExp: Expert = {
+      created = await expertApi.create(expData);
+    } catch {
+      created = {
         ...expData,
         id: `expert-${Date.now()}`
       };
-      setExperts((prev) => [...prev, fallbackExp]);
     }
+    setExperts((prev) => {
+      const next = [created, ...prev.filter((e) => e.id !== created.id)];
+      saveToStorage(STORAGE_KEYS.experts, next);
+      return next;
+    });
   };
 
   const updateExpert = async (id: string, updates: Partial<Expert>) => {
+    let updated: Expert | null = null;
     try {
-      const updated = await expertApi.update(id, updates);
-      setExperts((prev) => prev.map((e) => (e.id === id ? updated : e)));
-    } catch (e) {
-      setExperts((prev) => prev.map((e) => (e.id === id ? { ...e, ...updates } : e)));
-    }
+      updated = await expertApi.update(id, updates);
+    } catch {}
+    setExperts((prev) => {
+      const next = prev.map((e) => {
+        if (e.id === id) {
+          return updated || { ...e, ...updates };
+        }
+        return e;
+      });
+      saveToStorage(STORAGE_KEYS.experts, next);
+      return next;
+    });
   };
 
   const deleteExpert = async (id: string) => {
     try {
       await expertApi.delete(id);
-      setExperts((prev) => prev.filter((e) => e.id !== id));
-    } catch (e) {
-      setExperts((prev) => prev.filter((e) => e.id !== id));
-    }
+    } catch {}
+    setExperts((prev) => {
+      const next = prev.filter((e) => e.id !== id);
+      saveToStorage(STORAGE_KEYS.experts, next);
+      return next;
+    });
   };
 
   const resetData = async () => {
     try {
       await systemApi.seedData();
-      await refreshData();
-    } catch (e) {
-      setProducts(mockProducts);
-      setCategories(mockCategories);
-      setRankings(mockRankings);
-      setComparisons(mockComparisons);
-      setArticles(mockArticles);
-      setExperts(mockExperts);
-    }
+    } catch {}
+    saveToStorage(STORAGE_KEYS.products, mockProducts);
+    saveToStorage(STORAGE_KEYS.categories, mockCategories);
+    saveToStorage(STORAGE_KEYS.rankings, mockRankings);
+    saveToStorage(STORAGE_KEYS.comparisons, mockComparisons);
+    saveToStorage(STORAGE_KEYS.articles, mockArticles);
+    saveToStorage(STORAGE_KEYS.experts, mockExperts);
+    setProducts(mockProducts);
+    setCategories(mockCategories);
+    setRankings(mockRankings);
+    setComparisons(mockComparisons);
+    setArticles(mockArticles);
+    setExperts(mockExperts);
   };
 
   return (

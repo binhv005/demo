@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
+import { leadApi, Lead } from '../../services/api';
 import { AdminHeader } from '../../components/admin/AdminHeader';
 import { StatCard } from '../../components/admin/StatCard';
 import { Badge } from '../../components/ui/Badge';
@@ -14,25 +15,63 @@ import {
   Sparkles,
   TrendingUp,
   CheckCircle2,
-  Clock
+  Clock,
+  Mail,
+  Phone,
+  Calendar,
+  UserCheck,
+  ChevronRight
 } from 'lucide-react';
 
 export const AdminDashboardPage: React.FC = () => {
   const { products, categories, rankings, articles, comparisons } = useData();
+  const [leads, setLeads] = useState<Lead[]>([]);
+  const [loadingLeads, setLoadingLeads] = useState(true);
+
+  useEffect(() => {
+    const fetchLeads = async () => {
+      try {
+        setLoadingLeads(true);
+        const data = await leadApi.getAll();
+        if (Array.isArray(data) && data.length > 0) {
+          setLeads(data);
+          localStorage.setItem('techreview_leads_cache', JSON.stringify(data));
+        } else {
+          const cached = localStorage.getItem('techreview_leads_cache');
+          if (cached) {
+            const parsed = JSON.parse(cached);
+            if (Array.isArray(parsed) && parsed.length > 0) setLeads(parsed);
+          }
+        }
+      } catch {
+        const cached = localStorage.getItem('techreview_leads_cache');
+        if (cached) {
+          try {
+            const parsed = JSON.parse(cached);
+            if (Array.isArray(parsed) && parsed.length > 0) setLeads(parsed);
+          } catch {}
+        }
+      } finally {
+        setLoadingLeads(false);
+      }
+    };
+    fetchLeads();
+  }, []);
 
   const totalViews = products.reduce((acc, p) => acc + p.views, 0) + articles.reduce((acc, a) => acc + a.views, 0);
   const draftsCount = products.filter((p) => p.status === 'draft').length + articles.filter((a) => a.status === 'draft').length;
+  const newLeadsCount = leads.filter((l) => l.status === 'new').length;
 
   return (
     <div className="space-y-6 pb-12">
       <AdminHeader
         title="Tổng Quan Quản Trị"
-        description="Theo dõi toàn bộ sản phẩm, danh mục, bảng xếp hạng và bài viết thời gian thực."
+        description="Theo dõi toàn bộ sản phẩm, danh mục, bảng xếp hạng, bài viết và yêu cầu tư vấn thời gian thực."
       />
 
       <div className="px-6 space-y-6">
         {/* KPI Stat Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           <StatCard
             title="Tổng Sản Phẩm"
             value={products.length}
@@ -53,6 +92,13 @@ export const AdminDashboardPage: React.FC = () => {
             growth="+5 mới"
             icon={<FileText className="w-4 h-4 text-amber-500" />}
             color="amber"
+          />
+          <StatCard
+            title="Khách Hàng & Leads"
+            value={leads.length}
+            growth={`${newLeadsCount} chờ tư vấn`}
+            icon={<Mail className="w-4 h-4 text-rose-500" />}
+            color="rose"
           />
           <StatCard
             title="Lượt Xem Nội Dung"
@@ -140,6 +186,12 @@ export const AdminDashboardPage: React.FC = () => {
               <h4 className="font-bold text-base">Quản lý hệ thống</h4>
               <div className="flex flex-col gap-2 pt-1">
                 <Link
+                  to="/admin/leads"
+                  className="px-3 py-2 rounded-xl bg-orange-500/20 hover:bg-orange-500/30 text-orange-200 border border-orange-500/30 text-xs font-bold transition-colors block text-center"
+                >
+                  Xem Yêu Cầu Tư Vấn ({leads.length})
+                </Link>
+                <Link
                   to="/admin/categories"
                   className="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-semibold transition-colors block text-center"
                 >
@@ -154,6 +206,93 @@ export const AdminDashboardPage: React.FC = () => {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Recent Consultation Leads Table Widget */}
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div>
+              <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
+                <Mail className="w-4 h-4 text-orange-500" />
+                <span>Yêu Cầu Tư Vấn &amp; Liên Hệ Khách Hàng Mới Nhất</span>
+              </h3>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Các lượt đăng ký nhận báo cáo kiểm nghiệm Lab và yêu cầu tư vấn từ cẩm nang
+              </p>
+            </div>
+            <Link
+              to="/admin/leads"
+              className="text-xs font-bold text-orange-600 hover:text-orange-700 flex items-center gap-1 bg-orange-50 px-3 py-1.5 rounded-lg border border-orange-200/60"
+            >
+              <span>Xem tất cả ({leads.length})</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          {leads.length === 0 ? (
+            <div className="py-8 text-center text-xs text-slate-400">
+              Chưa có yêu cầu tư vấn nào được ghi nhận.
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-slate-100 text-slate-400 uppercase tracking-wider text-[10px]">
+                    <th className="py-2.5 px-3 font-semibold">Email &amp; Khách hàng</th>
+                    <th className="py-2.5 px-3 font-semibold">Số điện thoại</th>
+                    <th className="py-2.5 px-3 font-semibold">Dịch vụ / Bài viết</th>
+                    <th className="py-2.5 px-3 font-semibold">Trạng thái</th>
+                    <th className="py-2.5 px-3 font-semibold">Thời gian</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50">
+                  {leads.slice(0, 5).map((lead) => (
+                    <tr key={lead.id} className="hover:bg-slate-50/60 transition-colors">
+                      <td className="py-3 px-3">
+                        <div className="flex items-center gap-2">
+                          <div className="w-7 h-7 rounded-full bg-orange-100 text-orange-600 font-bold flex items-center justify-center text-xs flex-shrink-0">
+                            {lead.email?.[0]?.toUpperCase() || 'K'}
+                          </div>
+                          <div>
+                            <span className="font-bold text-slate-900 block truncate max-w-[200px]">{lead.email}</span>
+                            {lead.name && <span className="text-[11px] text-slate-400 block">{lead.name}</span>}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="py-3 px-3">
+                        {lead.phone ? (
+                          <div className="flex items-center gap-1.5 font-semibold text-emerald-600">
+                            <Phone className="w-3.5 h-3.5" />
+                            <span>{lead.phone}</span>
+                          </div>
+                        ) : (
+                          <span className="text-slate-400 italic">Chưa có</span>
+                        )}
+                      </td>
+                      <td className="py-3 px-3">
+                        <span className="inline-block px-2.5 py-1 rounded-md bg-slate-100 text-slate-700 font-medium truncate max-w-[240px]">
+                          {lead.service || lead.message || 'Tư vấn cẩm nang'}
+                        </span>
+                      </td>
+                      <td className="py-3 px-3">
+                        <Badge
+                          variant={
+                            lead.status === 'new' ? 'warning' : lead.status === 'contacted' ? 'indigo' : 'success'
+                          }
+                          size="sm"
+                        >
+                          {lead.status === 'new' ? 'Chưa liên hệ' : lead.status === 'contacted' ? 'Đang tư vấn' : 'Đã hoàn thành'}
+                        </Badge>
+                      </td>
+                      <td className="py-3 px-3 text-slate-400 whitespace-nowrap">
+                        {lead.createdAt ? new Date(lead.createdAt).toLocaleDateString('vi-VN') : 'Mới đây'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
     </div>

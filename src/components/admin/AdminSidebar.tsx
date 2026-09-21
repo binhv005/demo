@@ -21,6 +21,30 @@ interface AdminSidebarProps {
 
 export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen = false, onClose }) => {
   const { products, categories, rankings, articles, comparisons } = useData();
+  const [leadsCount, setLeadsCount] = React.useState<number | null>(() => {
+    try {
+      const cached = localStorage.getItem('techreview_leads_cache');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed)) return parsed.length;
+      }
+    } catch {}
+    return null;
+  });
+
+  React.useEffect(() => {
+    const handleStorageChange = () => {
+      try {
+        const cached = localStorage.getItem('techreview_leads_cache');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed)) setLeadsCount(parsed.length);
+        }
+      } catch {}
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   const handleLinkClick = () => {
     if (onClose) {
@@ -34,7 +58,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen = false, onCl
     { to: '/admin/categories', icon: FolderTree, label: 'Quản lý danh mục', badge: categories.length },
     { to: '/admin/articles', icon: FileText, label: 'Bài viết & Cẩm nang', badge: articles.length },
     { to: '/admin/comparisons', icon: Scale, label: 'So sánh đối đầu', badge: comparisons.length },
-    { to: '/admin/leads', icon: Mail, label: 'Khách hàng & Leads', badge: null }
+    { to: '/admin/leads', icon: Mail, label: 'Khách hàng & Leads', badge: leadsCount }
   ];
 
   return (

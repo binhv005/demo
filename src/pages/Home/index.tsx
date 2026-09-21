@@ -18,7 +18,7 @@ import { TestimonialsSection } from '../../components/home/TestimonialsSection';
 import { RevealOnScroll } from '../../components/ui/RevealOnScroll';
 import { CountUp } from '../../components/ui/CountUp';
 import { renderCategoryIcon } from '../../utils/icons';
-import { formatPrice, isValidVietnamesePhone } from '../../utils/formatters';
+import { formatPrice, isValidVietnamesePhone, getOfficialBuyUrl } from '../../utils/formatters';
 import { Product, Ranking, Article, Category, Expert } from '../../types';
 import { mockArticles } from '../../data/articles';
 import { mockCategories } from '../../data/categories';
@@ -1985,18 +1985,21 @@ export const HomePage: React.FC = () => {
               <span className="hidden sm:inline text-xs text-slate-500 max-w-sm">
                 Phù hợp nhất: <strong>{selectedProduct.bestFor}</strong>
               </span>
-              <Button
-                variant="primary"
-                size="sm"
-                className="w-full sm:w-auto"
-                onClick={() => {
-                  showToast(`Đang chuyển hướng tới gian hàng chính hãng cho ${selectedProduct.name}`, { type: 'info' });
-                  setSelectedProduct(null);
-                }}
-                leftIcon={<ShoppingCart className="w-4 h-4" />}
+              <a
+                href={getOfficialBuyUrl(selectedProduct)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto inline-block"
               >
-                Xem nơi bán chính hãng
-              </Button>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  className="w-full sm:w-auto"
+                  leftIcon={<ShoppingCart className="w-4 h-4" />}
+                >
+                  Xem nơi bán chính hãng
+                </Button>
+              </a>
             </div>
           </div>
         )}

@@ -10,7 +10,6 @@ import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Select } from '../../components/ui/Select';
 import { Badge } from '../../components/ui/Badge';
-import { ImageUpload } from '../../components/ui/ImageUpload';
 import { Plus, Edit2, Trash2, Eye, Scale, ChevronDown, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toSlug } from '../../utils/formatters';
@@ -149,7 +148,7 @@ export const AdminComparisonsPage: React.FC = () => {
       header: 'Bài so sánh',
       className: 'min-w-[280px] sm:min-w-[340px] max-w-md',
       accessor: (c: Comparison) => {
-        const pA = products.find((p) => p.id === c.productAId);
+        const pA = products.find((p) => p.id === c.productAId || p.slug === c.productAId);
         const displayImg = c.image || pA?.image || 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=300&q=80';
         return (
           <div className="flex items-center gap-3">
@@ -169,8 +168,8 @@ export const AdminComparisonsPage: React.FC = () => {
       header: 'Sản phẩm A vs B',
       className: 'whitespace-nowrap min-w-[240px]',
       accessor: (c: Comparison) => {
-        const pA = products.find((p) => p.id === c.productAId);
-        const pB = products.find((p) => p.id === c.productBId);
+        const pA = products.find((p) => p.id === c.productAId || p.slug === c.productAId);
+        const pB = products.find((p) => p.id === c.productBId || p.slug === c.productBId);
         return (
           <span className="text-xs text-slate-700 font-medium whitespace-nowrap inline-block">
             {pA?.name || 'Sản phẩm A'} <strong className="text-orange-500 font-bold px-1">vs</strong> {pB?.name || 'Sản phẩm B'}
@@ -334,13 +333,6 @@ export const AdminComparisonsPage: React.FC = () => {
             value={slug}
             onChange={(e) => setSlug(toSlug(e.target.value))}
             placeholder="aircook-vs-homechef"
-          />
-
-          <ImageUpload
-            label="Hình ảnh bài so sánh"
-            value={image}
-            onChange={setImage}
-            multiple={false}
           />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

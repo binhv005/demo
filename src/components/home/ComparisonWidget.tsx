@@ -33,8 +33,26 @@ export const ComparisonWidget: React.FC = () => {
 
   if (!activeComparison) return null;
 
-  const productA = products.find((p) => p.id === activeComparison.productAId);
-  const productB = products.find((p) => p.id === activeComparison.productBId);
+  const productA = products.find(
+    (p) => p.id === activeComparison.productAId || p.slug === activeComparison.productAId
+  );
+  const productB = products.find(
+    (p) => p.id === activeComparison.productBId || p.slug === activeComparison.productBId
+  );
+
+  const isWinnerA =
+    productA &&
+    (activeComparison.winnerId === productA.id ||
+      activeComparison.winnerId === productA.slug ||
+      activeComparison.winnerId === activeComparison.productAId ||
+      activeComparison.winnerId === 'A');
+
+  const isWinnerB =
+    productB &&
+    (activeComparison.winnerId === productB.id ||
+      activeComparison.winnerId === productB.slug ||
+      activeComparison.winnerId === activeComparison.productBId ||
+      activeComparison.winnerId === 'B');
 
   return (
     <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xl overflow-hidden">
@@ -72,12 +90,12 @@ export const ComparisonWidget: React.FC = () => {
           {productA && (
             <div
               className={`relative rounded-2xl p-5 sm:p-6 pt-6 sm:pt-6 border transition-all ${
-                activeComparison.winnerId === productA.id
+                isWinnerA
                   ? 'bg-gradient-to-b from-orange-50/50 to-white border-orange-300 ring-2 ring-orange-400/30'
                   : 'bg-white border-slate-200'
               }`}
             >
-              {activeComparison.winnerId === productA.id && (
+              {isWinnerA && (
                 <div className="absolute -top-3 left-4 inline-flex items-center gap-1 px-3 py-0.5 rounded-full bg-orange-600 text-white text-[11px] font-black shadow-md">
                   <Trophy className="w-3.5 h-3.5 text-amber-300" />
                   SẢN PHẨM KHUYÊN DÙNG #1
@@ -128,12 +146,12 @@ export const ComparisonWidget: React.FC = () => {
           {productB && (
             <div
               className={`relative rounded-2xl p-5 sm:p-6 pt-6 sm:pt-6 border transition-all ${
-                activeComparison.winnerId === productB.id
+                isWinnerB
                   ? 'bg-gradient-to-b from-orange-50/50 to-white border-orange-300 ring-2 ring-orange-400/30'
                   : 'bg-white border-slate-200'
               }`}
             >
-              {activeComparison.winnerId === productB.id && (
+              {isWinnerB && (
                 <div className="absolute -top-3 left-4 inline-flex items-center gap-1 px-3 py-0.5 rounded-full bg-orange-600 text-white text-[11px] font-black shadow-md">
                   <Trophy className="w-3.5 h-3.5 text-amber-300" />
                   SẢN PHẨM KHUYÊN DÙNG #1

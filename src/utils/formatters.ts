@@ -50,3 +50,28 @@ export function isValidVietnamesePhone(phone: string): boolean {
   return vnPhoneRegex.test(cleaned);
 }
 
+/**
+ * Lấy đường dẫn nơi bán chính hãng của sản phẩm.
+ * Nếu chưa được cấu hình buyUrl trong admin, tự động tạo link tìm kiếm Shopee Mall / website chính hãng.
+ */
+export function getOfficialBuyUrl(product?: { name?: string; type?: string; buyUrl?: string } | null): string {
+  if (!product) return '#';
+  if (product.buyUrl && product.buyUrl.trim().startsWith('http')) {
+    return product.buyUrl.trim();
+  }
+  const name = product.name || '';
+  if (product.type === 'digital') {
+    const lowerName = name.toLowerCase();
+    if (lowerName.includes('chatgpt') || lowerName.includes('gpt')) return 'https://chatgpt.com';
+    if (lowerName.includes('claude')) return 'https://claude.ai';
+    if (lowerName.includes('midjourney')) return 'https://www.midjourney.com';
+    if (lowerName.includes('notion')) return 'https://www.notion.so';
+    if (lowerName.includes('clickup')) return 'https://clickup.com';
+    if (lowerName.includes('figma')) return 'https://www.figma.com';
+    return `https://www.google.com/search?q=${encodeURIComponent(name + ' official website')}`;
+  }
+  return `https://shopee.vn/search?keyword=${encodeURIComponent(name)}`;
+}
+
+
+

@@ -9,6 +9,7 @@ import { ProductScore } from '../../components/product/ProductScore';
 import { SpecsTable } from '../../components/product/SpecsTable';
 import { ProductCard } from '../../components/product/ProductCard';
 import { Button } from '../../components/ui/Button';
+import { getOfficialBuyUrl } from '../../utils/formatters';
 import { ShieldCheck, ArrowRight, CheckCircle2, HelpCircle, Scale, ExternalLink } from 'lucide-react';
 
 export const ReviewDetailPage: React.FC = () => {
@@ -144,22 +145,16 @@ export const ReviewDetailPage: React.FC = () => {
               </div>
 
               <div className="space-y-2 pt-2 border-t border-slate-100">
-                {product.buyUrl ? (
-                  <a
-                    href={product.buyUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full block"
-                  >
-                    <Button variant="primary" size="md" className="w-full font-bold" rightIcon={<ExternalLink className="w-4 h-4" />}>
-                      Xem nơi bán chính hãng
-                    </Button>
-                  </a>
-                ) : (
-                  <Button variant="primary" size="md" className="w-full font-bold">
+                <a
+                  href={getOfficialBuyUrl(product)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full block"
+                >
+                  <Button variant="primary" size="md" className="w-full font-bold" rightIcon={<ExternalLink className="w-4 h-4" />}>
                     Xem nơi bán chính hãng
                   </Button>
-                )}
+                </a>
                 <Link to={`/${product.groupSlug}/${product.categorySlug}`} className="w-full block">
                   <Button variant="outline" size="md" className="w-full">
                     Xem sản phẩm cùng danh mục

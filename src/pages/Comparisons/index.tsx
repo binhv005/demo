@@ -46,8 +46,8 @@ export const ComparisonsListPage: React.FC = () => {
       // Search query
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase().trim();
-        const prodA = products.find((p) => p.id === c.productAId);
-        const prodB = products.find((p) => p.id === c.productBId);
+        const prodA = products.find((p) => p.id === c.productAId || p.slug === c.productAId);
+        const prodB = products.find((p) => p.id === c.productBId || p.slug === c.productBId);
 
         const matchTitle = c.title.toLowerCase().includes(q);
         const matchVerdict = c.verdict.toLowerCase().includes(q);
@@ -188,9 +188,20 @@ export const ComparisonsListPage: React.FC = () => {
           /* Comparisons Grid */
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {filteredComparisons.map((comp) => {
-              const prodA = products.find((p) => p.id === comp.productAId);
-              const prodB = products.find((p) => p.id === comp.productBId);
-              const winnerProd = products.find((p) => p.id === comp.winnerId);
+              const prodA = products.find((p) => p.id === comp.productAId || p.slug === comp.productAId);
+              const prodB = products.find((p) => p.id === comp.productBId || p.slug === comp.productBId);
+              const isWinnerA =
+                prodA &&
+                (comp.winnerId === prodA.id ||
+                  comp.winnerId === prodA.slug ||
+                  comp.winnerId === comp.productAId ||
+                  comp.winnerId === 'A');
+              const isWinnerB =
+                prodB &&
+                (comp.winnerId === prodB.id ||
+                  comp.winnerId === prodB.slug ||
+                  comp.winnerId === comp.productBId ||
+                  comp.winnerId === 'B');
 
               return (
                 <div
@@ -207,7 +218,7 @@ export const ComparisonsListPage: React.FC = () => {
                           </>
                         ) : (
                           <>
-                            <Sparkles className="w-3.5 h-3.5 text-indigo-400" /> Số & AI
+                            <Sparkles className="w-3.5 h-3.5 text-indigo-400" /> Số &amp; AI
                           </>
                         )}
                       </span>
@@ -241,7 +252,7 @@ export const ComparisonsListPage: React.FC = () => {
                       {/* Product A */}
                       <div
                         className={`p-3 rounded-xl transition-all flex flex-col items-center text-center space-y-2 ${
-                          comp.winnerId === comp.productAId
+                          isWinnerA
                             ? 'bg-amber-50/70 border border-amber-300/80 shadow-2xs'
                             : 'bg-white border border-slate-200'
                         }`}
@@ -271,7 +282,7 @@ export const ComparisonsListPage: React.FC = () => {
                             {formatPrice(prodA.price)}
                           </span>
                         )}
-                        {comp.winnerId === comp.productAId && (
+                        {isWinnerA && (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-orange-600 text-white text-[10px] font-black shadow-2xs">
                             <Trophy className="w-3 h-3 text-amber-300" /> Thắng cuộc
                           </span>
@@ -281,7 +292,7 @@ export const ComparisonsListPage: React.FC = () => {
                       {/* Product B */}
                       <div
                         className={`p-3 rounded-xl transition-all flex flex-col items-center text-center space-y-2 ${
-                          comp.winnerId === comp.productBId
+                          isWinnerB
                             ? 'bg-amber-50/70 border border-amber-300/80 shadow-2xs'
                             : 'bg-white border border-slate-200'
                         }`}
@@ -311,7 +322,7 @@ export const ComparisonsListPage: React.FC = () => {
                             {formatPrice(prodB.price)}
                           </span>
                         )}
-                        {comp.winnerId === comp.productBId && (
+                        {isWinnerB && (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-orange-600 text-white text-[10px] font-black shadow-2xs">
                             <Trophy className="w-3 h-3 text-amber-300" /> Thắng cuộc
                           </span>

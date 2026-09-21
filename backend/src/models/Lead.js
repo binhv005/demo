@@ -21,10 +21,10 @@ const leadSchema = new mongoose.Schema(
       validate: {
         validator: function (v) {
           if (!v) return true;
-          const cleaned = v.replace(/[\s.-]/g, '');
-          return /^(0|\+84|84)(3|5|7|8|9)[0-9]{8}$/.test(cleaned);
+          const cleaned = v.replace(/[\s.()+-]/g, '');
+          return /^(0|84)?[3|5|7|8|9][0-9]{8}$/.test(cleaned) || /^[0-9]{9,11}$/.test(cleaned);
         },
-        message: 'Số điện thoại không hợp lệ (yêu cầu đầu số Việt Nam 03, 05, 07, 08, 09 hoặc +84)'
+        message: 'Số điện thoại không hợp lệ (yêu cầu số điện thoại 9-11 chữ số)'
       }
     },
     website: {

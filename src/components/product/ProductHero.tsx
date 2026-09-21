@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Product } from '../../types';
-import { formatPrice } from '../../utils/formatters';
+import { formatPrice, getOfficialBuyUrl } from '../../utils/formatters';
 import { ScoreBadge } from '../ui/ScoreBadge';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
@@ -17,6 +17,8 @@ export const ProductHero: React.FC<ProductHeroProps> = ({ product }) => {
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+
+  const officialBuyUrl = getOfficialBuyUrl(product);
 
   const currentImage = allImages[activeImageIndex] || product.image;
 
@@ -170,23 +172,12 @@ export const ProductHero: React.FC<ProductHeroProps> = ({ product }) => {
             </div>
 
             <div className="flex items-center gap-2">
-              {product.buyUrl ? (
-                <a
-                  href={product.buyUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full sm:w-auto inline-block"
-                >
-                  <Button
-                    variant="primary"
-                    size="md"
-                    rightIcon={<ExternalLink className="w-3.5 h-3.5" />}
-                    className="w-full sm:w-auto font-bold text-xs sm:text-sm py-2 px-4 shadow-sm"
-                  >
-                    Xem nơi bán chính hãng
-                  </Button>
-                </a>
-              ) : (
+              <a
+                href={officialBuyUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto inline-block"
+              >
                 <Button
                   variant="primary"
                   size="md"
@@ -195,7 +186,7 @@ export const ProductHero: React.FC<ProductHeroProps> = ({ product }) => {
                 >
                   Xem nơi bán chính hãng
                 </Button>
-              )}
+              </a>
             </div>
           </div>
         </div>
