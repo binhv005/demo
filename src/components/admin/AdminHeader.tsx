@@ -30,7 +30,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ title, description, ac
               {user?.name || 'Quản Trị Viên'}
             </span>
             <span className="text-[10px] text-slate-400 font-medium">
-              {user?.email || 'admin@techreview.vn'}
+              {user?.email || 'admin@top20product.vn'}
             </span>
           </div>
         </div>

@@ -12,7 +12,7 @@ export const TestimonialsSection: React.FC = () => {
       avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
       rating: 5,
       content:
-        'Nhờ bảng so sánh chi tiết và tiêu chí khách quan của TechReview, mình đã chọn đúng chiếc ProBook 14 OLED phục vụ công việc lập trình. Thông số đo thời lượng pin và tản nhiệt trong lab cực kỳ chuẩn xác!',
+        'Nhờ bảng so sánh chi tiết và tiêu chí khách quan của Top20Product, mình đã chọn đúng chiếc ProBook 14 OLED phục vụ công việc lập trình. Thông số đo thời lượng pin và tản nhiệt trong lab cực kỳ chuẩn xác!',
       badge: 'Độc giả đã xác thực'
     },
     {
@@ -22,7 +22,7 @@ export const TestimonialsSection: React.FC = () => {
       avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=150&q=80',
       rating: 5,
       content:
-        'Trước khi mua nồi chiên không dầu mình rất bối rối vì trên mạng toàn bài quảng cáo được tài trợ. TechReview phân tích rõ ràng ưu nhược điểm của từng loại và giúp mình tiết kiệm gần 1 triệu đồng.',
+        'Trước khi mua nồi chiên không dầu mình rất bối rối vì trên mạng toàn bài quảng cáo được tài trợ. Top20Product phân tích rõ ràng ưu nhược điểm của từng loại và giúp mình tiết kiệm gần 1 triệu đồng.',
       badge: 'Người mua thông minh'
     },
     {
@@ -43,7 +43,7 @@ export const TestimonialsSection: React.FC = () => {
         {/* Section Title */}
         <div className="text-center space-y-2 max-w-2xl mx-auto mb-7">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 tracking-tight">
-            Độc Giả Nói Gì Về TechReview?
+            Độc Giả Nói Gì Về Top20Product?
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
             Hơn 1.200.000 người tiêu dùng đã lựa chọn được sản phẩm ưng ý nhất{' '}

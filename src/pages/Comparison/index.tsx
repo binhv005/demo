@@ -196,7 +196,7 @@ export const ComparisonDetailPage: React.FC = () => {
                   {/* Điểm tổng quan */}
                   <tr className="hover:bg-slate-50/50">
                     <td className="p-4 font-semibold text-slate-800 bg-slate-50/40">
-                      Điểm tổng thể TechReview
+                      Điểm tổng thể Top20Product
                     </td>
                     <td className={`p-4 text-center font-bold ${prodA.score >= prodB.score ? 'bg-emerald-50/60 text-emerald-900' : 'text-slate-700'}`}>
                       <div className="flex flex-col items-center gap-1">

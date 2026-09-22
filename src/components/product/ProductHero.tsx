@@ -122,7 +122,7 @@ export const ProductHero: React.FC<ProductHeroProps> = ({ product }) => {
 
           <div className="flex items-center text-xs text-slate-500 px-1">
             <span className="flex items-center gap-1.5 text-emerald-600 font-semibold">
-              <ShieldCheck className="w-4 h-4" /> Đã kiểm nghiệm độc lập bởi TechReview
+              <ShieldCheck className="w-4 h-4" /> Đã kiểm nghiệm độc lập bởi Top20Product
             </span>
           </div>
         </div>

@@ -77,7 +77,7 @@ export const AdminRankingsPage: React.FC = () => {
         subtitle,
         authorId: 'expert-1',
         intro: `Đánh giá và so sánh thực tế các sản phẩm ${title} tốt nhất năm nay.`,
-        methodology: 'Quy trình thử nghiệm tiêu chuẩn theo quy chuẩn chất lượng phòng thí nghiệm TechReview.',
+        methodology: 'Quy trình thử nghiệm tiêu chuẩn theo quy chuẩn chất lượng phòng thí nghiệm Top20Product.',
         quickPicks: {
           bestOverallId: topProducts[0]?.id || 'prod-aircook-6l',
           bestValueId: topProducts[1]?.id || topProducts[0]?.id || 'prod-aircook-6l',

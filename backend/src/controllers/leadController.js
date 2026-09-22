@@ -39,7 +39,7 @@ exports.createLead = async (req, res, next) => {
 
     res.status(201).json({
       success: true,
-      message: 'Đăng ký thành công! Cảm ơn bạn đã quan tâm đến TechReview.',
+      message: 'Đăng ký thành công! Cảm ơn bạn đã quan tâm đến Top20Product.',
       data: newLead
     });
   } catch (error) {

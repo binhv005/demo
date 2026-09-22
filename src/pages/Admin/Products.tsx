@@ -308,7 +308,7 @@ export const AdminProductsPage: React.FC = () => {
         badge: badge || undefined,
         bestFor,
         shortDescription: shortDesc,
-        deepReview: deepReview || `${name} là sản phẩm mới được bổ sung vào cơ sở dữ liệu kiểm nghiệm của TechReview.`,
+        deepReview: deepReview || `${name} là sản phẩm mới được bổ sung vào cơ sở dữ liệu kiểm nghiệm của Top20Product.`,
         pros,
         cons,
         specs: specsObj,

@@ -22,7 +22,7 @@ const startServer = async () => {
     app.listen(PORT, () => {
       console.log(`
 ======================================================
-  🚀 TechReview Backend Server Running
+  🚀 Top20Product Backend Server Running
   📡 Local:   http://localhost:${PORT}
   🔗 API:     http://localhost:${PORT}/api
   🩺 Health:  http://localhost:${PORT}/api/health

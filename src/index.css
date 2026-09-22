@@ -251,3 +251,9 @@
   scrollbar-width: none;
 }
 
+/* Ensure select option dropdowns always have dark readable text on clean white background */
+select option {
+  background-color: #ffffff !important;
+  color: #0f172a !important; /* slate-900 */
+}
+

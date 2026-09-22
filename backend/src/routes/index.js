@@ -27,7 +27,7 @@ router.use('/upload', uploadRoutes);
 router.get('/health', (req, res) => {
   res.status(200).json({
     success: true,
-    message: 'TechReview Backend API is running smoothly 🚀',
+    message: 'Top20Product Backend API is running smoothly 🚀',
     timestamp: new Date().toISOString()
   });
 });

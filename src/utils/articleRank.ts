@@ -137,6 +137,23 @@ export const getArticleResolvedRankMap = (articles: Article[]): Map<string, Reso
 };
 
 /**
+ * Computes a map of pure natural view ranks for all published articles.
+ * Sorted strictly by views descending (without any manual ranking displacement).
+ */
+export const getArticleNaturalViewRankMap = (articles: Article[]): Map<string, number> => {
+  const map = new Map<string, number>();
+  const published = articles
+    .filter((a) => a.status === 'published')
+    .sort((a, b) => (b.views || 0) - (a.views || 0));
+
+  published.forEach((art, index) => {
+    map.set(art.id, index + 1);
+  });
+
+  return map;
+};
+
+/**
  * Ensures a collection of articles has strictly unique manual ranks (1..10).
  * If duplicate manual ranks exist, only the first occurrence retains the rank;
  * others are reset to default (null / undefined).

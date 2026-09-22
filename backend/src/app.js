@@ -47,7 +47,7 @@ app.use('/api', apiLimiter);
 app.get('/', (req, res) => {
   res.json({
     success: true,
-    name: 'TechReview REST API Backend',
+    name: 'Top20Product REST API Backend',
     version: '1.0.0',
     docs: '/api/health'
   });

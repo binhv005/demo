@@ -372,7 +372,7 @@ export const HomePage: React.FC = () => {
   const faqItems = [
     {
       id: 'faq-1',
-      title: 'Các bài đánh giá và bảng xếp hạng trên TechReview có thực sự độc lập không?',
+      title: 'Các bài đánh giá và bảng xếp hạng trên Top20Product có thực sự độc lập không?',
       content: 'Hoàn toàn độc lập. Đội ngũ chuyên gia của chúng tôi tự mua hoặc mượn sản phẩm kiểm nghiệm theo bộ tiêu chuẩn đo lường nghiêm ngặt. Chúng tôi không nhận tiền quảng cáo để thay đổi thứ tự xếp hạng hoặc nâng điểm số của bất kỳ thương hiệu nào.'
     },
     {
@@ -387,7 +387,7 @@ export const HomePage: React.FC = () => {
     },
     {
       id: 'faq-4',
-      title: 'Làm thế nào để yêu cầu TechReview đánh giá một sản phẩm cụ thể?',
+      title: 'Làm thế nào để yêu cầu Top20Product đánh giá một sản phẩm cụ thể?',
       content: 'Bạn có thể gửi đề xuất qua hộp thư hoặc liên hệ với Ban biên tập. Các sản phẩm nhận được nhiều bình chọn từ độc giả sẽ được ưu tiên đưa vào lộ trình kiểm nghiệm phòng lab tiếp theo.'
     }
   ];
@@ -502,7 +502,7 @@ export const HomePage: React.FC = () => {
           <Container size="xl">
             <div className="text-center space-y-3 max-w-2xl mx-auto mb-14">
               <h2 className="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight">
-                Tại Sao Hơn 1.2 Triệu Người Chọn TechReview?
+                Tại Sao Hơn 1.2 Triệu Người Chọn Top20Product?
               </h2>
               <p className="text-xs sm:text-sm text-slate-600">
                 Khác biệt hoàn toàn với các trang tổng hợp thông tin, chúng tôi đánh giá dựa trên thiết bị đo kiểm và trải nghiệm đời thực.
@@ -1472,7 +1472,7 @@ export const HomePage: React.FC = () => {
                     Chúng tôi đánh giá sản phẩm như thế nào?
                   </h2>
                   <p className="text-sm text-slate-300 leading-relaxed">
-                    Mỗi bài đánh giá tại TechReview không đơn thuần là bảng thông số từ nhà sản xuất. Chúng tôi trực tiếp mua, trải nghiệm trong điều kiện đời thực và đo lường theo quy trình 4 bước chuẩn mực:
+                    Mỗi bài đánh giá tại Top20Product không đơn thuần là bảng thông số từ nhà sản xuất. Chúng tôi trực tiếp mua, trải nghiệm trong điều kiện đời thực và đo lường theo quy trình 4 bước chuẩn mực:
                   </p>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
@@ -1899,7 +1899,7 @@ export const HomePage: React.FC = () => {
             {/* Deep Review Paragraph */}
             <div className="space-y-2">
               <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider">
-                Đánh Giá Từ Phòng Lab TechReview
+                Đánh Giá Từ Phòng Lab Top20Product
               </h4>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed bg-slate-50 p-4 rounded-2xl border border-slate-100">
                 {selectedProduct.deepReview}

@@ -32,7 +32,8 @@ import { toSlug } from '../../utils/formatters';
 import {
   getManualArticleRank,
   isArticleExcludedFromTop,
-  getArticleResolvedRankMap
+  getArticleResolvedRankMap,
+  getArticleNaturalViewRankMap
 } from '../../utils/articleRank';
 
 export const AdminArticlesPage: React.FC = () => {
@@ -55,12 +56,17 @@ export const AdminArticlesPage: React.FC = () => {
   const [blocks, setBlocks] = useState<ArticleBlock[]>([]);
   const [status, setStatus] = useState<'published' | 'draft'>('published');
   const [isFeatured, setIsFeatured] = useState<boolean>(false);
-  const [isTopRanking, setIsTopRanking] = useState<boolean | number | undefined>(undefined);
-  const [topRankOrder, setTopRankOrder] = useState<number | null | undefined>(undefined);
+  const [isTopRanking, setIsTopRanking] = useState<boolean | number | null | undefined>(null);
+  const [topRankOrder, setTopRankOrder] = useState<number | null | undefined>(null);
 
   // Accurately resolved ranking map (strictly 1 article per rank, aligned with Homepage)
   const resolvedRankMap = React.useMemo(() => {
     return getArticleResolvedRankMap(articles);
+  }, [articles]);
+
+  // Pure natural view ranking map (sorted purely by views descending without manual slot shifts)
+  const naturalViewRankMap = React.useMemo(() => {
+    return getArticleNaturalViewRankMap(articles);
   }, [articles]);
 
   // Open Full-Page Editor for new article
@@ -76,8 +82,8 @@ export const AdminArticlesPage: React.FC = () => {
     setBlocks([]);
     setStatus('published');
     setIsFeatured(false);
-    setIsTopRanking(undefined);
-    setTopRankOrder(undefined);
+    setIsTopRanking(null);
+    setTopRankOrder(null);
     setCurrentView('editor');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -95,8 +101,8 @@ export const AdminArticlesPage: React.FC = () => {
     setBlocks(a.blocks || []);
     setStatus(a.status || 'published');
     setIsFeatured(a.isFeatured ?? false);
-    setIsTopRanking(a.isTopRanking);
-    setTopRankOrder(a.topRankOrder ?? (typeof a.isTopRanking === 'number' ? a.isTopRanking : a.isTopRanking === true ? 1 : a.isTopRanking === false ? -1 : undefined));
+    setIsTopRanking(a.isTopRanking ?? null);
+    setTopRankOrder(a.topRankOrder ?? (typeof a.isTopRanking === 'number' ? a.isTopRanking : a.isTopRanking === true ? 1 : a.isTopRanking === false ? -1 : null));
     setCurrentView('editor');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -131,7 +137,7 @@ export const AdminArticlesPage: React.FC = () => {
     }
 
     if (val === 'auto') {
-      await updateArticle(targetArticle.id, { isTopRanking: undefined, topRankOrder: null });
+      await updateArticle(targetArticle.id, { isTopRanking: null, topRankOrder: null });
       showToast(`Đã đặt lại bài viết "${targetArticle.title}" về Mặc định (Theo lượt xem)!`, { type: 'success' });
       return;
     }
@@ -152,7 +158,7 @@ export const AdminArticlesPage: React.FC = () => {
         const firstConflict = conflictingArticles[0];
         await updateArticle(firstConflict.id, { isTopRanking: currentTargetRank, topRankOrder: currentTargetRank });
         for (let i = 1; i < conflictingArticles.length; i++) {
-          await updateArticle(conflictingArticles[i].id, { isTopRanking: undefined, topRankOrder: null });
+          await updateArticle(conflictingArticles[i].id, { isTopRanking: null, topRankOrder: null });
         }
         await updateArticle(targetArticle.id, { isTopRanking: newRank, topRankOrder: newRank });
         showToast(
@@ -162,7 +168,7 @@ export const AdminArticlesPage: React.FC = () => {
       } else {
         // Displace conflicting article(s) to auto default
         for (const conf of conflictingArticles) {
-          await updateArticle(conf.id, { isTopRanking: undefined, topRankOrder: null });
+          await updateArticle(conf.id, { isTopRanking: null, topRankOrder: null });
         }
         await updateArticle(targetArticle.id, { isTopRanking: newRank, topRankOrder: newRank });
         showToast(
@@ -205,7 +211,7 @@ export const AdminArticlesPage: React.FC = () => {
       ? false
       : typeof topRankOrder === 'number'
       ? topRankOrder
-      : undefined;
+      : null;
 
     // Resolve any rank conflict before saving
     if (!isDraft && typeof finalTopRankOrder === 'number' && finalTopRankOrder >= 1 && finalTopRankOrder <= 10) {
@@ -218,11 +224,11 @@ export const AdminArticlesPage: React.FC = () => {
         if (oldRank !== null && oldRank !== finalTopRankOrder) {
           await updateArticle(conflicting[0].id, { isTopRanking: oldRank, topRankOrder: oldRank });
           for (let i = 1; i < conflicting.length; i++) {
-            await updateArticle(conflicting[i].id, { isTopRanking: undefined, topRankOrder: null });
+            await updateArticle(conflicting[i].id, { isTopRanking: null, topRankOrder: null });
           }
         } else {
           for (const conf of conflicting) {
-            await updateArticle(conf.id, { isTopRanking: undefined, topRankOrder: null });
+            await updateArticle(conf.id, { isTopRanking: null, topRankOrder: null });
           }
         }
       }
@@ -431,6 +437,7 @@ export const AdminArticlesPage: React.FC = () => {
         const isExcluded = isArticleExcludedFromTop(a);
         const rankInfo = resolvedRankMap.get(a.id);
         const resolvedRankNumber = rankInfo?.rank;
+        const naturalRankNumber = naturalViewRankMap.get(a.id);
         const isAutoTop = !isDraft && manualRank === null && !isExcluded && resolvedRankNumber !== undefined && resolvedRankNumber <= 10;
 
         let selectVal = isDraft ? 'excluded' : 'auto';
@@ -443,7 +450,7 @@ export const AdminArticlesPage: React.FC = () => {
               value={selectVal}
               disabled={isDraft}
               onChange={(e) => handleRankChange(a, e.target.value)}
-              className={`text-xs font-bold px-3 py-1.5 rounded-xl border appearance-none pr-8 transition-all ${
+              className={`text-xs font-bold px-3 py-1.5 rounded-xl border appearance-none pr-8 transition-all [&>option]:bg-white [&>option]:text-slate-900 ${
                 isDraft
                   ? 'bg-slate-50 text-slate-300 border-slate-200/60 cursor-not-allowed'
                   : manualRank !== null
@@ -455,24 +462,22 @@ export const AdminArticlesPage: React.FC = () => {
                   : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200 focus:ring-slate-400 cursor-pointer'
               }`}
             >
-              <option value="auto">
-                {isAutoTop
-                  ? `⚡ Top #${resolvedRankNumber} (Mặc định lượt xem)`
-                  : resolvedRankNumber && resolvedRankNumber > 0
-                  ? `⚡ Hạng #${resolvedRankNumber} (Theo lượt xem)`
+              <option value="auto" className="bg-white text-slate-900">
+                {naturalRankNumber
+                  ? `⚡ Hạng #${naturalRankNumber} (Theo lượt xem)`
                   : '⚡ Mặc định (Theo lượt xem)'}
               </option>
-              <option value="1">🏆 Top 1</option>
-              <option value="2">🏆 Top 2</option>
-              <option value="3">🏆 Top 3</option>
-              <option value="4">🏆 Top 4</option>
-              <option value="5">🏆 Top 5</option>
-              <option value="6">🏆 Top 6</option>
-              <option value="7">🏆 Top 7</option>
-              <option value="8">🏆 Top 8</option>
-              <option value="9">🏆 Top 9</option>
-              <option value="10">🏆 Top 10</option>
-              <option value="excluded">🚫 Ẩn khỏi Top</option>
+              <option value="1" className="bg-white text-slate-900">🏆 Top 1</option>
+              <option value="2" className="bg-white text-slate-900">🏆 Top 2</option>
+              <option value="3" className="bg-white text-slate-900">🏆 Top 3</option>
+              <option value="4" className="bg-white text-slate-900">🏆 Top 4</option>
+              <option value="5" className="bg-white text-slate-900">🏆 Top 5</option>
+              <option value="6" className="bg-white text-slate-900">🏆 Top 6</option>
+              <option value="7" className="bg-white text-slate-900">🏆 Top 7</option>
+              <option value="8" className="bg-white text-slate-900">🏆 Top 8</option>
+              <option value="9" className="bg-white text-slate-900">🏆 Top 9</option>
+              <option value="10" className="bg-white text-slate-900">🏆 Top 10</option>
+              <option value="excluded" className="bg-white text-slate-900">🚫 Ẩn khỏi Top</option>
             </select>
             <ChevronDown className="w-3.5 h-3.5 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none opacity-70" />
           </div>
@@ -571,31 +576,31 @@ export const AdminArticlesPage: React.FC = () => {
                       setIsTopRanking(false);
                     } else if (val === 'auto') {
                       setTopRankOrder(null);
-                      setIsTopRanking(undefined);
+                      setIsTopRanking(null);
                     } else {
                       const num = parseInt(val, 10);
                       setTopRankOrder(num);
                       setIsTopRanking(num);
                     }
                   }}
-                  className="bg-transparent font-bold text-xs outline-none cursor-pointer text-slate-900 pr-1"
+                  className="bg-transparent font-bold text-xs outline-none cursor-pointer text-slate-900 pr-1 [&>option]:bg-white [&>option]:text-slate-900"
                 >
-                  <option value="auto">
-                    {editingArticle && resolvedRankMap.get(editingArticle.id)?.rank && (resolvedRankMap.get(editingArticle.id)!.rank <= 10)
-                      ? `⚡ Top #${resolvedRankMap.get(editingArticle.id)!.rank} (Mặc định lượt xem)`
+                  <option value="auto" className="bg-white text-slate-900">
+                    {editingArticle && naturalViewRankMap.get(editingArticle.id)
+                      ? `⚡ Hạng #${naturalViewRankMap.get(editingArticle.id)} (Theo lượt xem)`
                       : '⚡ Mặc định (Theo lượt xem)'}
                   </option>
-                  <option value="1">🏆 Top 1</option>
-                  <option value="2">🏆 Top 2</option>
-                  <option value="3">🏆 Top 3</option>
-                  <option value="4">🏆 Top 4</option>
-                  <option value="5">🏆 Top 5</option>
-                  <option value="6">🏆 Top 6</option>
-                  <option value="7">🏆 Top 7</option>
-                  <option value="8">🏆 Top 8</option>
-                  <option value="9">🏆 Top 9</option>
-                  <option value="10">🏆 Top 10</option>
-                  <option value="excluded">🚫 Ẩn khỏi Top</option>
+                  <option value="1" className="bg-white text-slate-900">🏆 Top 1</option>
+                  <option value="2" className="bg-white text-slate-900">🏆 Top 2</option>
+                  <option value="3" className="bg-white text-slate-900">🏆 Top 3</option>
+                  <option value="4" className="bg-white text-slate-900">🏆 Top 4</option>
+                  <option value="5" className="bg-white text-slate-900">🏆 Top 5</option>
+                  <option value="6" className="bg-white text-slate-900">🏆 Top 6</option>
+                  <option value="7" className="bg-white text-slate-900">🏆 Top 7</option>
+                  <option value="8" className="bg-white text-slate-900">🏆 Top 8</option>
+                  <option value="9" className="bg-white text-slate-900">🏆 Top 9</option>
+                  <option value="10" className="bg-white text-slate-900">🏆 Top 10</option>
+                  <option value="excluded" className="bg-white text-slate-900">🚫 Ẩn khỏi Top</option>
                 </select>
               </div>
 

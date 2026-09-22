@@ -338,7 +338,7 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({
           {/* Footer of Search Modal */}
           <div className="px-5 py-3 border-t border-slate-100 bg-slate-50 flex items-center justify-between text-xs text-slate-400">
             <span>Mẹo: Nhấn ESC để đóng</span>
-            <span className="font-semibold text-slate-600">TechReview Search Engine</span>
+            <span className="font-semibold text-slate-600">Top20Product Search Engine</span>
           </div>
         </div>
       </div>

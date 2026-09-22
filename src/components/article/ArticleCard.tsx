@@ -127,11 +127,11 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
 
             {/* Editorial attribution */}
             <div className="flex items-center gap-2 text-xs text-slate-500 pt-0.5">
-              <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-orange-500 to-amber-500 text-white font-black flex items-center justify-center text-[9px] flex-shrink-0 shadow-xs">
-                TR
+              <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-orange-500 to-amber-500 text-white font-black flex items-center justify-center text-[8px] flex-shrink-0 shadow-xs">
+                T20
               </div>
               <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="font-semibold text-slate-700 text-[11.5px]">Ban Biên Tập TechReview</span>
+                <span className="font-semibold text-slate-700 text-[11.5px]">Ban Biên Tập Top20Product</span>
                 <span>•</span>
                 <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200/60 inline-flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>

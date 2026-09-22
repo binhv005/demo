@@ -199,7 +199,7 @@ export interface Article {
   views: number;
   status: 'published' | 'draft';
   isFeatured?: boolean;
-  isTopRanking?: boolean | number;
+  isTopRanking?: boolean | number | null;
   topRankOrder?: number | null;
 }
 

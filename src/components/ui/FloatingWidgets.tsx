@@ -27,13 +27,13 @@ export const FloatingWidgets: React.FC = () => {
   };
 
   const handlePhoneClick = () => {
-    showToast('Hotline tư vấn độc lập TechReview: 1900 6868 (8:00 - 21:00)', {
+    showToast('Hotline tư vấn độc lập Top20Product: 1900 6868 (8:00 - 21:00)', {
       type: 'info'
     });
   };
 
   const handleZaloClick = () => {
-    showToast('Đang mở cổng tư vấn Zalo Official Account TechReview...', {
+    showToast('Đang mở cổng tư vấn Zalo Official Account Top20Product...', {
       type: 'info'
     });
     window.open('https://zalo.me', '_blank');
