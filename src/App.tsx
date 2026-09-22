@@ -22,6 +22,10 @@ import { PhysicalProductsPage } from './pages/PhysicalProducts';
 import { DigitalProductsPage } from './pages/DigitalProducts';
 import { ArticlesPage } from './pages/Articles';
 import { SearchPage } from './pages/Search';
+import { PrivacyPolicyPage } from './pages/Legal/PrivacyPolicy';
+import { TermsOfServicePage } from './pages/Legal/TermsOfService';
+import { EditorialStandardsPage } from './pages/Legal/EditorialStandards';
+import { AffiliateDisclosurePage } from './pages/Legal/AffiliateDisclosure';
 
 // Admin Pages
 import { AdminDashboardPage } from './pages/Admin/Dashboard';
@@ -117,6 +121,17 @@ export function App() {
                   <Route path="/san-pham-vat-ly" element={<PhysicalProductsPage />} />
                   <Route path="/san-pham-so" element={<DigitalProductsPage />} />
                   <Route path="/tim-kiem" element={<SearchPage />} />
+
+                  {/* Legal & Policies */}
+                  <Route path="/chinh-sach-bao-mat" element={<PrivacyPolicyPage />} />
+                  <Route path="/privacy" element={<PrivacyPolicyPage />} />
+                  <Route path="/dieu-khoan-su-dung" element={<TermsOfServicePage />} />
+                  <Route path="/terms" element={<TermsOfServicePage />} />
+                  <Route path="/tieu-chuan-danh-gia" element={<EditorialStandardsPage />} />
+                  <Route path="/editorial-standards" element={<EditorialStandardsPage />} />
+                  <Route path="/tuyen-bo-mien-tru" element={<AffiliateDisclosurePage />} />
+                  <Route path="/affiliate-disclosure" element={<AffiliateDisclosurePage />} />
+
                   <Route path="/danh-muc/:category" element={<CategoryDetailPage />} />
                   <Route path="/:group/:category" element={<CategoryDetailPage />} />
                 </Route>

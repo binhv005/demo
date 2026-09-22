@@ -393,7 +393,7 @@ export const HomePage: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-16 sm:space-y-24 pb-20 overflow-hidden">
+    <div className="space-y-8 sm:space-y-10 pb-10 overflow-hidden">
       {/* ========================================================================= */}
       {/* SECTION 1 — BOTANICAL ORGANIC LUXURY HERO SECTION (PERFECT VIEWPORT FIT) */}
       {/* ========================================================================= */}
@@ -1231,7 +1231,7 @@ export const HomePage: React.FC = () => {
       {/* ========================================================================= */}
       {/* SECTION 6 — TOP 10 BÀI VIẾT ĐƯỢC XEM NHIỀU NHẤT (#ranking) */}
       {/* ========================================================================= */}
-      <section id="ranking" className="bg-slate-100/70 py-16 border-y border-slate-200/80 scroll-mt-24">
+      <section id="ranking" className="bg-slate-100/70 pt-7 pb-6 sm:pt-8 sm:pb-7 border-y border-slate-200/80 scroll-mt-24">
         <RevealOnScroll animation="zoom-in">
           <Container size="xl">
             {/* Header with Scroll Controls */}
@@ -1385,10 +1385,10 @@ export const HomePage: React.FC = () => {
       {/* ========================================================================= */}
       {/* SECTION 7 — LIVE COMPARISON WIDGET (#so-sanh) */}
       {/* ========================================================================= */}
-      <section id="so-sanh" className="scroll-mt-24">
+      <section id="so-sanh" className="scroll-mt-24 -mt-4 sm:-mt-6">
         <RevealOnScroll animation="fade-up">
           <Container size="xl">
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
               <div className="space-y-1.5">
                 <h2 className="text-[17px] xs:text-xl sm:text-3xl font-black text-slate-900 tracking-tight">
                   <span>So Sánh Sản Phẩm Đối Đầu</span>{' '}
@@ -1557,10 +1557,10 @@ export const HomePage: React.FC = () => {
       {/* ========================================================================= */}
       {/* SECTION 11 — FAQ ACCORDION (#faq) */}
       {/* ========================================================================= */}
-      <section id="faq" className="scroll-mt-24">
+      <section id="faq" className="scroll-mt-24 -mt-3 sm:-mt-4">
         <RevealOnScroll animation="fade-up">
           <Container size="md">
-            <div className="text-center space-y-2 mb-10">
+            <div className="text-center space-y-2 mb-6 sm:mb-7">
               <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
                 Câu Hỏi Thường Gặp
               </h2>

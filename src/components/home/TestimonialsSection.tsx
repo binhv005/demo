@@ -38,10 +38,10 @@ export const TestimonialsSection: React.FC = () => {
   ];
 
   return (
-    <section className="relative overflow-hidden py-20 border-t border-stone-200/80 bg-[#f7f4ef]">
+    <section className="relative overflow-hidden pt-7 pb-8 sm:pt-9 sm:pb-10 border-t border-stone-200/80 bg-[#f7f4ef]">
       <Container size="xl" className="relative z-10">
         {/* Section Title */}
-        <div className="text-center space-y-3 max-w-2xl mx-auto mb-12">
+        <div className="text-center space-y-2 max-w-2xl mx-auto mb-7">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 tracking-tight">
             Độc Giả Nói Gì Về TechReview?
           </h2>

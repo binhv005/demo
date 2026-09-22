@@ -2,7 +2,7 @@ import React from 'react';
 
 interface LogoProps {
   variant?: 'light' | 'dark';
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
   useImageOnly?: boolean;
 }
@@ -19,7 +19,8 @@ export const Logo: React.FC<LogoProps> = ({
   const dimensions = {
     sm: { imgH: 'h-8', iconSize: 'w-8 h-8', textMain: 'text-sm sm:text-base' },
     md: { imgH: 'h-10', iconSize: 'w-10 h-10', textMain: 'text-base sm:text-lg' },
-    lg: { imgH: 'h-12', iconSize: 'w-12 h-12', textMain: 'text-xl sm:text-2xl' }
+    lg: { imgH: 'h-13', iconSize: 'w-13 h-13', textMain: 'text-xl sm:text-2xl' },
+    xl: { imgH: 'h-15', iconSize: 'w-15 h-15', textMain: 'text-2xl sm:text-3xl' }
   }[size];
 
   if (useImageOnly) {
