@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
 import { useToast } from '../../context/ToastContext';
-import { leadApi } from '../../services/api';
+import { leadApi, Lead } from '../../services/api';
 import { Container } from '../../components/ui/Container';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
@@ -22,6 +22,7 @@ import { formatPrice, isValidVietnamesePhone, getOfficialBuyUrl } from '../../ut
 import { Product, Ranking, Article, Category, Expert } from '../../types';
 import { mockArticles } from '../../data/articles';
 import { mockCategories } from '../../data/categories';
+import { computeTop10Articles } from '../../utils/articleRank';
 import {
   Search,
   ArrowRight,
@@ -142,7 +143,7 @@ export const HomePage: React.FC = () => {
     window.dispatchEvent(new CustomEvent('open-search'));
   };
 
-  const handleNewsletterSubmit = async (e: React.FormEvent) => {
+  const handleNewsletterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const emailToSave = newsletterEmail.trim();
     const phoneToSave = newsletterPhone.trim();
@@ -164,62 +165,52 @@ export const HomePage: React.FC = () => {
       return;
     }
 
+    // 1. Instant local persistence & UI update (< 50ms)
+    const localLeadId = 'lead_' + Date.now();
+    const fallbackLead: Lead = {
+      id: localLeadId,
+      email: emailToSave,
+      phone: phoneToSave,
+      service: 'Nhận Bảng Xếp Hạng & Deal Tốt Nhất',
+      status: 'new',
+      source: 'homepage_banner',
+      createdAt: new Date().toISOString()
+    };
+
     try {
-      setIsSubscribing(true);
-      const newLead = await leadApi.create({
-        email: emailToSave,
-        phone: phoneToSave,
-        service: 'Nhận Bảng Xếp Hạng & Deal Tốt Nhất',
-        source: 'homepage_banner'
-      });
+      const cached = localStorage.getItem('techreview_leads_cache');
+      let list = cached ? JSON.parse(cached) : [];
+      list = [fallbackLead, ...list.filter((l: any) => l.email !== emailToSave)];
+      localStorage.setItem('techreview_leads_cache', JSON.stringify(list));
+    } catch { }
 
-      // Sync to local cache
-      try {
-        const cached = localStorage.getItem('techreview_leads_cache');
-        let list = cached ? JSON.parse(cached) : [];
-        if (newLead) {
-          list = [newLead, ...list.filter((l: any) => l.email !== emailToSave)];
+    setSubscribedEmail(emailToSave);
+    setIsSubscribed(true);
+    setNewsletterEmail('');
+    setNewsletterPhone('');
+    showToast('Đăng ký nhận tin thành công!', {
+      type: 'success',
+      description: 'Bản tin Top 10 sản phẩm tốt nhất sẽ được gửi đến hòm thư của bạn hàng tuần.'
+    });
+
+    // 2. Background async sync to server without blocking the user
+    leadApi.create({
+      email: emailToSave,
+      phone: phoneToSave,
+      service: 'Nhận Bảng Xếp Hạng & Deal Tốt Nhất',
+      source: 'homepage_banner'
+    }).then((createdLead) => {
+      if (createdLead) {
+        try {
+          const cached = localStorage.getItem('techreview_leads_cache');
+          let list = cached ? JSON.parse(cached) : [];
+          list = [createdLead, ...list.filter((l: any) => l.id !== localLeadId && l.email !== emailToSave)];
           localStorage.setItem('techreview_leads_cache', JSON.stringify(list));
-        }
-      } catch { }
-
-      setSubscribedEmail(emailToSave);
-      setIsSubscribed(true);
-      setNewsletterEmail('');
-      setNewsletterPhone('');
-      showToast('Đăng ký nhận tin thành công!', {
-        type: 'success',
-        description: 'Bản tin Top 10 sản phẩm tốt nhất sẽ được gửi đến hòm thư của bạn hàng tuần.'
-      });
-    } catch {
-      // Offline fallback: save locally so admin dashboard always reflects the lead
-      try {
-        const fallbackLead = {
-          id: 'lead_' + Date.now(),
-          email: emailToSave,
-          phone: phoneToSave,
-          service: 'Nhận Bảng Xếp Hạng & Deal Tốt Nhất',
-          status: 'new',
-          source: 'homepage_banner',
-          createdAt: new Date().toISOString()
-        };
-        const cached = localStorage.getItem('techreview_leads_cache');
-        let list = cached ? JSON.parse(cached) : [];
-        list = [fallbackLead, ...list.filter((l: any) => l.email !== emailToSave)];
-        localStorage.setItem('techreview_leads_cache', JSON.stringify(list));
-      } catch { }
-
-      setSubscribedEmail(emailToSave);
-      setIsSubscribed(true);
-      setNewsletterEmail('');
-      setNewsletterPhone('');
-      showToast('Đăng ký nhận tin thành công!', {
-        type: 'success',
-        description: 'Bản tin Top 10 sản phẩm tốt nhất sẽ được gửi đến hòm thư của bạn hàng tuần.'
-      });
-    } finally {
-      setIsSubscribing(false);
-    }
+        } catch { }
+      }
+    }).catch((err) => {
+      console.warn('[Newsletter] Background sync offline, lead preserved locally.', err);
+    });
   };
 
   const scrollToSection = (id: string) => {
@@ -355,72 +346,7 @@ export const HomePage: React.FC = () => {
   const top10Articles = useMemo(() => {
     const published = articles.filter((a) => a.status === 'published');
     const sourceList = published.length > 0 ? published : mockArticles;
-
-    // Filter out excluded articles
-    const eligible = sourceList.filter(
-      (a) => a.isTopRanking !== false && a.topRankOrder !== -1
-    );
-
-    const getManualRank = (a: Article): number | null => {
-      if (typeof a.topRankOrder === 'number' && a.topRankOrder >= 1 && a.topRankOrder <= 10) {
-        return a.topRankOrder;
-      }
-      if (typeof a.isTopRanking === 'number' && a.isTopRanking >= 1 && a.isTopRanking <= 10) {
-        return a.isTopRanking;
-      }
-      if (a.isTopRanking === true) {
-        return 1; // legacy fallback
-      }
-      return null;
-    };
-
-    const manualMap = new Map<number, Article[]>();
-    const autoArticles: Article[] = [];
-
-    for (const a of eligible) {
-      const manualRank = getManualRank(a);
-      if (manualRank !== null) {
-        if (!manualMap.has(manualRank)) manualMap.set(manualRank, []);
-        manualMap.get(manualRank)!.push(a);
-      } else {
-        autoArticles.push(a);
-      }
-    }
-
-    // Sort auto articles descending by views
-    autoArticles.sort((a, b) => (b.views || 0) - (a.views || 0));
-
-    const result: Article[] = [];
-    const usedIds = new Set<string>();
-    let autoIndex = 0;
-
-    for (let slot = 1; slot <= 10; slot++) {
-      if (manualMap.has(slot) && manualMap.get(slot)!.length > 0) {
-        const item = manualMap.get(slot)!.shift()!;
-        result.push(item);
-        usedIds.add(item.id);
-      } else {
-        while (autoIndex < autoArticles.length && usedIds.has(autoArticles[autoIndex].id)) {
-          autoIndex++;
-        }
-        if (autoIndex < autoArticles.length) {
-          const item = autoArticles[autoIndex++];
-          result.push(item);
-          usedIds.add(item.id);
-        }
-      }
-    }
-
-    // Fill remaining if needed
-    while (result.length < 10 && autoIndex < autoArticles.length) {
-      const item = autoArticles[autoIndex++];
-      if (!usedIds.has(item.id)) {
-        result.push(item);
-        usedIds.add(item.id);
-      }
-    }
-
-    return result;
+    return computeTop10Articles(sourceList);
   }, [articles]);
 
   const activeArticles = useMemo(() => {

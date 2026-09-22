@@ -10,9 +10,19 @@ import { Modal } from '../../components/ui/Modal';
 import { Select } from '../../components/ui/Select';
 import { Mail, Phone, Globe, Trash2, Eye, Calendar, CheckCircle2, Clock, RotateCcw, ChevronDown } from 'lucide-react';
 
+const getInitialLeads = (): Lead[] => {
+  try {
+    const cached = localStorage.getItem('techreview_leads_cache');
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      if (Array.isArray(parsed)) return parsed;
+    }
+  } catch {}
+  return [];
+};
+
 export const AdminLeadsPage: React.FC = () => {
-  const [leads, setLeads] = useState<Lead[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [leads, setLeads] = useState<Lead[]>(getInitialLeads);
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [search, setSearch] = useState('');
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
@@ -23,42 +33,24 @@ export const AdminLeadsPage: React.FC = () => {
 
   const fetchLeads = async () => {
     try {
-      setLoading(true);
       const data = await leadApi.getAll();
-      if (Array.isArray(data) && data.length > 0) {
-        setLeads(data);
-        localStorage.setItem('techreview_leads_cache', JSON.stringify(data));
-      } else {
-        // Check local cache if server returned empty or is loading
-        const cached = localStorage.getItem('techreview_leads_cache');
-        if (cached) {
-          try {
-            const parsed = JSON.parse(cached);
-            if (Array.isArray(parsed) && parsed.length > 0) {
-              setLeads(parsed);
-              return;
+      if (Array.isArray(data)) {
+        setLeads((prev) => {
+          const mergedMap = new Map<string, Lead>();
+          data.forEach((item) => mergedMap.set(item.id || item.email.toLowerCase(), item));
+          prev.forEach((item) => {
+            const key = item.id || item.email.toLowerCase();
+            if (!mergedMap.has(key)) {
+              mergedMap.set(key, item);
             }
-          } catch {}
-        }
-        if (Array.isArray(data)) {
-          setLeads(data);
-        }
+          });
+          const merged = Array.from(mergedMap.values());
+          localStorage.setItem('techreview_leads_cache', JSON.stringify(merged));
+          return merged;
+        });
       }
     } catch (error: any) {
-      // Fallback to local cache
-      const cached = localStorage.getItem('techreview_leads_cache');
-      if (cached) {
-        try {
-          const parsed = JSON.parse(cached);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            setLeads(parsed);
-            return;
-          }
-        } catch {}
-      }
-      showToast('Không thể tải danh sách leads từ máy chủ', { type: 'error', description: error.message });
-    } finally {
-      setLoading(false);
+      console.warn('[AdminLeads] API offline/delayed, using local cache.', error);
     }
   };
 
@@ -230,11 +222,6 @@ export const AdminLeadsPage: React.FC = () => {
       <AdminHeader
         title="Quản Lý Leads & Bản Tin"
         description="Theo dõi danh sách khách hàng gửi yêu cầu tư vấn và đăng ký nhận bản tin."
-        actions={
-          <Button variant="outline" size="sm" onClick={fetchLeads} leftIcon={<RotateCcw className="w-4 h-4" />}>
-            Làm mới
-          </Button>
-        }
       />
 
       <div className="px-6 space-y-4">

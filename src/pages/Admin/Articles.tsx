@@ -29,6 +29,11 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toSlug } from '../../utils/formatters';
+import {
+  getManualArticleRank,
+  isArticleExcludedFromTop,
+  getArticleResolvedRankMap
+} from '../../utils/articleRank';
 
 export const AdminArticlesPage: React.FC = () => {
   const { articles, addArticle, updateArticle, deleteArticle } = useData();
@@ -53,15 +58,9 @@ export const AdminArticlesPage: React.FC = () => {
   const [isTopRanking, setIsTopRanking] = useState<boolean | number | undefined>(undefined);
   const [topRankOrder, setTopRankOrder] = useState<number | null | undefined>(undefined);
 
-  // Auto top rank map by views with rank numbers
-  const autoTopRankMap = React.useMemo(() => {
-    const published = articles.filter((a) => a.status === 'published');
-    const sorted = [...published].sort((a, b) => (b.views || 0) - (a.views || 0));
-    const map = new Map<string, number>();
-    sorted.forEach((art, idx) => {
-      map.set(art.id, idx + 1);
-    });
-    return map;
+  // Accurately resolved ranking map (strictly 1 article per rank, aligned with Homepage)
+  const resolvedRankMap = React.useMemo(() => {
+    return getArticleResolvedRankMap(articles);
   }, [articles]);
 
   // Open Full-Page Editor for new article
@@ -116,7 +115,68 @@ export const AdminArticlesPage: React.FC = () => {
     setCurrentView('list');
   };
 
-  const handleSave = (targetStatus?: 'published' | 'draft') => {
+  const handleRankChange = async (targetArticle: Article, val: string) => {
+    if (targetArticle.status === 'draft') {
+      showToast(
+        'Bài viết đang ở trạng thái Bản nháp! Vui lòng chuyển sang "Xuất bản" trước khi ghim vào Bảng xếp hạng.',
+        { type: 'error' }
+      );
+      return;
+    }
+
+    if (val === 'excluded') {
+      await updateArticle(targetArticle.id, { isTopRanking: false, topRankOrder: -1 });
+      showToast(`Đã ẩn bài viết "${targetArticle.title}" khỏi Top Bảng Xếp Hạng!`, { type: 'info' });
+      return;
+    }
+
+    if (val === 'auto') {
+      await updateArticle(targetArticle.id, { isTopRanking: undefined, topRankOrder: null });
+      showToast(`Đã đặt lại bài viết "${targetArticle.title}" về Mặc định (Theo lượt xem)!`, { type: 'success' });
+      return;
+    }
+
+    const newRank = parseInt(val, 10);
+    if (isNaN(newRank) || newRank < 1 || newRank > 10) return;
+
+    const currentTargetRank = getManualArticleRank(targetArticle);
+
+    // Find any conflicting articles with this rank (strict uniqueness - no 2 articles at same rank)
+    const conflictingArticles = articles.filter(
+      (art) => art.id !== targetArticle.id && getManualArticleRank(art) === newRank
+    );
+
+    if (conflictingArticles.length > 0) {
+      if (currentTargetRank !== null && currentTargetRank !== newRank) {
+        // Swap rank with the first conflicting article
+        const firstConflict = conflictingArticles[0];
+        await updateArticle(firstConflict.id, { isTopRanking: currentTargetRank, topRankOrder: currentTargetRank });
+        for (let i = 1; i < conflictingArticles.length; i++) {
+          await updateArticle(conflictingArticles[i].id, { isTopRanking: undefined, topRankOrder: null });
+        }
+        await updateArticle(targetArticle.id, { isTopRanking: newRank, topRankOrder: newRank });
+        showToast(
+          `Đã chuyển "${targetArticle.title}" sang Top #${newRank} và hoán đổi vị trí với "${firstConflict.title}" (về Top #${currentTargetRank})!`,
+          { type: 'success' }
+        );
+      } else {
+        // Displace conflicting article(s) to auto default
+        for (const conf of conflictingArticles) {
+          await updateArticle(conf.id, { isTopRanking: undefined, topRankOrder: null });
+        }
+        await updateArticle(targetArticle.id, { isTopRanking: newRank, topRankOrder: newRank });
+        showToast(
+          `Đã ghim "${targetArticle.title}" vào Top #${newRank} (Bài viết "${conflictingArticles[0].title}" chuyển về Mặc định)!`,
+          { type: 'success' }
+        );
+      }
+    } else {
+      await updateArticle(targetArticle.id, { isTopRanking: newRank, topRankOrder: newRank });
+      showToast(`Đã ghim bài viết "${targetArticle.title}" vào vị trí Top #${newRank}!`, { type: 'success' });
+    }
+  };
+
+  const handleSave = async (targetStatus?: 'published' | 'draft') => {
     if (!title.trim()) {
       showToast('Vui lòng nhập tiêu đề bài viết!', { type: 'error' });
       return;
@@ -147,8 +207,29 @@ export const AdminArticlesPage: React.FC = () => {
       ? topRankOrder
       : undefined;
 
+    // Resolve any rank conflict before saving
+    if (!isDraft && typeof finalTopRankOrder === 'number' && finalTopRankOrder >= 1 && finalTopRankOrder <= 10) {
+      const oldRank = editingArticle ? getManualArticleRank(editingArticle) : null;
+      const conflicting = articles.filter(
+        (a) => (!editingArticle || a.id !== editingArticle.id) && getManualArticleRank(a) === finalTopRankOrder
+      );
+
+      if (conflicting.length > 0) {
+        if (oldRank !== null && oldRank !== finalTopRankOrder) {
+          await updateArticle(conflicting[0].id, { isTopRanking: oldRank, topRankOrder: oldRank });
+          for (let i = 1; i < conflicting.length; i++) {
+            await updateArticle(conflicting[i].id, { isTopRanking: undefined, topRankOrder: null });
+          }
+        } else {
+          for (const conf of conflicting) {
+            await updateArticle(conf.id, { isTopRanking: undefined, topRankOrder: null });
+          }
+        }
+      }
+    }
+
     if (editingArticle) {
-      updateArticle(editingArticle.id, {
+      await updateArticle(editingArticle.id, {
         title,
         slug: generatedSlug,
         type,
@@ -164,7 +245,7 @@ export const AdminArticlesPage: React.FC = () => {
       });
       showToast(`Đã cập nhật bài viết "${title}"!`, { type: 'success' });
     } else {
-      addArticle({
+      await addArticle({
         title,
         slug: generatedSlug,
         type,
@@ -346,18 +427,11 @@ export const AdminArticlesPage: React.FC = () => {
       className: 'text-center whitespace-nowrap',
       accessor: (a: Article) => {
         const isDraft = a.status === 'draft';
-        const manualRank =
-          !isDraft && typeof a.topRankOrder === 'number' && a.topRankOrder >= 1 && a.topRankOrder <= 10
-            ? a.topRankOrder
-            : !isDraft && typeof a.isTopRanking === 'number' && a.isTopRanking >= 1 && a.isTopRanking <= 10
-            ? a.isTopRanking
-            : !isDraft && a.isTopRanking === true
-            ? 1
-            : null;
-
-        const isExcluded = isDraft || a.isTopRanking === false || a.topRankOrder === -1;
-        const autoRank = autoTopRankMap.get(a.id);
-        const isAutoTop = !isDraft && manualRank === null && !isExcluded && autoRank !== undefined && autoRank <= 10;
+        const manualRank = getManualArticleRank(a);
+        const isExcluded = isArticleExcludedFromTop(a);
+        const rankInfo = resolvedRankMap.get(a.id);
+        const resolvedRankNumber = rankInfo?.rank;
+        const isAutoTop = !isDraft && manualRank === null && !isExcluded && resolvedRankNumber !== undefined && resolvedRankNumber <= 10;
 
         let selectVal = isDraft ? 'excluded' : 'auto';
         if (manualRank !== null) selectVal = String(manualRank);
@@ -368,27 +442,7 @@ export const AdminArticlesPage: React.FC = () => {
             <select
               value={selectVal}
               disabled={isDraft}
-              onChange={(e) => {
-                if (isDraft) {
-                  showToast(
-                    'Bài viết đang ở trạng thái Bản nháp! Vui lòng chuyển sang "Xuất bản" trước khi ghim vào Bảng xếp hạng.',
-                    { type: 'error' }
-                  );
-                  return;
-                }
-                const val = e.target.value;
-                if (val === 'excluded') {
-                  updateArticle(a.id, { isTopRanking: false, topRankOrder: -1 });
-                  showToast('Đã ẩn bài viết khỏi Top Bảng Xếp Hạng!', { type: 'info' });
-                } else if (val === 'auto') {
-                  updateArticle(a.id, { isTopRanking: undefined, topRankOrder: null });
-                  showToast('Đã đặt lại bài viết về Mặc định (Theo lượt xem)!', { type: 'success' });
-                } else {
-                  const num = parseInt(val, 10);
-                  updateArticle(a.id, { isTopRanking: num, topRankOrder: num });
-                  showToast(`Đã ghim bài viết vào vị trí Top #${num}!`, { type: 'success' });
-                }
-              }}
+              onChange={(e) => handleRankChange(a, e.target.value)}
               className={`text-xs font-bold px-3 py-1.5 rounded-xl border appearance-none pr-8 transition-all ${
                 isDraft
                   ? 'bg-slate-50 text-slate-300 border-slate-200/60 cursor-not-allowed'
@@ -403,9 +457,9 @@ export const AdminArticlesPage: React.FC = () => {
             >
               <option value="auto">
                 {isAutoTop
-                  ? `⚡ Top #${autoRank} (Mặc định lượt xem)`
-                  : autoRank
-                  ? `⚡ Hạng #${autoRank} (Theo lượt xem)`
+                  ? `⚡ Top #${resolvedRankNumber} (Mặc định lượt xem)`
+                  : resolvedRankNumber && resolvedRankNumber > 0
+                  ? `⚡ Hạng #${resolvedRankNumber} (Theo lượt xem)`
                   : '⚡ Mặc định (Theo lượt xem)'}
               </option>
               <option value="1">🏆 Top 1</option>
@@ -526,7 +580,11 @@ export const AdminArticlesPage: React.FC = () => {
                   }}
                   className="bg-transparent font-bold text-xs outline-none cursor-pointer text-slate-900 pr-1"
                 >
-                  <option value="auto">⚡ Mặc định (Theo lượt xem)</option>
+                  <option value="auto">
+                    {editingArticle && resolvedRankMap.get(editingArticle.id)?.rank && (resolvedRankMap.get(editingArticle.id)!.rank <= 10)
+                      ? `⚡ Top #${resolvedRankMap.get(editingArticle.id)!.rank} (Mặc định lượt xem)`
+                      : '⚡ Mặc định (Theo lượt xem)'}
+                  </option>
                   <option value="1">🏆 Top 1</option>
                   <option value="2">🏆 Top 2</option>
                   <option value="3">🏆 Top 3</option>

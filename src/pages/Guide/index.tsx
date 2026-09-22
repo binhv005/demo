@@ -76,64 +76,55 @@ export const GuideDetailPage: React.FC = () => {
       return;
     }
 
+    // 1. Instant local persistence & UI update (< 50ms)
+    const localLeadId = 'lead_' + Date.now();
+    const fallbackLead = {
+      id: localLeadId,
+      email: emailToSave,
+      phone: phoneToSave,
+      name: `Khách hàng (${phoneToSave})`,
+      service: `Tư vấn chọn mua: ${article?.title || 'Cẩm nang'}`,
+      status: 'new',
+      source: `guide_sidebar: ${slug || 'cam-nang'}`,
+      message: `Khách hàng đăng ký nhận báo cáo kiểm nghiệm Lab & tư vấn chọn mua từ bài viết: "${article?.title || ''}"`,
+      createdAt: new Date().toISOString()
+    };
+
     try {
-      setIsSubmittingLead(true);
-      const newLead = await leadApi.create({
-        email: emailToSave,
-        phone: phoneToSave,
-        name: `Khách hàng (${phoneToSave})`,
-        service: `Tư vấn chọn mua: ${article?.title || 'Cẩm nang'}`,
-        source: `guide_sidebar: ${slug || 'cam-nang'}`,
-        message: `Khách hàng đăng ký nhận báo cáo kiểm nghiệm Lab & tư vấn chọn mua từ bài viết: "${article?.title || ''}"`
-      });
+      const cached = localStorage.getItem('techreview_leads_cache');
+      let list = cached ? JSON.parse(cached) : [];
+      list = [fallbackLead, ...list.filter((l: any) => l.email !== emailToSave)];
+      localStorage.setItem('techreview_leads_cache', JSON.stringify(list));
+    } catch {}
 
-      // Cache locally for Admin Leads sync
-      try {
-        const cached = localStorage.getItem('techreview_leads_cache');
-        let list = cached ? JSON.parse(cached) : [];
-        if (newLead) {
-          list = [newLead, ...list.filter((l: any) => l.email !== emailToSave)];
+    setSubmittedSuccess(true);
+    setEmailInput('');
+    setPhoneInput('');
+    showToast('Gửi thông tin thành công!', {
+      type: 'success',
+      description: 'Chuyên gia sẽ liên hệ và gửi báo cáo kiểm nghiệm Lab chi tiết đến bạn sớm nhất.'
+    });
+
+    // 2. Background async sync to server
+    leadApi.create({
+      email: emailToSave,
+      phone: phoneToSave,
+      name: `Khách hàng (${phoneToSave})`,
+      service: `Tư vấn chọn mua: ${article?.title || 'Cẩm nang'}`,
+      source: `guide_sidebar: ${slug || 'cam-nang'}`,
+      message: `Khách hàng đăng ký nhận báo cáo kiểm nghiệm Lab & tư vấn chọn mua từ bài viết: "${article?.title || ''}"`
+    }).then((newLead) => {
+      if (newLead) {
+        try {
+          const cached = localStorage.getItem('techreview_leads_cache');
+          let list = cached ? JSON.parse(cached) : [];
+          list = [newLead, ...list.filter((l: any) => l.id !== localLeadId && l.email !== emailToSave)];
           localStorage.setItem('techreview_leads_cache', JSON.stringify(list));
-        }
-      } catch {}
-
-      setSubmittedSuccess(true);
-      setEmailInput('');
-      setPhoneInput('');
-      showToast('Gửi thông tin thành công!', {
-        type: 'success',
-        description: 'Chuyên gia sẽ liên hệ và gửi báo cáo kiểm nghiệm Lab chi tiết đến bạn sớm nhất.'
-      });
-    } catch {
-      // Offline fallback
-      try {
-        const fallbackLead = {
-          id: 'lead_' + Date.now(),
-          email: emailToSave,
-          phone: phoneToSave,
-          name: `Khách hàng (${phoneToSave})`,
-          service: `Tư vấn chọn mua: ${article?.title || 'Cẩm nang'}`,
-          status: 'new',
-          source: `guide_sidebar: ${slug || 'cam-nang'}`,
-          message: `Khách hàng đăng ký nhận báo cáo kiểm nghiệm Lab & tư vấn chọn mua từ bài viết: "${article?.title || ''}"`,
-          createdAt: new Date().toISOString()
-        };
-        const cached = localStorage.getItem('techreview_leads_cache');
-        let list = cached ? JSON.parse(cached) : [];
-        list = [fallbackLead, ...list.filter((l: any) => l.email !== emailToSave)];
-        localStorage.setItem('techreview_leads_cache', JSON.stringify(list));
-      } catch {}
-
-      setSubmittedSuccess(true);
-      setEmailInput('');
-      setPhoneInput('');
-      showToast('Gửi thông tin thành công!', {
-        type: 'success',
-        description: 'Chuyên gia sẽ liên hệ và gửi báo cáo kiểm nghiệm Lab chi tiết đến bạn sớm nhất.'
-      });
-    } finally {
-      setIsSubmittingLead(false);
-    }
+        } catch {}
+      }
+    }).catch((err) => {
+      console.warn('[Guide Lead] Background sync offline, lead preserved locally.', err);
+    });
   };
 
   return (

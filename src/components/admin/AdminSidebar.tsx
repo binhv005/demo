@@ -82,15 +82,12 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ isOpen = false, onCl
         {/* Brand Header */}
         <div className="p-4 border-b border-slate-800/80 flex items-center justify-between bg-slate-950/60 flex-shrink-0">
           <Link to="/" onClick={handleLinkClick} className="flex items-center gap-2.5 group">
-            <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform shadow-sm">
-              <img src="/brand-logo.webp" alt="TechReview Icon" className="w-full h-full object-contain" />
+            <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform shadow-sm border border-sky-400/30 bg-slate-950">
+              <img src="/brand-logo.webp" alt="TOP 20 PRODUCT Logo" className="w-full h-full object-cover scale-105" />
             </div>
-            <div>
-              <div className="font-extrabold text-white text-sm tracking-tight flex items-center gap-1.5">
-                <span>Tech<span className="text-orange-500">Review</span></span>
-                <span className="text-[9px] font-bold text-orange-400 bg-orange-500/15 px-1.5 py-0.5 rounded border border-orange-500/30">CMS</span>
-              </div>
-              <span className="block text-[9.5px] text-slate-400 font-medium">Bảng Điều Khiển Quản Trị</span>
+            <div className="font-extrabold text-white text-xs sm:text-sm tracking-tight flex items-center gap-1.5">
+              <span>TOP 20 <span className="text-sky-400">PRODUCT</span></span>
+              <span className="text-[9px] font-bold text-sky-400 bg-sky-500/15 px-1.5 py-0.5 rounded border border-sky-500/30">CMS</span>
             </div>
           </Link>
 

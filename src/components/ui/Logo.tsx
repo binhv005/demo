@@ -3,7 +3,6 @@ import React from 'react';
 interface LogoProps {
   variant?: 'light' | 'dark';
   size?: 'sm' | 'md' | 'lg';
-  showSubtitle?: boolean;
   className?: string;
   useImageOnly?: boolean;
 }
@@ -11,7 +10,6 @@ interface LogoProps {
 export const Logo: React.FC<LogoProps> = ({
   variant = 'light',
   size = 'md',
-  showSubtitle = true,
   className = '',
   useImageOnly = false
 }) => {
@@ -19,16 +17,16 @@ export const Logo: React.FC<LogoProps> = ({
 
   // Size configurations
   const dimensions = {
-    sm: { imgH: 'h-7', iconSize: 'w-7 h-7', textMain: 'text-base', textSub: 'text-[8.5px]' },
-    md: { imgH: 'h-9', iconSize: 'w-9 h-9', textMain: 'text-lg sm:text-xl', textSub: 'text-[9.5px]' },
-    lg: { imgH: 'h-11', iconSize: 'w-11 h-11', textMain: 'text-2xl', textSub: 'text-[11px]' }
+    sm: { imgH: 'h-8', iconSize: 'w-8 h-8', textMain: 'text-sm sm:text-base' },
+    md: { imgH: 'h-10', iconSize: 'w-10 h-10', textMain: 'text-base sm:text-lg' },
+    lg: { imgH: 'h-12', iconSize: 'w-12 h-12', textMain: 'text-xl sm:text-2xl' }
   }[size];
 
   if (useImageOnly) {
     return (
       <img
-        src={isDark ? '/logo-dark.webp' : '/logo.webp'}
-        alt="Tech Review - Đánh giá & So sánh"
+        src="/brand-logo.webp"
+        alt="TOP 20 PRODUCT"
         className={`${dimensions.imgH} w-auto object-contain transition-transform ${className}`}
       />
     );
@@ -38,32 +36,21 @@ export const Logo: React.FC<LogoProps> = ({
     <div className={`flex items-center gap-2.5 select-none ${className}`}>
       {/* Brand Icon Image */}
       <div
-        className={`${dimensions.iconSize} rounded-full overflow-hidden flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-105 shadow-sm`}
+        className={`${dimensions.iconSize} rounded-full overflow-hidden flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-105 shadow-sm border border-sky-400/30 bg-slate-950`}
       >
         <img
           src="/brand-logo.webp"
-          alt="TechReview Icon"
-          className="w-full h-full object-contain"
+          alt="TOP 20 PRODUCT Logo"
+          className="w-full h-full object-cover scale-105"
         />
       </div>
 
-      {/* Typography: Tech Review + Subtitle */}
-      <div className="flex flex-col justify-center leading-none">
-        <div
-          className={`${dimensions.textMain} font-black tracking-tight flex items-center`}
-        >
-          <span className={isDark ? 'text-white' : 'text-[#1e1c1b]'}>Tech</span>
-          <span className="text-[#f26522] ml-1">Review</span>
-        </div>
-        {showSubtitle && (
-          <span
-            className={`${dimensions.textSub} font-extrabold tracking-wider uppercase mt-0.5 ${
-              isDark ? 'text-slate-400' : 'text-[#a69c90]'
-            }`}
-          >
-            ĐÁNH GIÁ &amp; SO SÁNH
-          </span>
-        )}
+      {/* Typography: TOP 20 PRODUCT */}
+      <div
+        className={`${dimensions.textMain} font-black tracking-tight flex items-center gap-1.5 leading-none`}
+      >
+        <span className={isDark ? 'text-white' : 'text-slate-900'}>TOP 20</span>
+        <span className="text-sky-500 font-black">PRODUCT</span>
       </div>
     </div>
   );

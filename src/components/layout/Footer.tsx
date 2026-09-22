@@ -71,7 +71,7 @@ export const Footer: React.FC = () => {
 
         {/* Bottom copyright line */}
         <div className="pt-8 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-          <p>© 2026 TechReview. Nền tảng đánh giá và xếp hạng sản phẩm độc lập số 1.</p>
+          <p>© 2026 TOP 20 PRODUCT. Nền tảng đánh giá và xếp hạng sản phẩm độc lập số 1.</p>
 
         </div>
       </Container>

@@ -13,9 +13,9 @@ export const AdminSettingsPage: React.FC = () => {
   const { showToast } = useToast();
   const { confirm } = useConfirm();
 
-  const [siteName, setSiteName] = useState('TechReview & Choice Platform');
-  const [siteTagline, setSiteTagline] = useState('Đánh giá, So sánh & Lựa chọn Sản phẩm');
-  const [contactEmail, setContactEmail] = useState('editorial@techreview.vn');
+  const [siteName, setSiteName] = useState('TOP 20 PRODUCT Platform');
+  const [siteTagline, setSiteTagline] = useState('Đánh giá, So sánh & Bảng xếp hạng Top Sản phẩm');
+  const [contactEmail, setContactEmail] = useState('editorial@top20product.com');
   const [itemsPerPage, setItemsPerPage] = useState('12');
   const [enableComments, setEnableComments] = useState(true);
   const [autoApproveReviews, setAutoApproveReviews] = useState(false);

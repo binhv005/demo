@@ -26,10 +26,10 @@ export const AdminLayout: React.FC = () => {
             </button>
 
             <Link to="/admin" className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-full overflow-hidden flex items-center justify-center flex-shrink-0 shadow-xs">
-                <img src="/brand-logo.webp" alt="TechReview Icon" className="w-full h-full object-contain" />
+              <div className="w-7 h-7 rounded-full overflow-hidden flex items-center justify-center flex-shrink-0 shadow-xs border border-sky-400/30 bg-slate-950">
+                <img src="/brand-logo.webp" alt="TOP 20 PRODUCT Logo" className="w-full h-full object-cover scale-105" />
               </div>
-              <span className="font-extrabold text-sm tracking-tight">Admin <span className="text-orange-400">CMS</span></span>
+              <span className="font-extrabold text-sm tracking-tight">TOP 20 <span className="text-sky-400">CMS</span></span>
             </Link>
           </div>
 
