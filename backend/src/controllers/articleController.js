@@ -89,7 +89,12 @@ exports.createArticle = async (req, res, next) => {
       articleData.publishedAt = `${new Date().getDate()} Tháng ${new Date().getMonth() + 1}, ${new Date().getFullYear()}`;
     }
 
-    const article = await Article.create(articleData);
+    let article = await Article.findOne({ slug: articleData.slug });
+    if (article) {
+      article = await Article.findByIdAndUpdate(article._id, articleData, { new: true });
+    } else {
+      article = await Article.create(articleData);
+    }
 
     res.status(201).json({
       success: true,
@@ -108,10 +113,20 @@ exports.updateArticle = async (req, res, next) => {
     const { id } = req.params;
     let article;
 
-    if (id.match(/^[0-9a-fA-F]{24}$/)) {
-      article = await Article.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
-    } else {
-      article = await Article.findOneAndUpdate({ slug: id }, req.body, { new: true, runValidators: true });
+    if (id && id.match(/^[0-9a-fA-F]{24}$/)) {
+      article = await Article.findByIdAndUpdate(id, req.body, { new: true });
+    }
+
+    if (!article) {
+      article = await Article.findOneAndUpdate({ slug: id }, req.body, { new: true });
+    }
+
+    if (!article && req.body.slug) {
+      article = await Article.findOneAndUpdate({ slug: req.body.slug }, req.body, { new: true });
+    }
+
+    if (!article && req.body.title) {
+      article = await Article.create(req.body);
     }
 
     if (!article) {
@@ -138,25 +153,20 @@ exports.deleteArticle = async (req, res, next) => {
     const { id } = req.params;
     let article;
 
-    if (id.match(/^[0-9a-fA-F]{24}$/)) {
+    if (id && id.match(/^[0-9a-fA-F]{24}$/)) {
       article = await Article.findByIdAndDelete(id);
-    } else {
-      article = await Article.findOneAndDelete({ slug: id });
     }
-
     if (!article) {
-      return res.status(404).json({
-        success: false,
-        message: 'Không tìm thấy bài viết để xóa'
-      });
+      article = await Article.findOneAndDelete({ slug: id });
     }
 
     res.status(200).json({
       success: true,
       message: 'Xóa bài viết thành công',
-      data: { id: article._id }
+      data: { id }
     });
   } catch (error) {
     next(error);
   }
 };
+

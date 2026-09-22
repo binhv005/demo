@@ -107,7 +107,12 @@ exports.createProduct = async (req, res, next) => {
       productData.slug = slugify(productData.name) + '-' + Date.now().toString().slice(-4);
     }
 
-    const product = await Product.create(productData);
+    let product = await Product.findOne({ slug: productData.slug });
+    if (product) {
+      product = await Product.findByIdAndUpdate(product._id, productData, { new: true });
+    } else {
+      product = await Product.create(productData);
+    }
 
     res.status(201).json({
       success: true,
@@ -126,10 +131,20 @@ exports.updateProduct = async (req, res, next) => {
     const { id } = req.params;
     let product;
 
-    if (id.match(/^[0-9a-fA-F]{24}$/)) {
-      product = await Product.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
-    } else {
-      product = await Product.findOneAndUpdate({ slug: id }, req.body, { new: true, runValidators: true });
+    if (id && id.match(/^[0-9a-fA-F]{24}$/)) {
+      product = await Product.findByIdAndUpdate(id, req.body, { new: true });
+    }
+
+    if (!product) {
+      product = await Product.findOneAndUpdate({ slug: id }, req.body, { new: true });
+    }
+
+    if (!product && req.body.slug) {
+      product = await Product.findOneAndUpdate({ slug: req.body.slug }, req.body, { new: true });
+    }
+
+    if (!product && req.body.name) {
+      product = await Product.create(req.body);
     }
 
     if (!product) {
@@ -156,23 +171,17 @@ exports.deleteProduct = async (req, res, next) => {
     const { id } = req.params;
     let product;
 
-    if (id.match(/^[0-9a-fA-F]{24}$/)) {
+    if (id && id.match(/^[0-9a-fA-F]{24}$/)) {
       product = await Product.findByIdAndDelete(id);
-    } else {
-      product = await Product.findOneAndDelete({ slug: id });
     }
-
     if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: 'Không tìm thấy sản phẩm để xóa'
-      });
+      product = await Product.findOneAndDelete({ slug: id });
     }
 
     res.status(200).json({
       success: true,
       message: 'Xóa sản phẩm thành công',
-      data: { id: product._id }
+      data: { id }
     });
   } catch (error) {
     next(error);

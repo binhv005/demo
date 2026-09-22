@@ -1,9 +1,15 @@
+const dns = require('dns');
+try {
+  dns.setServers(['8.8.8.8', '1.1.1.1', '8.8.4.4']);
+} catch (e) {}
+
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const path = require('path');
 
 // Load env
 dotenv.config({ path: path.join(__dirname, '../../.env') });
+
 
 const Product = require('../models/Product');
 const Category = require('../models/Category');
@@ -1158,7 +1164,7 @@ async function seedDatabase() {
   try {
     const mongoURI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/techreview';
     console.log('[Seed] Connecting to MongoDB:', mongoURI);
-    await mongoose.connect(mongoURI);
+    await mongoose.connect(mongoURI, { dbName: 'techreview' });
 
     console.log('[Seed] Clearing existing collections...');
     await Promise.all([

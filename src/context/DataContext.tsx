@@ -109,54 +109,97 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [experts, setExperts] = useState<Expert[]>(() =>
     getInitialData(STORAGE_KEYS.experts, mockExperts)
   );
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isBackendConnected, setIsBackendConnected] = useState<boolean>(false);
 
-  // Fetch initial data from Backend API
+  // Fetch data from Backend API with parallel real-time hydration
   const refreshData = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const [pRes, cRes, rRes, compRes, aRes, eRes] = await Promise.allSettled([
-        productApi.getAll(),
-        categoryApi.getAll(),
-        rankingApi.getAll(),
-        comparisonApi.getAll(),
-        articleApi.getAll(),
-        expertApi.getAll()
-      ]);
-
-      if (pRes.status === 'fulfilled' && pRes.value?.length > 0) {
-        setProducts(pRes.value);
-        saveToStorage(STORAGE_KEYS.products, pRes.value);
+    // 1. Articles fetch
+    articleApi.getAll().then((data) => {
+      if (Array.isArray(data) && data.length > 0) {
+        const sanitizedArticles = sanitizeArticleRanks(data);
+        setArticles((prev) => {
+          const backendIds = new Set(sanitizedArticles.map((a: any) => a.id));
+          const backendSlugs = new Set(sanitizedArticles.map((a: any) => a.slug));
+          const localOnly = prev.filter((a) => !backendIds.has(a.id) && !backendSlugs.has(a.slug));
+          // Put locally added articles at the TOP so they appear immediately
+          const merged = sanitizeArticleRanks([...localOnly, ...sanitizedArticles]);
+          saveToStorage(STORAGE_KEYS.articles, merged);
+          return merged;
+        });
         setIsBackendConnected(true);
       }
-      if (cRes.status === 'fulfilled' && cRes.value?.length > 0) {
-        setCategories(cRes.value);
-        saveToStorage(STORAGE_KEYS.categories, cRes.value);
+    }).catch(() => {});
+
+    // 2. Products fetch
+    productApi.getAll().then((data) => {
+      if (Array.isArray(data) && data.length > 0) {
+        setProducts((prev) => {
+          const backendIds = new Set(data.map((p: any) => p.id));
+          const backendSlugs = new Set(data.map((p: any) => p.slug));
+          const localOnly = prev.filter((p) => !backendIds.has(p.id) && !backendSlugs.has(p.slug));
+          const merged = [...localOnly, ...data];
+          saveToStorage(STORAGE_KEYS.products, merged);
+          return merged;
+        });
+        setIsBackendConnected(true);
       }
-      if (rRes.status === 'fulfilled' && rRes.value?.length > 0) {
-        setRankings(rRes.value);
-        saveToStorage(STORAGE_KEYS.rankings, rRes.value);
+    }).catch(() => {});
+
+    // 3. Categories fetch
+    categoryApi.getAll().then((data) => {
+      if (Array.isArray(data) && data.length > 0) {
+        setCategories((prev) => {
+          const backendIds = new Set(data.map((c: any) => c.id));
+          const backendSlugs = new Set(data.map((c: any) => c.slug));
+          const localOnly = prev.filter((c) => !backendIds.has(c.id) && !backendSlugs.has(c.slug));
+          const merged = [...localOnly, ...data];
+          saveToStorage(STORAGE_KEYS.categories, merged);
+          return merged;
+        });
       }
-      if (compRes.status === 'fulfilled' && compRes.value?.length > 0) {
-        setComparisons(compRes.value);
-        saveToStorage(STORAGE_KEYS.comparisons, compRes.value);
+    }).catch(() => {});
+
+    // 4. Rankings fetch
+    rankingApi.getAll().then((data) => {
+      if (Array.isArray(data) && data.length > 0) {
+        setRankings((prev) => {
+          const backendIds = new Set(data.map((r: any) => r.id));
+          const backendSlugs = new Set(data.map((r: any) => r.slug));
+          const localOnly = prev.filter((r) => !backendIds.has(r.id) && !backendSlugs.has(r.slug));
+          const merged = [...localOnly, ...data];
+          saveToStorage(STORAGE_KEYS.rankings, merged);
+          return merged;
+        });
       }
-      if (aRes.status === 'fulfilled' && aRes.value?.length > 0) {
-        const sanitizedArticles = sanitizeArticleRanks(aRes.value);
-        setArticles(sanitizedArticles);
-        saveToStorage(STORAGE_KEYS.articles, sanitizedArticles);
+    }).catch(() => {});
+
+    // 5. Comparisons fetch
+    comparisonApi.getAll().then((data) => {
+      if (Array.isArray(data) && data.length > 0) {
+        setComparisons((prev) => {
+          const backendIds = new Set(data.map((c: any) => c.id));
+          const backendSlugs = new Set(data.map((c: any) => c.slug));
+          const localOnly = prev.filter((c) => !backendIds.has(c.id) && !backendSlugs.has(c.slug));
+          const merged = [...localOnly, ...data];
+          saveToStorage(STORAGE_KEYS.comparisons, merged);
+          return merged;
+        });
       }
-      if (eRes.status === 'fulfilled' && eRes.value?.length > 0) {
-        setExperts(eRes.value);
-        saveToStorage(STORAGE_KEYS.experts, eRes.value);
+    }).catch(() => {});
+
+    // 6. Experts fetch
+    expertApi.getAll().then((data) => {
+      if (Array.isArray(data) && data.length > 0) {
+        setExperts((prev) => {
+          const backendIds = new Set(data.map((e: any) => e.id));
+          const localOnly = prev.filter((e) => !backendIds.has(e.id));
+          const merged = [...localOnly, ...data];
+          saveToStorage(STORAGE_KEYS.experts, merged);
+          return merged;
+        });
       }
-    } catch (err) {
-      console.warn('[DataContext] Backend API offline, continuing with local persistent storage.', err);
-      setIsBackendConnected(false);
-    } finally {
-      setIsLoading(false);
-    }
+    }).catch(() => {});
   }, []);
 
   useEffect(() => {
